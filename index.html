@@ -37,7 +37,7 @@
     a { text-decoration: none; color: inherit; }
     img { display: block; }
 
-    /* ----- 公告栏（顶栏） ----- */
+    /* ----- 公告栏 ----- */
     #announcement-bar {
       background: var(--announce-bg);
       color: var(--announce-text);
@@ -216,7 +216,7 @@
       color: var(--text2); background: #fff; font-family: inherit; cursor: pointer; outline: none;
     }
 
-    /* ----- 视图返回栏（“我喜欢”独立页面时显示） ----- */
+    /* ----- 视图返回栏（“我喜欢”独立页面） ----- */
     .view-back-bar {
       display: none;
       padding: 12px 16px;
@@ -543,7 +543,7 @@
 <body>
 
 <!-- ============================================================
-   公告栏（顶栏）
+   公告栏
    ============================================================ -->
 <div id="announcement-bar">
   <div class="announce-text" id="announce-text">
@@ -557,7 +557,7 @@
 </div>
 
 <!-- ============================================================
-   视图返回栏（“我喜欢”独立页面时显示）
+   视图返回栏（“我喜欢”独立页面）
    ============================================================ -->
 <div class="view-back-bar" id="view-back-bar">
   <span class="back-btn" id="view-back-btn">← 返回全部</span>
@@ -565,7 +565,7 @@
 </div>
 
 <!-- ============================================================
-   MAIN VIEW (画廊主界面)
+   MAIN VIEW
    ============================================================ -->
 <div id="main-view">
 
@@ -590,6 +590,9 @@
     </div>
     <div class="header-right">
       <span class="admin-badge" id="admin-badge" style="display:none">管理</span>
+      <span id="auth-section">
+        <!-- 由 JS 动态渲染 -->
+      </span>
       <button class="btn btn-ghost" id="admin-btn">管理</button>
       <button class="btn btn-primary" id="upload-btn" style="display:none">＋ 上传</button>
     </div>
@@ -633,7 +636,7 @@
 </div><!-- end main-view -->
 
 <!-- ============================================================
-   DETAIL VIEW (帖子详情页)
+   DETAIL VIEW
    ============================================================ -->
 <div id="detail-view">
   <div class="detail-header">
@@ -683,7 +686,7 @@
   </div>
 </div>
 
-<!-- AUTH MODAL -->
+<!-- AUTH MODAL (管理员登录 - GitHub Token) -->
 <div class="modal-backdrop" id="auth-modal">
   <div class="modal">
     <div class="modal-header"><span class="modal-title">🔐 管理员</span><button class="modal-x" id="auth-close">✕</button></div>
@@ -693,7 +696,33 @@
   </div>
 </div>
 
+<!-- ============================================================
+   USERBASE 登录 / 注册 模态框
+   ============================================================ -->
+<!-- 登录 -->
+<div class="modal-backdrop" id="login-modal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-header"><span class="modal-title">登录</span><button class="modal-x" onclick="closeModal('login-modal')">✕</button></div>
+    <div class="form-row"><label>用户名</label><input type="text" id="login-username" placeholder="用户名" autocomplete="username" /></div>
+    <div class="form-row"><label>密码</label><input type="password" id="login-password" placeholder="密码" autocomplete="current-password" /></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('login-modal')">取消</button><button class="btn btn-primary" id="login-submit">登录</button></div>
+  </div>
+</div>
+
+<!-- 注册 -->
+<div class="modal-backdrop" id="signup-modal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-header"><span class="modal-title">注册</span><button class="modal-x" onclick="closeModal('signup-modal')">✕</button></div>
+    <div class="form-row"><label>用户名</label><input type="text" id="signup-username" placeholder="用户名" autocomplete="username" /></div>
+    <div class="form-row"><label>密码</label><input type="password" id="signup-password" placeholder="至少6位" autocomplete="new-password" /></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('signup-modal')">取消</button><button class="btn btn-primary" id="signup-submit">注册</button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
+
+<!-- Userbase SDK -->
+<script src="https://www.unpkg.com/userbase-js@latest/dist/userbase.js"></script>
 
 <script>
 'use strict';
@@ -703,6 +732,7 @@
 // ================================================================
 const CFG = { owner: 'ljhLJH0102-0721', repo: 'Public', branch: 'main' };
 const GH = 'https://api.github.com';
+const USERBASE_APP_ID = '6c6e05da-87ac-4af4-afdd-69719d48a0d1';
 
 // ================================================================
 // GISCUS 配置
@@ -757,7 +787,7 @@ function addRecent(art) {
 }
 
 // ================================================================
-// 公告数据（修复乱码）
+// 公告数据
 // ================================================================
 let announcements = [];
 let annSha = null;
@@ -768,7 +798,6 @@ async function fetchAnnouncements() {
     const file = await ghGetFile(ANN_FILE, null);
     if (file) {
       annSha = file.sha;
-      // 正确解码 UTF-8
       const binary = atob(file.content.replace(/\s/g, ''));
       const utf8Text = decodeURIComponent(escape(binary));
       announcements = JSON.parse(utf8Text);
@@ -784,7 +813,6 @@ async function fetchAnnouncements() {
 
 async function saveAnnouncements(token) {
   const json = JSON.stringify(announcements, null, 2);
-  // 正确编码 UTF-8
   const utf8Bytes = unescape(encodeURIComponent(json));
   const base64 = btoa(utf8Bytes);
   const result = await ghPutFile(ANN_FILE, base64, 'update announcements', annSha, token);
@@ -794,7 +822,6 @@ async function saveAnnouncements(token) {
 function renderAnnouncements() {
   const container = document.getElementById('announce-text');
   const empty = document.getElementById('announce-empty');
-  // 移除之前动态添加的项（保留第一个和第二个）
   while (container.children.length > 2) {
     container.removeChild(container.lastChild);
   }
@@ -812,7 +839,6 @@ function renderAnnouncements() {
     `;
     container.appendChild(wrapper);
   });
-  // 绑定删除事件
   document.querySelectorAll('.del-ann').forEach(el => {
     el.addEventListener('click', async function(e) {
       e.stopPropagation();
@@ -825,7 +851,6 @@ function renderAnnouncements() {
       toast('公告已删除');
     });
   });
-  // 根据管理员状态显示删除按钮和发布栏
   if (isAdmin) {
     document.getElementById('announcement-bar').classList.add('admin-mode');
     document.getElementById('announce-actions').style.display = 'flex';
@@ -835,7 +860,6 @@ function renderAnnouncements() {
   }
 }
 
-// 发布公告
 document.getElementById('announce-post').addEventListener('click', async function() {
   if (!isAdmin) { toast('请先登录管理员'); return; }
   const input = document.getElementById('announce-input');
@@ -992,9 +1016,118 @@ let adminToken = '';
 let currentDetailArt = null;
 let isLikedView = false;
 
+// ================================================================
+// Userbase 用户系统
+// ================================================================
+let currentUser = null;
+
+async function initUserbase() {
+  try {
+    await userbase.init({ appId: USERBASE_APP_ID });
+    const session = await userbase.getSession();
+    if (session && session.user) {
+      currentUser = session.user;
+      updateUIForLoggedIn();
+    } else {
+      updateUIForLoggedOut();
+    }
+  } catch (e) {
+    console.error('Userbase init error:', e);
+    updateUIForLoggedOut();
+  }
+}
+
+async function signUp(username, password) {
+  try {
+    const user = await userbase.signUp({ username, password, rememberMe: 'session' });
+    currentUser = user;
+    updateUIForLoggedIn();
+    toast('注册成功！');
+    return user;
+  } catch (e) {
+    toast('注册失败：' + e.message, 'error');
+    throw e;
+  }
+}
+
+async function signIn(username, password) {
+  try {
+    const user = await userbase.signIn({ username, password, rememberMe: 'session' });
+    currentUser = user;
+    updateUIForLoggedIn();
+    toast('登录成功！');
+    return user;
+  } catch (e) {
+    toast('登录失败：' + e.message, 'error');
+    throw e;
+  }
+}
+
+async function signOut() {
+  try {
+    await userbase.signOut();
+    currentUser = null;
+    updateUIForLoggedOut();
+    toast('已退出');
+  } catch (e) {
+    toast('退出失败：' + e.message, 'error');
+  }
+}
+
+function updateUIForLoggedIn() {
+  document.getElementById('auth-section').innerHTML = `
+    <span style="color:var(--text2);font-size:0.8rem;margin-right:6px;">👤 ${escHtml(currentUser.username)}</span>
+    <button class="btn btn-ghost" onclick="signOut()">退出</button>
+  `;
+}
+
+function updateUIForLoggedOut() {
+  document.getElementById('auth-section').innerHTML = `
+    <button class="btn btn-ghost" onclick="showLoginModal()">登录</button>
+    <button class="btn btn-primary" onclick="showSignupModal()">注册</button>
+  `;
+}
+
+function showLoginModal() { openModal('login-modal'); }
+function showSignupModal() { openModal('signup-modal'); }
+
+async function doLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+  if (!username || !password) { toast('请填写完整'); return; }
+  await signIn(username, password);
+  closeModal('login-modal');
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+}
+
+async function doSignup() {
+  const username = document.getElementById('signup-username').value.trim();
+  const password = document.getElementById('signup-password').value.trim();
+  if (!username || !password) { toast('请填写完整'); return; }
+  if (password.length < 6) { toast('密码至少6位'); return; }
+  await signUp(username, password);
+  closeModal('signup-modal');
+  document.getElementById('signup-username').value = '';
+  document.getElementById('signup-password').value = '';
+}
+
+document.getElementById('login-submit').addEventListener('click', doLogin);
+document.getElementById('signup-submit').addEventListener('click', doSignup);
+
+// 回车键支持登录/注册
+document.getElementById('login-password').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('login-submit').click();
+});
+document.getElementById('signup-password').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('signup-submit').click();
+});
+
+// ================================================================
+// 画廊核心功能
+// ================================================================
 async function fetchArtworks() {
   showSkeletons();
-
   const cached = localStorage.getItem('artworks_cache');
   if (cached) {
     try {
@@ -1007,7 +1140,6 @@ async function fetchArtworks() {
       }
     } catch(e) {}
   }
-
   try {
     const rawUrl = `https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/artworks.json`;
     const res = await fetch(rawUrl, { cache: 'no-store' });
@@ -1199,7 +1331,6 @@ function closeDetail() {
 function loadGiscus(artId) {
   const container = document.getElementById('giscus-container');
   container.innerHTML = '';
-
   setTimeout(() => {
     const term = `gallery-${artId}`;
     const script = document.createElement('script');
@@ -1350,7 +1481,7 @@ document.getElementById('upload-submit').addEventListener('click', async () => {
 });
 
 // ================================================================
-// Auth
+// Admin Auth (GitHub Token)
 // ================================================================
 document.getElementById('admin-btn').addEventListener('click', () => {
   if (isAdmin) {
@@ -1358,19 +1489,18 @@ document.getElementById('admin-btn').addEventListener('click', () => {
     document.getElementById('upload-btn').style.display = 'none';
     document.getElementById('admin-badge').style.display = 'none';
     document.getElementById('admin-btn').textContent = '管理';
-    // 隐藏公告发布栏
     document.getElementById('announce-actions').style.display = 'none';
     document.getElementById('announcement-bar').classList.remove('admin-mode');
     renderAnnouncements();
     toast('已退出');
   } else openModal('auth-modal');
 });
-document.getElementById('auth-submit').addEventListener('click', doLogin);
+document.getElementById('auth-submit').addEventListener('click', doAdminLogin);
 document.getElementById('auth-cancel').addEventListener('click', () => closeModal('auth-modal'));
 document.getElementById('auth-close').addEventListener('click', () => closeModal('auth-modal'));
-document.getElementById('admin-token').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('admin-token').addEventListener('keydown', e => { if (e.key === 'Enter') doAdminLogin(); });
 
-async function doLogin() {
+async function doAdminLogin() {
   const token = document.getElementById('admin-token').value.trim();
   if (!token) return toast('输入Token');
   try {
@@ -1380,7 +1510,6 @@ async function doLogin() {
     document.getElementById('upload-btn').style.display = '';
     document.getElementById('admin-badge').style.display = '';
     document.getElementById('admin-btn').textContent = '退出';
-    // 显示公告发布栏
     document.getElementById('announce-actions').style.display = 'flex';
     document.getElementById('announcement-bar').classList.add('admin-mode');
     renderAnnouncements();
@@ -1389,6 +1518,9 @@ async function doLogin() {
   } catch(e) { toast('Token无效'); }
 }
 
+// ================================================================
+// 分类 & 排序
+// ================================================================
 document.querySelectorAll('.tag-pill').forEach(btn => {
   btn.addEventListener('click', () => {
     if (isLikedView) {
@@ -1402,18 +1534,27 @@ document.querySelectorAll('.tag-pill').forEach(btn => {
 });
 document.getElementById('sort-select').addEventListener('change', e => { currentSort = e.target.value; applyFilters(); });
 
+// ================================================================
+// Modal Helpers
+// ================================================================
 function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
-['upload-modal','auth-modal'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => { if (e.target === document.getElementById(id)) closeModal(id); });
+['upload-modal','auth-modal','login-modal','signup-modal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target === document.getElementById(id)) closeModal(id);
+  });
 });
 
+// ================================================================
+// Toast
+// ================================================================
 let toastTimer;
-function toast(msg) {
+function toast(msg, type = '') {
   const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
+  el.textContent = msg;
+  el.className = 'show' + (type ? ' ' + type : '');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+  toastTimer = setTimeout(() => el.className = '', 2500);
 }
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtDate(ts) { return new Date(ts).toLocaleDateString('zh-CN', { year:'numeric', month:'short', day:'numeric' }); }
@@ -1434,6 +1575,7 @@ if (savedToken) {
 setupSearchSuggestions();
 fetchArtworks();
 fetchAnnouncements();
+initUserbase();
 </script>
 </body>
 </html>
