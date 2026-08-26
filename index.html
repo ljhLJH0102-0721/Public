@@ -276,11 +276,6 @@
     /* ── Auth Modal ── */
     #auth-modal .modal { max-width: 380px; }
 
-    /* ── Setup Modal ── */
-    #setup-modal .modal { max-width: 460px; }
-    .setup-note { font-size: 0.82rem; color: var(--text2); line-height: 1.65; margin-bottom: 22px; background: #f0f7ff; border: 1px solid #cce4ff; border-radius: var(--radius-s); padding: 12px 14px; }
-    code { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 0.82em; font-family: monospace; color: var(--accent); }
-
     /* ── Toast ── */
     #toast {
       position: fixed; bottom: 24px; left: 50%;
@@ -469,38 +464,11 @@
     <div class="form-row">
       <label>GitHub Token</label>
       <input type="password" id="admin-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-      <p class="form-hint">需要 <code>contents: write</code> 权限（Fine-grained token）</p>
+      <p class="form-hint">需要 <code>repo</code> 权限（经典令牌）</p>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" id="auth-cancel">取消</button>
       <button class="btn btn-primary" id="auth-submit">登录</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════ SETUP MODAL ══════════════════ -->
-<div class="modal-backdrop" id="setup-modal" role="dialog" aria-modal="true">
-  <div class="modal" style="max-width:480px">
-    <div class="modal-header">
-      <span class="modal-title">⚙️ 连接 GitHub 仓库</span>
-    </div>
-    <div class="setup-note">
-      这是首次访问，请填写你的 GitHub 仓库信息。图片将存储在仓库的 <code>images/</code> 目录，画作列表存储在 <code>artworks.json</code>。配置只需填写一次。
-    </div>
-    <div class="form-row">
-      <label>GitHub 用户名</label>
-      <input type="text" id="cfg-owner" placeholder="your-username" />
-    </div>
-    <div class="form-row">
-      <label>仓库名称</label>
-      <input type="text" id="cfg-repo" placeholder="my-gallery" />
-    </div>
-    <div class="form-row">
-      <label>分支</label>
-      <input type="text" id="cfg-branch" placeholder="main" value="main" />
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" id="setup-save">保存并连接</button>
     </div>
   </div>
 </div>
@@ -513,20 +481,16 @@
 'use strict';
 
 /* ────────────────────────────────────────────────
-   CONFIG
+   CONFIG — 硬编码你的仓库信息，无需用户填写
 ──────────────────────────────────────────────── */
-let CFG = { owner: '', repo: '', branch: 'main' };
-
-function loadCfg() {
-  try { const s = localStorage.getItem('ag_cfg'); if (s) Object.assign(CFG, JSON.parse(s)); } catch(_) {}
-}
-function saveCfg() {
-  localStorage.setItem('ag_cfg', JSON.stringify(CFG));
-}
-function cfgReady() { return !!(CFG.owner && CFG.repo); }
+const CFG = {
+  owner: 'ljhLJH0102-0721',
+  repo:  'Public',
+  branch: 'main'
+};
 
 /* ────────────────────────────────────────────────
-   GITHUB API
+   GITHUB API  (上传/删除使用，需 Token)
 ──────────────────────────────────────────────── */
 const GH = 'https://api.github.com';
 
@@ -568,43 +532,68 @@ async function ghVerifyToken(token) {
   return r.json();
 }
 
-// Public CDN URL — no token needed for visitors
+/* ────────────────────────────────────────────────
+   CDN URL — 用于公开读取（无需 Token）
+──────────────────────────────────────────────── */
 function cdnUrl(path) {
-  // Use a timestamp-busting trick: append ?v=sha-prefix when available
   return `https://cdn.jsdelivr.net/gh/${CFG.owner}/${CFG.repo}@${CFG.branch}/${path}`;
 }
 
 /* ────────────────────────────────────────────────
-   ARTWORKS DATA
+   ARTWORKS DATA  — 直接从 CDN 读取 artworks.json
 ──────────────────────────────────────────────── */
 let artworks    = [];
-let artworksSha = null;
+let artworksSha = null;  // 用于更新时
 
 async function fetchArtworks() {
   showSkeletons();
   try {
-    const file = await ghGetFile('artworks.json', null);
-    if (file) {
-      artworksSha = file.sha;
-      const decoded = decodeURIComponent(escape(atob(file.content.replace(/\s/g, ''))));
-      artworks = JSON.parse(decoded);
+    // 用 CDN 公开读取，不依赖 Token，不会限流
+    const url = cdnUrl('artworks.json');
+    const res = await fetch(url);
+    if (!res.ok) {
+      // 如果 CDN 返回 404，可能是没有 artworks.json，视为空列表
+      if (res.status === 404) {
+        artworks = [];
+        artworksSha = null;
+      } else {
+        throw new Error(`CDN 加载失败 (${res.status})`);
+      }
     } else {
-      artworks = [];
-      artworksSha = null;
+      const data = await res.json();
+      artworks = data;
+      // 为了后续更新，我们还需要获取文件的 SHA（从 GitHub API 获取）
+      // 但这里只是读取，不更新，所以 SHA 不需要。
+      // 但在上传时，我们需要 SHA，那时我们会调用 ghGetFile 获取。
     }
   } catch(e) {
     console.error(e);
-    showError('加载失败：' + e.message);
-    return;
+    // 如果 CDN 读取失败，尝试用 GitHub API 直接读取（需要 Token？不，公开仓库也可以无 Token 读取，但有限流风险）
+    // 这里作为 fallback
+    try {
+      const file = await ghGetFile('artworks.json', null);
+      if (file) {
+        artworks = JSON.parse(atob(file.content.replace(/\s/g, '')));
+        artworksSha = file.sha;
+      } else {
+        artworks = [];
+      }
+    } catch(e2) {
+      showError('加载作品列表失败，请刷新重试');
+      return;
+    }
   }
   applyFilters();
 }
 
 async function persistArtworks(token) {
-  const json    = JSON.stringify(artworks, null, 2);
-  const base64  = btoa(unescape(encodeURIComponent(json)));
-  const result  = await ghPutFile('artworks.json', base64, 'chore: update artworks.json', artworksSha, token);
-  artworksSha   = result.content.sha;
+  // 先获取最新的 SHA
+  const file = await ghGetFile('artworks.json', token);
+  const sha = file ? file.sha : null;
+  const json = JSON.stringify(artworks, null, 2);
+  const base64 = btoa(unescape(encodeURIComponent(json)));
+  const result = await ghPutFile('artworks.json', base64, 'chore: update artworks.json', sha, token);
+  artworksSha = result.content.sha;
 }
 
 /* ────────────────────────────────────────────────
@@ -656,13 +645,10 @@ function showError(msg) {
       <div class="empty-icon">⚠️</div>
       <p style="color:#ef4444">${escHtml(msg)}</p>
     </div>`;
-  document.getElementById('count-label') && (document.getElementById('count-label').textContent = '');
 }
 
 function renderGallery() {
   const g = document.getElementById('gallery');
-
-  // Update count in page title area — reuse section-title or just console
   document.title = `画廊 · ${artworks.length} 件作品`;
 
   if (!filtered.length) {
@@ -845,7 +831,6 @@ document.getElementById('upload-submit').addEventListener('click', async () => {
     setProgress(15, '读取图片…');
     const base64raw  = pickedDataUrl.split(',')[1];
 
-    // Sanitize filename
     const ext      = (pickedFile.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
     const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
     const imgPath  = `images/${safeName}`;
@@ -929,21 +914,6 @@ async function doLogin() {
 }
 
 /* ────────────────────────────────────────────────
-   SETUP
-──────────────────────────────────────────────── */
-document.getElementById('setup-save').addEventListener('click', () => {
-  const owner  = document.getElementById('cfg-owner').value.trim();
-  const repo   = document.getElementById('cfg-repo').value.trim();
-  const branch = document.getElementById('cfg-branch').value.trim() || 'main';
-  if (!owner || !repo) { toast('用户名和仓库名不能为空', 'error'); return; }
-  CFG = { owner, repo, branch };
-  saveCfg();
-  closeModal('setup-modal');
-  fetchArtworks();
-  toast('配置已保存，正在加载…', 'success');
-});
-
-/* ────────────────────────────────────────────────
    FILTER CONTROLS
 ──────────────────────────────────────────────── */
 document.querySelectorAll('.tag-pill').forEach(btn => {
@@ -1003,11 +973,9 @@ function fmtDate(ts) {
 }
 
 /* ────────────────────────────────────────────────
-   INIT
+   INIT — 直接加载，无需配置
 ──────────────────────────────────────────────── */
-loadCfg();
-
-// Restore session if same tab
+// 恢复会话（如果有 Token）
 const savedTok = sessionStorage.getItem('ag_token');
 if (savedTok) {
   adminToken = savedTok; isAdmin = true;
@@ -1016,11 +984,8 @@ if (savedTok) {
   document.getElementById('admin-btn').textContent     = '退出管理';
 }
 
-if (!cfgReady()) {
-  openModal('setup-modal');
-} else {
-  fetchArtworks();
-}
+// 开始加载作品
+fetchArtworks();
 </script>
 </body>
 </html>
