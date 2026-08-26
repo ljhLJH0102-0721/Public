@@ -548,7 +548,7 @@ const CFG = { owner: 'ljhLJH0102-0721', repo: 'Public', branch: 'main' };
 const GH = 'https://api.github.com';
 
 // ================================================================
-// GISCUS 配置（已按你提供的填入）
+// GISCUS 配置
 // ================================================================
 const GISCUS_CONFIG = {
   repo: 'ljhLJH0102-0721/Public',
@@ -890,6 +890,8 @@ function closeDetail() {
   document.getElementById('main-view').classList.remove('hidden');
   document.body.style.overflow = 'auto';
   document.getElementById('giscus-container').innerHTML = '';
+  // 恢复原始路径
+  history.pushState(null, '', '/');
   currentDetailArt = null;
 }
 
@@ -925,14 +927,15 @@ document.getElementById('detail-delete').addEventListener('click', async functio
 });
 
 // ================================================================
-// Giscus 评论区加载
+// Giscus 评论区加载 (使用 pathname 映射，每幅画独立)
 // ================================================================
 function loadGiscus(artId) {
   const container = document.getElementById('giscus-container');
   container.innerHTML = '';
 
-  // 使用 number 映射，用 artId 的哈希作为唯一标识，确保每幅画评论独立
-  const hash = artId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  // 用 pathname 映射，通过 pushState 临时改变路径，使每幅画的评论独立
+  const fakePath = `/gallery/${artId}`;
+  history.pushState(null, '', fakePath);
 
   const script = document.createElement('script');
   script.src = 'https://giscus.app/client.js';
@@ -940,8 +943,7 @@ function loadGiscus(artId) {
   script.setAttribute('data-repo-id', GISCUS_CONFIG.repoId);
   script.setAttribute('data-category', GISCUS_CONFIG.category);
   script.setAttribute('data-category-id', GISCUS_CONFIG.categoryId);
-  script.setAttribute('data-mapping', 'number');
-  script.setAttribute('data-term', String(hash));
+  script.setAttribute('data-mapping', GISCUS_CONFIG.mapping);
   script.setAttribute('data-strict', GISCUS_CONFIG.strict);
   script.setAttribute('data-reactions-enabled', GISCUS_CONFIG.reactionsEnabled);
   script.setAttribute('data-emit-metadata', GISCUS_CONFIG.emitMetadata);
