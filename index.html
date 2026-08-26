@@ -34,7 +34,6 @@
     a { text-decoration: none; color: inherit; }
     img { display: block; }
 
-    /* Header */
     header {
       position: sticky; top: 0; z-index: 200;
       background: rgba(255,255,255,0.92);
@@ -55,6 +54,7 @@
       background: var(--bg); border: 1.5px solid var(--border);
       border-radius: 24px; padding: 0 14px; gap: 6px;
       transition: border-color .2s;
+      position: relative;
     }
     .search-wrap:focus-within { border-color: var(--accent); background: #fff; }
     .search-wrap input {
@@ -62,6 +62,31 @@
       color: var(--text); outline: none; padding: 6px 0; font-family: inherit;
     }
     .search-wrap input::placeholder { color: var(--text3); }
+
+    /* 搜索建议下拉 */
+    #suggestions {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-s);
+      box-shadow: var(--shadow);
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+      z-index: 300;
+    }
+    #suggestions .sug-item {
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--bg);
+    }
+    #suggestions .sug-item:hover { background: var(--bg); }
+    #suggestions .sug-item:last-child { border-bottom: none; }
 
     .header-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 
@@ -76,7 +101,6 @@
     .btn-ghost:hover { background: var(--bg); color: var(--text); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
-    /* Tags */
     .tags-bar {
       background: #fff; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; gap: 6px;
@@ -97,7 +121,6 @@
       color: var(--text2); background: #fff; font-family: inherit; cursor: pointer; outline: none;
     }
 
-    /* Gallery */
     #gallery-wrap { padding: 16px; }
     #gallery {
       display: grid;
@@ -143,7 +166,6 @@
       border: 1px solid rgba(255,255,255,0.15);
     }
 
-    /* Empty / Skeleton */
     .empty { text-align: center; padding: 60px 20px; color: var(--text3); grid-column: 1 / -1; }
     .empty .empty-icon { font-size: 3rem; margin-bottom: 12px; }
     .skeleton-card {
@@ -213,24 +235,82 @@
       cursor: pointer; display: none; font-family: inherit;
     }
 
-    /* Recent View */
-    .recent-section {
-      background: #fff; border-top: 1px solid var(--border);
-      padding: 12px 16px; margin-top: 0;
+    /* 底部横条区域 */
+    .bottom-strip {
+      background: #fff;
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      margin-top: 0;
     }
-    .recent-title { font-size: 0.75rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-    .recent-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
-    .recent-list::-webkit-scrollbar { height: 3px; }
-    .recent-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-    .recent-item {
-      flex-shrink: 0; width: 60px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border);
-      cursor: pointer; transition: transform .2s;
+    .strip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .strip-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .strip-more {
+      font-size: 0.7rem;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .strip-more:hover { text-decoration: underline; }
+    .strip-list {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .strip-list::-webkit-scrollbar { height: 3px; }
+    .strip-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    .strip-item {
+      flex-shrink: 0;
+      width: 60px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform .2s;
       background: var(--bg);
+      position: relative;
     }
-    .recent-item:hover { transform: scale(1.04); }
-    .recent-item img { width: 60px; height: 60px; object-fit: cover; display: block; }
-    .recent-item .ri-title { font-size: 0.55rem; color: var(--text3); text-align: center; padding: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .strip-item:hover { transform: scale(1.04); }
+    .strip-item img { width: 60px; height: 60px; object-fit: cover; display: block; }
+    .strip-item .si-title {
+      font-size: 0.5rem;
+      color: var(--text3);
+      text-align: center;
+      padding: 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: rgba(255,255,255,0.8);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+    .strip-empty {
+      font-size: 0.75rem;
+      color: #bbb;
+      padding: 6px 0;
+    }
 
+    /* 视图切换时显示返回按钮 */
+    .view-back {
+      display: none;
+      margin-left: 8px;
+    }
+    .view-back.show { display: inline-block; }
+
+    /* Toast */
     .toast {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       background: #333; color: #fff; padding: 8px 20px; border-radius: 24px;
@@ -238,7 +318,6 @@
     }
     .toast.show { opacity: 1; }
 
-    /* Auth Modal */
     .modal-backdrop {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
       z-index: 600; align-items: center; justify-content: center;
@@ -302,9 +381,10 @@
     <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="#0096fa"/><path d="M7 21 L11 11 L14 17 L17 13 L21 21" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="9" r="2.5" fill="white"/></svg>
     <span>ArtGallery</span>
   </div>
-  <div class="search-wrap">
+  <div class="search-wrap" id="search-wrap">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" id="search-input" placeholder="搜索…" autocomplete="off" />
+    <div id="suggestions"></div>
   </div>
   <div class="header-right">
     <span class="admin-badge" id="admin-badge" style="display:none">管理</span>
@@ -324,8 +404,7 @@
   <button class="tag-pill" data-tag="数字艺术">数字艺术</button>
   <button class="tag-pill" data-tag="摄影">摄影</button>
   <button class="tag-pill" data-tag="其他">其他</button>
-  <!-- 👇 新增 “我喜欢” 标签 -->
-  <button class="tag-pill" data-tag="liked">❤️ 我喜欢</button>
+  <!-- 我喜欢标签已不再需要，但我们保留一个隐藏的视图切换，用底部横条代替 -->
   <select class="sort-select" id="sort-select"><option value="newest">最新</option><option value="oldest">最早</option><option value="title">名称</option></select>
 </div>
 
@@ -334,10 +413,22 @@
   <div id="gallery"></div>
 </div>
 
-<!-- RECENT VIEW -->
-<div class="recent-section" id="recent-section">
-  <div class="recent-title">⏱️ 最近浏览</div>
-  <div class="recent-list" id="recent-list"></div>
+<!-- BOTTOM STRIPS -->
+<!-- 最近浏览 -->
+<div class="bottom-strip" id="recent-strip">
+  <div class="strip-header">
+    <span class="strip-title">⏱️ 最近浏览</span>
+  </div>
+  <div class="strip-list" id="recent-list"></div>
+</div>
+
+<!-- 我喜欢 -->
+<div class="bottom-strip" id="liked-strip">
+  <div class="strip-header">
+    <span class="strip-title">❤️ 我喜欢</span>
+    <span class="strip-more" id="liked-more">查看全部 →</span>
+  </div>
+  <div class="strip-list" id="liked-list"></div>
 </div>
 
 <!-- LIGHTBOX -->
@@ -439,34 +530,104 @@ function isLiked(id) {
   return !!likes[id];
 }
 
-// ===== 添加浏览记录 =====
+// ===== 浏览记录 =====
 function addRecent(art) {
   let recent = getRecent();
   recent = recent.filter(item => item.id !== art.id);
   recent.unshift({ id: art.id, title: art.title, imagePath: art.imagePath });
   if (recent.length > 20) recent = recent.slice(0, 20);
   saveRecent(recent);
-  renderRecent();
+  renderRecentStrip();
 }
 
-// ===== 渲染最近浏览 =====
-function renderRecent() {
+// ===== 渲染底部横条（最近浏览 + 我喜欢） =====
+function renderRecentStrip() {
   const container = document.getElementById('recent-list');
   const recent = getRecent();
   if (!recent.length) {
-    container.innerHTML = '<span style="font-size:0.75rem;color:#bbb;">还没有浏览记录</span>';
+    container.innerHTML = '<span class="strip-empty">还没有浏览记录</span>';
     return;
   }
   container.innerHTML = recent.map(item => `
-    <div class="recent-item" data-id="${item.id}">
+    <div class="strip-item" data-id="${item.id}">
       <img src="${cdnUrl(item.imagePath)}" alt="${item.title}" loading="lazy" />
-      <div class="ri-title">${escHtml(item.title)}</div>
+      <div class="si-title">${escHtml(item.title)}</div>
     </div>
   `).join('');
-  container.querySelectorAll('.recent-item').forEach(el => {
+  container.querySelectorAll('.strip-item').forEach(el => {
     const id = el.dataset.id;
     const art = artworks.find(a => a.id === id);
     if (art) el.addEventListener('click', () => openLightbox(artworks.indexOf(art)));
+  });
+}
+
+function renderLikedStrip() {
+  const container = document.getElementById('liked-list');
+  const likes = getLikes();
+  const likedIds = Object.keys(likes).filter(id => likes[id] === true);
+  if (!likedIds.length) {
+    container.innerHTML = '<span class="strip-empty">还没有喜欢的作品</span>';
+    return;
+  }
+  // 按点赞时间？但我们没有存时间，按作品顺序
+  const likedArts = artworks.filter(a => likedIds.includes(a.id));
+  if (!likedArts.length) {
+    container.innerHTML = '<span class="strip-empty">还没有喜欢的作品</span>';
+    return;
+  }
+  container.innerHTML = likedArts.map(art => `
+    <div class="strip-item" data-id="${art.id}">
+      <img src="${cdnUrl(art.imagePath)}" alt="${art.title}" loading="lazy" />
+      <div class="si-title">${escHtml(art.title)}</div>
+    </div>
+  `).join('');
+  container.querySelectorAll('.strip-item').forEach(el => {
+    const id = el.dataset.id;
+    const art = artworks.find(a => a.id === id);
+    if (art) el.addEventListener('click', () => openLightbox(artworks.indexOf(art)));
+  });
+}
+
+// ===== 搜索建议 =====
+function setupSearchSuggestions() {
+  const input = document.getElementById('search-input');
+  const sugg = document.getElementById('suggestions');
+  input.addEventListener('input', function() {
+    const val = this.value.trim().toLowerCase();
+    if (!val) { sugg.style.display = 'none'; return; }
+    // 从 artworks 中匹配标题
+    const matches = artworks
+      .filter(a => a.title.toLowerCase().includes(val))
+      .slice(0, 8); // 最多显示8个
+    if (!matches.length) {
+      sugg.style.display = 'none';
+      return;
+    }
+    sugg.innerHTML = matches.map(a => `<div class="sug-item" data-title="${escHtml(a.title)}">${escHtml(a.title)}</div>`).join('');
+    sugg.style.display = 'block';
+    sugg.querySelectorAll('.sug-item').forEach(el => {
+      el.addEventListener('click', function() {
+        input.value = this.dataset.title;
+        sugg.style.display = 'none';
+        // 触发搜索
+        const evt = new Event('input');
+        input.dispatchEvent(evt);
+        // 但我们的搜索是实时过滤，需要手动触发
+        searchQuery = input.value.trim().toLowerCase();
+        applyFilters();
+      });
+    });
+  });
+  // 点击其他区域关闭建议
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('search-wrap').contains(e.target)) {
+      sugg.style.display = 'none';
+    }
+  });
+  // 输入时过滤
+  input.addEventListener('input', function() {
+    searchQuery = this.value.trim().toLowerCase();
+    applyFilters();
   });
 }
 
@@ -517,16 +678,17 @@ let isAdmin = false;
 let adminToken = '';
 let lbIndex = 0;
 
+// 视图模式：'normal' 或 'liked'
+let viewMode = 'normal';
+
 async function fetchArtworks() {
   showSkeletons();
   try {
-    // ⭐ 直接从 GitHub 原始地址读取，永远最新，不带任何缓存
     const rawUrl = `https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/artworks.json`;
     const res = await fetch(rawUrl, { cache: 'no-store' });
     if (res.ok) {
       artworks = await res.json();
     } else {
-      // 如果 raw 地址失败（偶尔被限流），走 CDN 但加随机参数绕过缓存
       const cdnFallback = `https://cdn.jsdelivr.net/gh/${CFG.owner}/${CFG.repo}@${CFG.branch}/artworks.json?t=${Date.now()}`;
       const res2 = await fetch(cdnFallback);
       if (res2.ok) {
@@ -545,7 +707,8 @@ async function fetchArtworks() {
     artworks = [];
   }
   applyFilters();
-  renderRecent();
+  renderRecentStrip();
+  renderLikedStrip();
 }
 
 async function persistArtworks(token) {
@@ -559,16 +722,14 @@ async function persistArtworks(token) {
 
 function applyFilters() {
   let arr = [...artworks];
-  // 分类过滤
-  if (currentTag !== 'all' && currentTag !== 'liked') {
-    arr = arr.filter(a => a.tag === currentTag);
-  }
-  // 我喜欢 特殊过滤
-  if (currentTag === 'liked') {
+  // 如果视图模式是 liked，只显示喜欢的
+  if (viewMode === 'liked') {
     const likes = getLikes();
     arr = arr.filter(a => likes[a.id] === true);
+  } else if (currentTag !== 'all' && currentTag !== 'liked') {
+    arr = arr.filter(a => a.tag === currentTag);
   }
-  // 搜索过滤
+  // 搜索
   if (searchQuery) {
     arr = arr.filter(a => a.title.toLowerCase().includes(searchQuery) || (a.desc||'').toLowerCase().includes(searchQuery));
   }
@@ -578,6 +739,8 @@ function applyFilters() {
   if (currentSort === 'title') arr.sort((a,b) => a.title.localeCompare(b.title, 'zh'));
   filtered = arr;
   renderGallery();
+  // 更新底部横条（点赞状态变化时也刷新）
+  renderLikedStrip();
 }
 
 function showSkeletons(n = 8) {
@@ -620,8 +783,10 @@ function renderGallery() {
       const btn = e.currentTarget;
       btn.innerHTML = `${nowLiked ? '❤️' : '🤍'} <span class="heart-count">${nowLiked ? 1 : 0}</span>`;
       btn.classList.toggle('liked', nowLiked);
-      // 如果当前在“我喜欢”标签页，实时刷新列表（取消点赞会移除）
-      if (currentTag === 'liked') {
+      // 更新底部我喜欢横条
+      renderLikedStrip();
+      // 如果当前是 liked 视图，刷新列表
+      if (viewMode === 'liked') {
         applyFilters();
       }
     });
@@ -680,10 +845,9 @@ document.getElementById('lb-heart').addEventListener('click', function() {
   this.textContent = liked ? '❤️' : '🤍';
   this.classList.toggle('liked', liked);
   document.getElementById('lb-heart-count').textContent = liked ? 1 : 0;
-  // 更新卡片上的点赞状态
   renderGallery();
-  // 如果当前在“我喜欢”标签页，重新过滤
-  if (currentTag === 'liked') {
+  renderLikedStrip();
+  if (viewMode === 'liked') {
     applyFilters();
   }
 });
@@ -702,6 +866,7 @@ document.getElementById('lb-delete').addEventListener('click', async function() 
     await persistArtworks(adminToken);
     closeLightbox();
     applyFilters();
+    renderLikedStrip();
     toast('已删除');
   } catch(e) { toast('删除失败'); }
 });
@@ -800,6 +965,11 @@ async function doLogin() {
 // ===== Filters =====
 document.querySelectorAll('.tag-pill').forEach(btn => {
   btn.addEventListener('click', () => {
+    // 如果当前是 liked 视图，先退出
+    if (viewMode === 'liked') {
+      viewMode = 'normal';
+      document.getElementById('liked-more').textContent = '查看全部 →';
+    }
     document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentTag = btn.dataset.tag;
@@ -807,7 +977,26 @@ document.querySelectorAll('.tag-pill').forEach(btn => {
   });
 });
 document.getElementById('sort-select').addEventListener('change', e => { currentSort = e.target.value; applyFilters(); });
-document.getElementById('search-input').addEventListener('input', e => { searchQuery = e.target.value.trim().toLowerCase(); applyFilters(); });
+
+// ===== 我喜欢“查看全部”按钮 =====
+document.getElementById('liked-more').addEventListener('click', function() {
+  if (viewMode === 'liked') {
+    // 回到正常视图
+    viewMode = 'normal';
+    this.textContent = '查看全部 →';
+    // 取消所有标签的高亮，高亮“全部”
+    document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+    document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');
+    currentTag = 'all';
+    applyFilters();
+  } else {
+    viewMode = 'liked';
+    this.textContent = '← 返回全部';
+    // 取消所有标签高亮
+    document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+    applyFilters();
+  }
+});
 
 // ===== Modal helpers =====
 function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
@@ -835,6 +1024,8 @@ if (savedToken) {
   document.getElementById('admin-badge').style.display = '';
   document.getElementById('admin-btn').textContent = '退出';
 }
+// 设置搜索建议
+setupSearchSuggestions();
 fetchArtworks();
 </script>
 </body>
