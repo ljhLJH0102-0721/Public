@@ -612,14 +612,13 @@ const CFG = { owner: 'ljhLJH0102-0721', repo: 'Public', branch: 'main' };
 const GH = 'https://api.github.com';
 
 // ================================================================
-// GISCUS 配置（已修复：使用 pathname 映射）
+// GISCUS 配置 - 使用 term 映射，不改变页面路径
 // ================================================================
 const GISCUS_CONFIG = {
   repo: 'ljhLJH0102-0721/Public',
   repoId: 'R_kgDOUEWNDg',
   category: 'Announcements',
   categoryId: 'DIC_kwDOUEWNDs4DENWa',
-  mapping: 'pathname',
   strict: '0',
   reactionsEnabled: '1',
   emitMetadata: '0',
@@ -795,10 +794,6 @@ let isAdmin = false;
 let adminToken = '';
 
 let currentDetailArt = null;
-
-// ================================================================
-// 视图状态（用于“我喜欢”独立页面）
-// ================================================================
 let isLikedView = false;
 
 async function fetchArtworks() {
@@ -896,7 +891,6 @@ function renderGallery() {
       btn.innerHTML = `${nowLiked ? '❤️' : '🤍'} <span class="heart-count">${nowLiked ? 1 : 0}</span>`;
       btn.classList.toggle('liked', nowLiked);
       renderLikedStrip();
-      // 如果在“我喜欢”视图下，重新应用过滤
       if (isLikedView) {
         showLikedView();
       }
@@ -918,7 +912,6 @@ function showLikedView() {
   const likedArts = artworks.filter(a => likedIds.includes(a.id));
   if (!likedArts.length) {
     toast('还没有喜欢的作品');
-    // 如果当前在 liked 视图但没有作品，返回正常视图
     if (isLikedView) {
       exitLikedView();
     }
@@ -927,14 +920,12 @@ function showLikedView() {
   isLikedView = true;
   filtered = likedArts;
   renderGallery();
-  // 隐藏主 UI 元素
   document.getElementById('main-header').classList.add('hidden');
   document.getElementById('tags-bar').classList.add('hidden');
   document.getElementById('recent-strip').classList.add('hidden');
   document.getElementById('liked-strip').classList.add('hidden');
   document.getElementById('view-back-bar').classList.add('show');
   document.getElementById('view-title').textContent = '❤️ 我喜欢';
-  // 取消所有标签高亮
   document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
 }
 
@@ -945,18 +936,11 @@ function exitLikedView() {
   document.getElementById('recent-strip').classList.remove('hidden');
   document.getElementById('liked-strip').classList.remove('hidden');
   document.getElementById('view-back-bar').classList.remove('show');
-  // 恢复全部显示
   document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
   document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');
   currentTag = 'all';
   applyFilters();
 }
-
-// 返回按钮
-document.getElementById('view-back-btn').addEventListener('click', exitLikedView);
-
-// 我喜欢“查看全部”
-document.getElementById('liked-more').addEventListener('click', showLikedView);
 
 // ================================================================
 // 详情页 (帖子样式)
@@ -1012,15 +996,52 @@ function closeDetail() {
   document.getElementById('main-view').classList.remove('hidden');
   document.body.style.overflow = 'auto';
   document.getElementById('giscus-container').innerHTML = '';
-  // 恢复原始路径
-  history.pushState(null, '', '/');
   currentDetailArt = null;
-  // 如果当前是 liked 视图，刷新视图
   if (isLikedView) {
     showLikedView();
   }
 }
 
+// ================================================================
+// Giscus 评论区加载（使用 term 映射，不改变路径）
+// ================================================================
+function loadGiscus(artId) {
+  const container = document.getElementById('giscus-container');
+  container.innerHTML = '';
+
+  const term = `gallery-${artId}`;
+
+  const script = document.createElement('script');
+  script.src = 'https://giscus.app/client.js';
+  script.setAttribute('data-repo', GISCUS_CONFIG.repo);
+  script.setAttribute('data-repo-id', GISCUS_CONFIG.repoId);
+  script.setAttribute('data-category', GISCUS_CONFIG.category);
+  script.setAttribute('data-category-id', GISCUS_CONFIG.categoryId);
+  script.setAttribute('data-mapping', 'term');
+  script.setAttribute('data-term', term);
+  script.setAttribute('data-strict', GISCUS_CONFIG.strict);
+  script.setAttribute('data-reactions-enabled', GISCUS_CONFIG.reactionsEnabled);
+  script.setAttribute('data-emit-metadata', GISCUS_CONFIG.emitMetadata);
+  script.setAttribute('data-input-position', GISCUS_CONFIG.inputPosition);
+  script.setAttribute('data-theme', GISCUS_CONFIG.theme);
+  script.setAttribute('data-lang', GISCUS_CONFIG.lang);
+  script.setAttribute('data-loading', GISCUS_CONFIG.loading);
+  script.crossOrigin = 'anonymous';
+  script.async = true;
+
+  container.appendChild(script);
+
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://giscus.app/default.css';
+  container.appendChild(link);
+}
+
+// ================================================================
+// 事件绑定
+// ================================================================
+document.getElementById('view-back-btn').addEventListener('click', exitLikedView);
+document.getElementById('liked-more').addEventListener('click', showLikedView);
 document.getElementById('detail-back').addEventListener('click', closeDetail);
 
 document.getElementById('detail-heart').addEventListener('click', function() {
@@ -1054,42 +1075,6 @@ document.getElementById('detail-delete').addEventListener('click', async functio
     toast('已删除');
   } catch(e) { toast('删除失败'); }
 });
-
-// ================================================================
-// Giscus 评论区加载（使用 pathname 映射，每幅画独立）
-// ================================================================
-function loadGiscus(artId) {
-  const container = document.getElementById('giscus-container');
-  container.innerHTML = '';
-
-  // 用 pathname 映射，通过 pushState 临时改变路径，使每幅画的评论独立
-  const fakePath = `/gallery/${artId}`;
-  history.pushState(null, '', fakePath);
-
-  const script = document.createElement('script');
-  script.src = 'https://giscus.app/client.js';
-  script.setAttribute('data-repo', GISCUS_CONFIG.repo);
-  script.setAttribute('data-repo-id', GISCUS_CONFIG.repoId);
-  script.setAttribute('data-category', GISCUS_CONFIG.category);
-  script.setAttribute('data-category-id', GISCUS_CONFIG.categoryId);
-  script.setAttribute('data-mapping', GISCUS_CONFIG.mapping);
-  script.setAttribute('data-strict', GISCUS_CONFIG.strict);
-  script.setAttribute('data-reactions-enabled', GISCUS_CONFIG.reactionsEnabled);
-  script.setAttribute('data-emit-metadata', GISCUS_CONFIG.emitMetadata);
-  script.setAttribute('data-input-position', GISCUS_CONFIG.inputPosition);
-  script.setAttribute('data-theme', GISCUS_CONFIG.theme);
-  script.setAttribute('data-lang', GISCUS_CONFIG.lang);
-  script.setAttribute('data-loading', GISCUS_CONFIG.loading);
-  script.crossOrigin = 'anonymous';
-  script.async = true;
-
-  container.appendChild(script);
-
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'https://giscus.app/default.css';
-  container.appendChild(link);
-}
 
 // ================================================================
 // 上传
@@ -1191,7 +1176,6 @@ async function doLogin() {
 // ================================================================
 document.querySelectorAll('.tag-pill').forEach(btn => {
   btn.addEventListener('click', () => {
-    // 如果当前在 liked 视图，先退出
     if (isLikedView) {
       exitLikedView();
     }
