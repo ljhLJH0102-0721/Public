@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>画廊 · 点赞 · 评论</title>
+  <title>鸾尾花论坛 · 画作展示</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -14,13 +14,15 @@
       --text: #1a1a1a;
       --text2: #555;
       --text3: #999;
-      --accent: #0096fa;
-      --accent-h: #007dd6;
+      --accent: #6a4e9c;
+      --accent-h: #5a3e8c;
       --radius: 12px;
       --radius-s: 8px;
       --shadow: 0 2px 12px rgba(0,0,0,0.08);
       --shadow-h: 0 8px 24px rgba(0,0,0,0.12);
       --heart: #ff4757;
+      --announce-bg: #f0ecf5;
+      --announce-text: #3d2a5c;
     }
     html { scroll-behavior: smooth; }
     body {
@@ -35,6 +37,76 @@
     a { text-decoration: none; color: inherit; }
     img { display: block; }
 
+    /* ----- 公告栏（顶栏） ----- */
+    #announcement-bar {
+      background: var(--announce-bg);
+      color: var(--announce-text);
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      min-height: 36px;
+    }
+    #announcement-bar .announce-text {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    #announcement-bar .announce-text span {
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(106,78,156,0.12);
+      font-size: 0.8rem;
+    }
+    #announcement-bar .announce-text .ann-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #announcement-bar .announce-text .ann-item .del-ann {
+      color: #c0392b;
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 0 4px;
+      display: none;
+    }
+    #announcement-bar .announce-text .ann-item .del-ann:hover { text-decoration: underline; }
+    .admin-mode .announce-text .ann-item .del-ann { display: inline-block; }
+    .announce-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .announce-actions input {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3px 12px;
+      font-size: 0.8rem;
+      background: #fff;
+      outline: none;
+      width: 160px;
+    }
+    .announce-actions input:focus { border-color: var(--accent); }
+    .announce-actions .btn-sm {
+      padding: 2px 12px;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    .announce-actions .btn-sm:hover { background: var(--accent-h); }
+    .announce-empty { color: var(--text3); font-size: 0.8rem; }
+
+    /* ----- 顶部导航 ----- */
     header {
       position: sticky; top: 0; z-index: 200;
       background: rgba(255,255,255,0.92);
@@ -52,13 +124,14 @@
       overflow: hidden;
     }
     .logo {
-      font-size: 1.15rem; font-weight: 800; color: var(--accent);
-      white-space: nowrap; display: flex; align-items: center; gap: 6px;
+      font-size: 1.15rem; font-weight: 700; color: var(--accent);
+      white-space: nowrap; display: flex; align-items: center; gap: 8px;
       cursor: pointer;
       user-select: none;
       transition: opacity 0.2s;
     }
     .logo:active { opacity: 0.6; }
+    .logo svg { flex-shrink: 0; width: 28px; height: 28px; }
 
     .search-wrap {
       flex: 1; max-width: 420px;
@@ -112,6 +185,7 @@
     .btn-ghost:hover { background: var(--bg); color: var(--text); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
+    /* ----- 标签栏 ----- */
     .tags-bar {
       background: #fff; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; gap: 6px;
@@ -141,6 +215,7 @@
       color: var(--text2); background: #fff; font-family: inherit; cursor: pointer; outline: none;
     }
 
+    /* ----- 视图返回栏（“我喜欢”独立页面时显示） ----- */
     .view-back-bar {
       display: none;
       padding: 12px 16px;
@@ -169,6 +244,7 @@
       color: var(--text);
     }
 
+    /* ----- 主视图 ----- */
     #main-view { display: block; }
     #main-view.hidden { display: none; }
 
@@ -234,6 +310,7 @@
     .skeleton-line.short { width: 60%; }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
+    /* ----- 底部横条 ----- */
     .bottom-strip {
       background: #fff;
       border-top: 1px solid var(--border);
@@ -283,6 +360,7 @@
     }
     .strip-empty { font-size: 0.75rem; color: #bbb; padding: 6px 0; }
 
+    /* ----- 详情页 ----- */
     #detail-view {
       display: none;
       background: #fff;
@@ -393,6 +471,7 @@
       width: 100%;
     }
 
+    /* ----- Toast ----- */
     .toast {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       background: #333; color: #fff; padding: 8px 20px; border-radius: 24px;
@@ -400,6 +479,7 @@
     }
     .toast.show { opacity: 1; }
 
+    /* ----- Modals ----- */
     .modal-backdrop {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
       z-index: 600; align-items: center; justify-content: center;
@@ -454,26 +534,57 @@
       .heart-btn { font-size: 1rem; }
       .detail-body { padding: 12px; }
       .detail-title-text { font-size: 1.1rem; }
+      #announcement-bar { font-size: 0.75rem; padding: 4px 12px; }
+      .announce-actions input { width: 100px; }
     }
   </style>
 </head>
 <body>
 
+<!-- ============================================================
+   公告栏（顶栏）
+   ============================================================ -->
+<div id="announcement-bar">
+  <div class="announce-text" id="announce-text">
+    <span>📢</span>
+    <span class="announce-empty" id="announce-empty">暂无公告</span>
+  </div>
+  <div class="announce-actions" id="announce-actions" style="display:none;">
+    <input type="text" id="announce-input" placeholder="新公告内容…" maxlength="200" />
+    <button class="btn-sm" id="announce-post">发布</button>
+  </div>
+</div>
+
+<!-- ============================================================
+   视图返回栏（“我喜欢”独立页面时显示）
+   ============================================================ -->
 <div class="view-back-bar" id="view-back-bar">
   <span class="back-btn" id="view-back-btn">← 返回全部</span>
   <span class="view-title" id="view-title">❤️ 我喜欢</span>
 </div>
 
+<!-- ============================================================
+   MAIN VIEW (画廊主界面)
+   ============================================================ -->
 <div id="main-view">
 
+  <!-- HEADER -->
   <header id="main-header">
     <div class="logo" id="logo">
-      <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="#0096fa"/><path d="M7 21 L11 11 L14 17 L17 13 L21 21" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="9" r="2.5" fill="white"/></svg>
-      <span>ArtGallery</span>
+      <!-- 鸾尾花 SVG 图标 -->
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 8 C24 16, 12 22, 16 36 C18 44, 28 48, 32 42 C36 48, 46 44, 48 36 C52 22, 40 16, 32 8Z" fill="#6a4e9c" stroke="#5a3e8c" stroke-width="1.5"/>
+        <path d="M32 8 C32 8, 28 28, 28 42" stroke="#f0ecf5" stroke-width="2" stroke-linecap="round"/>
+        <path d="M32 8 C32 8, 36 28, 36 42" stroke="#f0ecf5" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="32" cy="44" r="4" fill="#d4c4e0" stroke="#5a3e8c" stroke-width="1"/>
+        <path d="M24 32 C22 26, 18 22, 14 22" stroke="#5a3e8c" stroke-width="2" stroke-linecap="round"/>
+        <path d="M40 32 C42 26, 46 22, 50 22" stroke="#5a3e8c" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span>鸾尾花论坛</span>
     </div>
     <div class="search-wrap" id="search-wrap">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="search-input" placeholder="搜索…" autocomplete="off" />
+      <input type="text" id="search-input" placeholder="搜索作品…" autocomplete="off" />
       <div id="suggestions"></div>
     </div>
     <div class="header-right">
@@ -483,6 +594,7 @@
     </div>
   </header>
 
+  <!-- TAGS -->
   <div class="tags-bar" id="tags-bar">
     <button class="tag-pill active" data-tag="all">全部</button>
     <button class="tag-pill" data-tag="油画">油画</button>
@@ -496,10 +608,12 @@
     <select class="sort-select" id="sort-select"><option value="newest">最新</option><option value="oldest">最早</option><option value="title">名称</option></select>
   </div>
 
+  <!-- GALLERY -->
   <div id="gallery-wrap">
     <div id="gallery"></div>
   </div>
 
+  <!-- BOTTOM STRIPS -->
   <div class="bottom-strip" id="recent-strip">
     <div class="strip-header">
       <span class="strip-title">⏱️ 最近浏览</span>
@@ -515,8 +629,11 @@
     <div class="strip-list" id="liked-list"></div>
   </div>
 
-</div>
+</div><!-- end main-view -->
 
+<!-- ============================================================
+   DETAIL VIEW (帖子详情页)
+   ============================================================ -->
 <div id="detail-view">
   <div class="detail-header">
     <span class="detail-back" id="detail-back">← 返回</span>
@@ -543,6 +660,7 @@
   </div>
 </div>
 
+<!-- UPLOAD MODAL -->
 <div class="modal-backdrop" id="upload-modal">
   <div class="modal">
     <div class="modal-header"><span class="modal-title">上传作品</span><button class="modal-x" id="upload-close">✕</button></div>
@@ -564,6 +682,7 @@
   </div>
 </div>
 
+<!-- AUTH MODAL -->
 <div class="modal-backdrop" id="auth-modal">
   <div class="modal">
     <div class="modal-header"><span class="modal-title">🔐 管理员</span><button class="modal-x" id="auth-close">✕</button></div>
@@ -578,9 +697,15 @@
 <script>
 'use strict';
 
+// ================================================================
+// CONFIG
+// ================================================================
 const CFG = { owner: 'ljhLJH0102-0721', repo: 'Public', branch: 'main' };
 const GH = 'https://api.github.com';
 
+// ================================================================
+// GISCUS 配置
+// ================================================================
 const GISCUS_CONFIG = {
   repo: 'ljhLJH0102-0721/Public',
   repoId: 'R_kgDOUEWNDg',
@@ -595,6 +720,9 @@ const GISCUS_CONFIG = {
   loading: 'lazy'
 };
 
+// ================================================================
+// 本地存储
+// ================================================================
 const LIKES_KEY = 'ag_likes';
 const RECENT_KEY = 'ag_recent';
 
@@ -627,6 +755,109 @@ function addRecent(art) {
   renderRecentStrip();
 }
 
+// ================================================================
+// 公告数据
+// ================================================================
+let announcements = [];
+let annSha = null;
+const ANN_FILE = 'announcements.json';
+
+async function fetchAnnouncements() {
+  try {
+    const file = await ghGetFile(ANN_FILE, null);
+    if (file) {
+      annSha = file.sha;
+      announcements = JSON.parse(atob(file.content.replace(/\s/g, '')));
+    } else {
+      announcements = [];
+    }
+  } catch (e) {
+    announcements = [];
+  }
+  renderAnnouncements();
+}
+
+async function saveAnnouncements(token) {
+  const json = JSON.stringify(announcements, null, 2);
+  const base64 = btoa(unescape(encodeURIComponent(json)));
+  const result = await ghPutFile(ANN_FILE, base64, 'update announcements', annSha, token);
+  annSha = result.content.sha;
+}
+
+function renderAnnouncements() {
+  const container = document.getElementById('announce-text');
+  const empty = document.getElementById('announce-empty');
+  // 移除之前动态添加的项（保留第一个 span 是 📢）
+  const children = container.children;
+  // 保留第一个和第二个（📢 和 empty 占位），后面全部移除
+  while (container.children.length > 2) {
+    container.removeChild(container.lastChild);
+  }
+  if (!announcements.length) {
+    empty.style.display = 'inline';
+    return;
+  }
+  empty.style.display = 'none';
+  announcements.forEach((ann, index) => {
+    const wrapper = document.createElement('span');
+    wrapper.className = 'ann-item';
+    wrapper.innerHTML = `
+      <span>${escHtml(ann.text)}</span>
+      <span class="del-ann" data-id="${ann.id}" data-index="${index}">✕</span>
+    `;
+    container.appendChild(wrapper);
+  });
+  // 绑定删除事件（仅管理员可见，但点击事件始终绑定，由 isAdmin 控制显示）
+  document.querySelectorAll('.del-ann').forEach(el => {
+    el.addEventListener('click', async function(e) {
+      e.stopPropagation();
+      if (!isAdmin) { toast('请先登录管理员'); return; }
+      const id = this.dataset.id;
+      if (!confirm('删除此公告？')) return;
+      announcements = announcements.filter(a => a.id !== id);
+      await saveAnnouncements(adminToken);
+      renderAnnouncements();
+      toast('公告已删除');
+    });
+  });
+  // 根据管理员状态显示删除按钮
+  if (isAdmin) {
+    document.getElementById('announcement-bar').classList.add('admin-mode');
+    document.getElementById('announce-actions').style.display = 'flex';
+  } else {
+    document.getElementById('announcement-bar').classList.remove('admin-mode');
+    document.getElementById('announce-actions').style.display = 'none';
+  }
+}
+
+// 发布公告
+document.getElementById('announce-post').addEventListener('click', async function() {
+  if (!isAdmin) { toast('请先登录管理员'); return; }
+  const input = document.getElementById('announce-input');
+  const text = input.value.trim();
+  if (!text) { toast('请输入公告内容'); return; }
+  const newAnn = {
+    id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6),
+    text: text,
+    date: Date.now()
+  };
+  announcements.push(newAnn);
+  await saveAnnouncements(adminToken);
+  renderAnnouncements();
+  input.value = '';
+  toast('公告发布成功');
+});
+
+// 回车发布公告
+document.getElementById('announce-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    document.getElementById('announce-post').click();
+  }
+});
+
+// ================================================================
+// 渲染底部横条（最近浏览 + 我喜欢）
+// ================================================================
 function renderRecentStrip() {
   const container = document.getElementById('recent-list');
   const recent = getRecent();
@@ -673,6 +904,9 @@ function renderLikedStrip() {
   });
 }
 
+// ================================================================
+// 搜索建议
+// ================================================================
 function setupSearchSuggestions() {
   const input = document.getElementById('search-input');
   const sugg = document.getElementById('suggestions');
@@ -701,6 +935,9 @@ function setupSearchSuggestions() {
   });
 }
 
+// ================================================================
+// GitHub Helpers
+// ================================================================
 function ghHeaders(token) {
   const h = { 'Accept': 'application/vnd.github+json' };
   if (token) h['Authorization'] = `Bearer ${token}`;
@@ -736,6 +973,9 @@ async function ghVerifyToken(token) {
 }
 function cdnUrl(path) { return `https://cdn.jsdelivr.net/gh/${CFG.owner}/${CFG.repo}@${CFG.branch}/${path}`; }
 
+// ================================================================
+// 数据
+// ================================================================
 let artworks = [];
 let artworksSha = null;
 let filtered = [];
@@ -984,29 +1224,20 @@ function loadGiscus(artId) {
 }
 
 // ================================================================
-// 🔧 修复：双击 ArtGallery 标题，重置所有状态并返回首页
+// 双击 Logo 返回首页（并重置搜索和分类）
 // ================================================================
 document.querySelector('.logo').addEventListener('dblclick', function() {
-  // 1. 清空搜索框
   document.getElementById('search-input').value = '';
   searchQuery = '';
-
-  // 2. 重置分类标签到“全部”
   document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
   document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');
   currentTag = 'all';
-
-  // 3. 关闭详情页（如果打开）
   if (document.getElementById('detail-view').classList.contains('open')) {
     closeDetail();
   }
-
-  // 4. 退出“我喜欢”视图（如果激活）
   if (isLikedView) {
     exitLikedView();
   }
-
-  // 5. 刷新数据并滚动到顶部
   fetchArtworks();
   window.scrollTo({ top: 0, behavior: 'smooth' });
   toast('已返回首页');
@@ -1123,6 +1354,10 @@ document.getElementById('admin-btn').addEventListener('click', () => {
     document.getElementById('upload-btn').style.display = 'none';
     document.getElementById('admin-badge').style.display = 'none';
     document.getElementById('admin-btn').textContent = '管理';
+    // 隐藏公告发布栏
+    document.getElementById('announce-actions').style.display = 'none';
+    document.getElementById('announcement-bar').classList.remove('admin-mode');
+    renderAnnouncements();
     toast('已退出');
   } else openModal('auth-modal');
 });
@@ -1141,6 +1376,10 @@ async function doLogin() {
     document.getElementById('upload-btn').style.display = '';
     document.getElementById('admin-badge').style.display = '';
     document.getElementById('admin-btn').textContent = '退出';
+    // 显示公告发布栏
+    document.getElementById('announce-actions').style.display = 'flex';
+    document.getElementById('announcement-bar').classList.add('admin-mode');
+    renderAnnouncements();
     closeModal('auth-modal');
     toast('登录成功');
   } catch(e) { toast('Token无效'); }
@@ -1175,15 +1414,23 @@ function toast(msg) {
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtDate(ts) { return new Date(ts).toLocaleDateString('zh-CN', { year:'numeric', month:'short', day:'numeric' }); }
 
+// ================================================================
+// Init
+// ================================================================
 const savedToken = sessionStorage.getItem('ag_token');
 if (savedToken) {
   adminToken = savedToken; isAdmin = true;
   document.getElementById('upload-btn').style.display = '';
   document.getElementById('admin-badge').style.display = '';
   document.getElementById('admin-btn').textContent = '退出';
+  document.getElementById('announce-actions').style.display = 'flex';
+  document.getElementById('announcement-bar').classList.add('admin-mode');
 }
+
 setupSearchSuggestions();
+// 先加载作品，再加载公告
 fetchArtworks();
+fetchAnnouncements();
 </script>
 </body>
 </html>
