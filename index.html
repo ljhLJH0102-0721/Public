@@ -29,11 +29,15 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
     }
     button { cursor: pointer; border: none; background: none; font-family: inherit; }
     a { text-decoration: none; color: inherit; }
     img { display: block; }
 
+    /* ----- 顶部导航（默认可见） ----- */
     header {
       position: sticky; top: 0; z-index: 200;
       background: rgba(255,255,255,0.92);
@@ -41,6 +45,11 @@
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; padding: 0 16px; gap: 12px;
       height: 56px;
+      transition: transform 0.3s;
+    }
+    header.hidden {
+      transform: translateY(-100%);
+      pointer-events: none;
     }
     .logo {
       font-size: 1.15rem; font-weight: 800; color: var(--accent);
@@ -63,7 +72,6 @@
     }
     .search-wrap input::placeholder { color: var(--text3); }
 
-    /* 搜索建议下拉 */
     #suggestions {
       position: absolute;
       top: calc(100% + 4px);
@@ -101,10 +109,20 @@
     .btn-ghost:hover { background: var(--bg); color: var(--text); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
+    /* ----- 标签栏（默认可见） ----- */
     .tags-bar {
       background: #fff; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; gap: 6px;
       padding: 0 16px; height: 44px; overflow-x: auto;
+      transition: transform 0.3s;
+    }
+    .tags-bar.hidden {
+      transform: translateY(-100%);
+      pointer-events: none;
+      height: 0;
+      padding: 0;
+      border: none;
+      overflow: hidden;
     }
     .tags-bar::-webkit-scrollbar { display: none; }
     .tag-pill {
@@ -121,6 +139,7 @@
       color: var(--text2); background: #fff; font-family: inherit; cursor: pointer; outline: none;
     }
 
+    /* ----- 画廊主体 ----- */
     #gallery-wrap { padding: 16px; }
     #gallery {
       display: grid;
@@ -178,69 +197,22 @@
     .skeleton-line.short { width: 60%; }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    /* Lightbox */
-    #lightbox {
-      display: none; position: fixed; inset: 0; z-index: 500;
-      background: rgba(0,0,0,0.88); backdrop-filter: blur(6px);
-      align-items: center; justify-content: center;
-      padding: 16px;
-    }
-    #lightbox.open { display: flex; }
-
-    .lb-container {
-      display: flex; flex-direction: column; max-width: 600px; width: 100%; max-height: 95vh;
-      background: #fff; border-radius: 16px; overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.35); position: relative;
-    }
-    .lb-img-area {
-      background: #111; display: flex; align-items: center; justify-content: center;
-      min-height: 260px; overflow: hidden;
-    }
-    .lb-img-area img { max-width: 100%; max-height: 70vh; object-fit: contain; display: block; }
-
-    .lb-side { padding: 16px 18px; }
-    .lb-tag-badge {
-      display: inline-block; background: #eef6ff; color: var(--accent);
-      font-size: 0.7rem; font-weight: 600; padding: 3px 12px; border-radius: 12px;
-    }
-    .lb-title { font-size: 1.2rem; font-weight: 800; margin: 8px 0 4px; }
-    .lb-date { font-size: 0.75rem; color: var(--text3); margin-bottom: 10px; }
-    .lb-desc { font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
-    .lb-divider { height: 1px; background: var(--border); margin: 12px 0; }
-
-    .lb-actions {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 18px; border-top: 1px solid var(--border);
-      flex-wrap: wrap; gap: 8px;
-    }
-    .lb-nav-row { display: flex; gap: 8px; }
-    .lb-nav-row .btn { font-size: 0.78rem; padding: 6px 14px; }
-    .lb-heart-row { display: flex; align-items: center; gap: 12px; }
-    .lb-heart-btn { font-size: 1.6rem; background: none; border: none; cursor: pointer; transition: transform .2s; color: #ccc; }
-    .lb-heart-btn.liked { color: var(--heart); }
-    .lb-heart-btn:active { transform: scale(0.85); }
-    .lb-heart-count { font-size: 0.9rem; color: var(--text2); font-weight: 500; }
-
-    .lb-close {
-      position: absolute; top: 10px; right: 10px; z-index: 10;
-      width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.5);
-      color: #fff; font-size: 1rem; display: flex; align-items: center; justify-content: center;
-      border: none; cursor: pointer;
-    }
-    .lb-close:hover { background: rgba(0,0,0,0.7); }
-
-    .lb-delete-btn {
-      padding: 6px 14px; border-radius: var(--radius-s); font-size: 0.75rem; font-weight: 600;
-      color: var(--danger); border: 1.5px solid var(--danger); background: transparent;
-      cursor: pointer; display: none; font-family: inherit;
-    }
-
-    /* 底部横条区域 */
+    /* ----- 底部横条（默认可见） ----- */
     .bottom-strip {
       background: #fff;
       border-top: 1px solid var(--border);
       padding: 12px 16px;
       margin-top: 0;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .bottom-strip.hidden {
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none;
+      height: 0;
+      padding: 0;
+      border: none;
+      overflow: hidden;
     }
     .strip-header {
       display: flex;
@@ -303,14 +275,150 @@
       padding: 6px 0;
     }
 
-    /* 视图切换时显示返回按钮 */
-    .view-back {
+    /* ----- 全屏图片查看器（沉浸式） ----- */
+    #fullscreen-viewer {
       display: none;
-      margin-left: 8px;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.95);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
     }
-    .view-back.show { display: inline-block; }
+    #fullscreen-viewer.open {
+      display: flex;
+    }
+    #fullscreen-viewer .fs-img {
+      max-width: 95vw;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    #fullscreen-viewer .fs-close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      font-size: 2rem;
+      color: #fff;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 40px;
+      transition: background 0.2s;
+      z-index: 10;
+      line-height: 1;
+    }
+    #fullscreen-viewer .fs-close:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .fs-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fff;
+      font-size: 2.5rem;
+      background: rgba(0,0,0,0.4);
+      border: none;
+      cursor: pointer;
+      padding: 10px 16px;
+      border-radius: 50%;
+      transition: background 0.2s;
+      z-index: 10;
+      line-height: 1;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .fs-nav:hover { background: rgba(255,255,255,0.2); }
+    .fs-nav.prev { left: 20px; }
+    .fs-nav.next { right: 20px; }
+    .fs-nav:disabled {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+    .fs-heart {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.2rem;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+    .fs-heart.liked { color: #ff4757; }
+    .fs-heart:hover { background: rgba(255,255,255,0.15); }
 
-    /* Toast */
+    .fs-delete {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      color: #ff4757;
+      border: 1px solid #ff4757;
+      background: rgba(0,0,0,0.5);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: none;
+      z-index: 10;
+    }
+    .fs-delete:hover { background: #ff4757; color: #fff; }
+
+    /* ----- 视图切换模式（查看全部时隐藏主UI） ----- */
+    .view-mode-liked header,
+    .view-mode-liked .tags-bar,
+    .view-mode-liked .bottom-strip {
+      display: none !important;
+    }
+    .view-mode-liked #gallery-wrap {
+      padding-top: 16px;
+    }
+    .view-back-bar {
+      display: none;
+      padding: 12px 16px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      gap: 12px;
+    }
+    .view-back-bar.show {
+      display: flex;
+    }
+    .view-back-bar .back-btn {
+      font-size: 1.2rem;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .view-back-bar .back-btn:hover { text-decoration: underline; }
+    .view-back-bar .view-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ----- Toast ----- */
     .toast {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       background: #333; color: #fff; padding: 8px 20px; border-radius: 24px;
@@ -318,6 +426,7 @@
     }
     .toast.show { opacity: 1; }
 
+    /* ----- Modals (unchanged) ----- */
     .modal-backdrop {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
       z-index: 600; align-items: center; justify-content: center;
@@ -369,14 +478,15 @@
       #gallery { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
       .card-info { padding: 8px 10px; }
       .heart-btn { font-size: 1rem; }
-      .lb-container { max-width: 100%; border-radius: 12px; }
+      .fs-nav { font-size: 1.8rem; width: 40px; height: 40px; }
+      .fs-heart { font-size: 1.8rem; width: 48px; height: 48px; }
     }
   </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<header>
+<header id="main-header">
   <div class="logo">
     <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="#0096fa"/><path d="M7 21 L11 11 L14 17 L17 13 L21 21" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="9" r="2.5" fill="white"/></svg>
     <span>ArtGallery</span>
@@ -394,7 +504,7 @@
 </header>
 
 <!-- TAGS -->
-<div class="tags-bar">
+<div class="tags-bar" id="tags-bar">
   <button class="tag-pill active" data-tag="all">全部</button>
   <button class="tag-pill" data-tag="油画">油画</button>
   <button class="tag-pill" data-tag="水彩">水彩</button>
@@ -404,8 +514,13 @@
   <button class="tag-pill" data-tag="数字艺术">数字艺术</button>
   <button class="tag-pill" data-tag="摄影">摄影</button>
   <button class="tag-pill" data-tag="其他">其他</button>
-  <!-- 我喜欢标签已不再需要，但我们保留一个隐藏的视图切换，用底部横条代替 -->
   <select class="sort-select" id="sort-select"><option value="newest">最新</option><option value="oldest">最早</option><option value="title">名称</option></select>
+</div>
+
+<!-- VIEW BACK BAR (shown when in liked/recent full view) -->
+<div class="view-back-bar" id="view-back-bar">
+  <span class="back-btn" id="view-back-btn">← 返回全部</span>
+  <span class="view-title" id="view-title">❤️ 我喜欢</span>
 </div>
 
 <!-- GALLERY -->
@@ -414,7 +529,6 @@
 </div>
 
 <!-- BOTTOM STRIPS -->
-<!-- 最近浏览 -->
 <div class="bottom-strip" id="recent-strip">
   <div class="strip-header">
     <span class="strip-title">⏱️ 最近浏览</span>
@@ -422,7 +536,6 @@
   <div class="strip-list" id="recent-list"></div>
 </div>
 
-<!-- 我喜欢 -->
 <div class="bottom-strip" id="liked-strip">
   <div class="strip-header">
     <span class="strip-title">❤️ 我喜欢</span>
@@ -431,32 +544,14 @@
   <div class="strip-list" id="liked-list"></div>
 </div>
 
-<!-- LIGHTBOX -->
-<div id="lightbox">
-  <div class="lb-container">
-    <div class="lb-img-area"><img id="lb-img" src="" alt="" /></div>
-    <div class="lb-side">
-      <span class="lb-tag-badge" id="lb-tag"></span>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h2 class="lb-title" id="lb-title"></h2>
-        <div class="lb-heart-row">
-          <button class="lb-heart-btn" id="lb-heart">🤍</button>
-          <span class="lb-heart-count" id="lb-heart-count">0</span>
-        </div>
-      </div>
-      <p class="lb-date" id="lb-date"></p>
-      <div class="lb-divider"></div>
-      <p class="lb-desc" id="lb-desc"></p>
-    </div>
-    <div class="lb-actions">
-      <div class="lb-nav-row">
-        <button class="btn btn-ghost" id="lb-prev">← 上一张</button>
-        <button class="btn btn-ghost" id="lb-next">下一张 →</button>
-      </div>
-      <button class="lb-delete-btn" id="lb-delete">删除</button>
-    </div>
-    <button class="lb-close" id="lb-close">✕</button>
-  </div>
+<!-- 全屏查看器 -->
+<div id="fullscreen-viewer">
+  <button class="fs-close" id="fs-close">✕</button>
+  <button class="fs-nav prev" id="fs-prev">‹</button>
+  <button class="fs-nav next" id="fs-next">›</button>
+  <img class="fs-img" id="fs-img" src="" alt="" />
+  <button class="fs-heart" id="fs-heart">🤍</button>
+  <button class="fs-delete" id="fs-delete">删除</button>
 </div>
 
 <!-- UPLOAD MODAL -->
@@ -540,7 +635,7 @@ function addRecent(art) {
   renderRecentStrip();
 }
 
-// ===== 渲染底部横条（最近浏览 + 我喜欢） =====
+// ===== 渲染底部横条 =====
 function renderRecentStrip() {
   const container = document.getElementById('recent-list');
   const recent = getRecent();
@@ -557,7 +652,7 @@ function renderRecentStrip() {
   container.querySelectorAll('.strip-item').forEach(el => {
     const id = el.dataset.id;
     const art = artworks.find(a => a.id === id);
-    if (art) el.addEventListener('click', () => openLightbox(artworks.indexOf(art)));
+    if (art) el.addEventListener('click', () => openFullscreen(artworks.indexOf(art)));
   });
 }
 
@@ -569,7 +664,6 @@ function renderLikedStrip() {
     container.innerHTML = '<span class="strip-empty">还没有喜欢的作品</span>';
     return;
   }
-  // 按点赞时间？但我们没有存时间，按作品顺序
   const likedArts = artworks.filter(a => likedIds.includes(a.id));
   if (!likedArts.length) {
     container.innerHTML = '<span class="strip-empty">还没有喜欢的作品</span>';
@@ -584,7 +678,7 @@ function renderLikedStrip() {
   container.querySelectorAll('.strip-item').forEach(el => {
     const id = el.dataset.id;
     const art = artworks.find(a => a.id === id);
-    if (art) el.addEventListener('click', () => openLightbox(artworks.indexOf(art)));
+    if (art) el.addEventListener('click', () => openFullscreen(artworks.indexOf(art)));
   });
 }
 
@@ -595,10 +689,9 @@ function setupSearchSuggestions() {
   input.addEventListener('input', function() {
     const val = this.value.trim().toLowerCase();
     if (!val) { sugg.style.display = 'none'; return; }
-    // 从 artworks 中匹配标题
     const matches = artworks
       .filter(a => a.title.toLowerCase().includes(val))
-      .slice(0, 8); // 最多显示8个
+      .slice(0, 8);
     if (!matches.length) {
       sugg.style.display = 'none';
       return;
@@ -609,22 +702,16 @@ function setupSearchSuggestions() {
       el.addEventListener('click', function() {
         input.value = this.dataset.title;
         sugg.style.display = 'none';
-        // 触发搜索
-        const evt = new Event('input');
-        input.dispatchEvent(evt);
-        // 但我们的搜索是实时过滤，需要手动触发
         searchQuery = input.value.trim().toLowerCase();
         applyFilters();
       });
     });
   });
-  // 点击其他区域关闭建议
   document.addEventListener('click', function(e) {
     if (!document.getElementById('search-wrap').contains(e.target)) {
       sugg.style.display = 'none';
     }
   });
-  // 输入时过滤
   input.addEventListener('input', function() {
     searchQuery = this.value.trim().toLowerCase();
     applyFilters();
@@ -676,9 +763,11 @@ let currentSort = 'newest';
 let searchQuery = '';
 let isAdmin = false;
 let adminToken = '';
-let lbIndex = 0;
+// 全屏浏览状态
+let fsList = [];        // 当前浏览的作品列表（可能是 filtered 或 liked 列表）
+let fsIndex = 0;
 
-// 视图模式：'normal' 或 'liked'
+// 视图模式：'normal' 或 'liked' 或 'recent' (我们只实现 liked 和 normal)
 let viewMode = 'normal';
 
 async function fetchArtworks() {
@@ -722,12 +811,27 @@ async function persistArtworks(token) {
 
 function applyFilters() {
   let arr = [...artworks];
-  // 如果视图模式是 liked，只显示喜欢的
   if (viewMode === 'liked') {
     const likes = getLikes();
     arr = arr.filter(a => likes[a.id] === true);
-  } else if (currentTag !== 'all' && currentTag !== 'liked') {
-    arr = arr.filter(a => a.tag === currentTag);
+    // 隐藏主UI，显示返回栏
+    document.getElementById('main-header').classList.add('hidden');
+    document.getElementById('tags-bar').classList.add('hidden');
+    document.getElementById('recent-strip').classList.add('hidden');
+    document.getElementById('liked-strip').classList.add('hidden');
+    document.getElementById('view-back-bar').classList.add('show');
+    document.getElementById('view-title').textContent = '❤️ 我喜欢';
+  } else {
+    // 恢复正常显示
+    document.getElementById('main-header').classList.remove('hidden');
+    document.getElementById('tags-bar').classList.remove('hidden');
+    document.getElementById('recent-strip').classList.remove('hidden');
+    document.getElementById('liked-strip').classList.remove('hidden');
+    document.getElementById('view-back-bar').classList.remove('show');
+    // 如果当前是普通视图，分类过滤
+    if (currentTag !== 'all') {
+      arr = arr.filter(a => a.tag === currentTag);
+    }
   }
   // 搜索
   if (searchQuery) {
@@ -739,7 +843,6 @@ function applyFilters() {
   if (currentSort === 'title') arr.sort((a,b) => a.title.localeCompare(b.title, 'zh'));
   filtered = arr;
   renderGallery();
-  // 更新底部横条（点赞状态变化时也刷新）
   renderLikedStrip();
 }
 
@@ -783,68 +886,73 @@ function renderGallery() {
       const btn = e.currentTarget;
       btn.innerHTML = `${nowLiked ? '❤️' : '🤍'} <span class="heart-count">${nowLiked ? 1 : 0}</span>`;
       btn.classList.toggle('liked', nowLiked);
-      // 更新底部我喜欢横条
       renderLikedStrip();
-      // 如果当前是 liked 视图，刷新列表
       if (viewMode === 'liked') {
         applyFilters();
       }
     });
     card.addEventListener('click', () => {
-      openLightbox(idx);
+      // 使用全屏查看器，且列表基于当前 filtered
+      openFullscreen(idx);
       addRecent(art);
     });
     g.appendChild(card);
   });
 }
 
-// ===== Lightbox =====
-function openLightbox(idx) {
-  lbIndex = Math.max(0, Math.min(idx, filtered.length - 1));
-  paintLightbox();
-  document.getElementById('lightbox').classList.add('open');
+// ===== 全屏查看器 =====
+function openFullscreen(idx) {
+  // 基于当前 filtered 列表
+  fsList = filtered;
+  fsIndex = Math.max(0, Math.min(idx, fsList.length - 1));
+  renderFullscreen();
+  document.getElementById('fullscreen-viewer').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
+
+function closeFullscreen() {
+  document.getElementById('fullscreen-viewer').classList.remove('open');
   document.body.style.overflow = '';
 }
-function paintLightbox() {
-  const art = filtered[lbIndex];
+
+function renderFullscreen() {
+  const art = fsList[fsIndex];
   if (!art) return;
-  document.getElementById('lb-img').src = cdnUrl(art.imagePath);
-  document.getElementById('lb-tag').textContent = art.tag;
-  document.getElementById('lb-title').textContent = art.title;
-  document.getElementById('lb-date').textContent = fmtDate(art.date);
-  document.getElementById('lb-desc').textContent = art.desc || '暂无描述';
+  document.getElementById('fs-img').src = cdnUrl(art.imagePath);
   const liked = isLiked(art.id);
-  document.getElementById('lb-heart').textContent = liked ? '❤️' : '🤍';
-  document.getElementById('lb-heart').classList.toggle('liked', liked);
-  document.getElementById('lb-heart-count').textContent = liked ? 1 : 0;
-  document.getElementById('lb-delete').style.display = isAdmin ? 'block' : 'none';
-  document.getElementById('lb-delete').dataset.id = art.id;
-  document.getElementById('lb-delete').dataset.imgpath = art.imagePath || '';
-  document.getElementById('lb-prev').disabled = lbIndex === 0;
-  document.getElementById('lb-next').disabled = lbIndex === filtered.length - 1;
+  const heartBtn = document.getElementById('fs-heart');
+  heartBtn.textContent = liked ? '❤️' : '🤍';
+  heartBtn.classList.toggle('liked', liked);
+  document.getElementById('fs-delete').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('fs-delete').dataset.id = art.id;
+  document.getElementById('fs-delete').dataset.imgpath = art.imagePath;
+  document.getElementById('fs-prev').disabled = fsIndex === 0;
+  document.getElementById('fs-next').disabled = fsIndex === fsList.length - 1;
 }
-document.getElementById('lb-close').addEventListener('click', closeLightbox);
-document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox')) closeLightbox(); });
-document.getElementById('lb-prev').addEventListener('click', () => { if (lbIndex > 0) { lbIndex--; paintLightbox(); } });
-document.getElementById('lb-next').addEventListener('click', () => { if (lbIndex < filtered.length - 1) { lbIndex++; paintLightbox(); } });
+
+document.getElementById('fs-close').addEventListener('click', closeFullscreen);
+document.getElementById('fullscreen-viewer').addEventListener('click', function(e) {
+  if (e.target === this) closeFullscreen();
+});
+document.getElementById('fs-prev').addEventListener('click', () => {
+  if (fsIndex > 0) { fsIndex--; renderFullscreen(); }
+});
+document.getElementById('fs-next').addEventListener('click', () => {
+  if (fsIndex < fsList.length - 1) { fsIndex++; renderFullscreen(); }
+});
 document.addEventListener('keydown', e => {
-  if (!document.getElementById('lightbox').classList.contains('open')) return;
-  if (e.key === 'Escape') closeLightbox();
-  if (e.key === 'ArrowLeft' && lbIndex > 0) { lbIndex--; paintLightbox(); }
-  if (e.key === 'ArrowRight' && lbIndex < filtered.length - 1) { lbIndex++; paintLightbox(); }
+  if (!document.getElementById('fullscreen-viewer').classList.contains('open')) return;
+  if (e.key === 'Escape') closeFullscreen();
+  if (e.key === 'ArrowLeft' && fsIndex > 0) { fsIndex--; renderFullscreen(); }
+  if (e.key === 'ArrowRight' && fsIndex < fsList.length - 1) { fsIndex++; renderFullscreen(); }
 });
 
-document.getElementById('lb-heart').addEventListener('click', function() {
-  const art = filtered[lbIndex];
+document.getElementById('fs-heart').addEventListener('click', function() {
+  const art = fsList[fsIndex];
   if (!art) return;
   const liked = toggleLike(art.id);
   this.textContent = liked ? '❤️' : '🤍';
   this.classList.toggle('liked', liked);
-  document.getElementById('lb-heart-count').textContent = liked ? 1 : 0;
   renderGallery();
   renderLikedStrip();
   if (viewMode === 'liked') {
@@ -852,7 +960,7 @@ document.getElementById('lb-heart').addEventListener('click', function() {
   }
 });
 
-document.getElementById('lb-delete').addEventListener('click', async function() {
+document.getElementById('fs-delete').addEventListener('click', async function() {
   if (!isAdmin) return;
   const id = this.dataset.id;
   const imgPath = this.dataset.imgpath;
@@ -864,7 +972,7 @@ document.getElementById('lb-delete').addEventListener('click', async function() 
     }
     artworks = artworks.filter(a => a.id !== id);
     await persistArtworks(adminToken);
-    closeLightbox();
+    closeFullscreen();
     applyFilters();
     renderLikedStrip();
     toast('已删除');
@@ -962,13 +1070,17 @@ async function doLogin() {
   } catch(e) { toast('Token无效'); }
 }
 
-// ===== Filters =====
+// ===== 分类标签 =====
 document.querySelectorAll('.tag-pill').forEach(btn => {
   btn.addEventListener('click', () => {
-    // 如果当前是 liked 视图，先退出
     if (viewMode === 'liked') {
+      // 如果当前在喜欢视图，先退出
       viewMode = 'normal';
-      document.getElementById('liked-more').textContent = '查看全部 →';
+      document.getElementById('view-back-bar').classList.remove('show');
+      document.getElementById('main-header').classList.remove('hidden');
+      document.getElementById('tags-bar').classList.remove('hidden');
+      document.getElementById('recent-strip').classList.remove('hidden');
+      document.getElementById('liked-strip').classList.remove('hidden');
     }
     document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -978,24 +1090,25 @@ document.querySelectorAll('.tag-pill').forEach(btn => {
 });
 document.getElementById('sort-select').addEventListener('change', e => { currentSort = e.target.value; applyFilters(); });
 
-// ===== 我喜欢“查看全部”按钮 =====
+// ===== 我喜欢“查看全部” =====
 document.getElementById('liked-more').addEventListener('click', function() {
-  if (viewMode === 'liked') {
-    // 回到正常视图
-    viewMode = 'normal';
-    this.textContent = '查看全部 →';
-    // 取消所有标签的高亮，高亮“全部”
-    document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
-    document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');
-    currentTag = 'all';
-    applyFilters();
-  } else {
-    viewMode = 'liked';
-    this.textContent = '← 返回全部';
-    // 取消所有标签高亮
-    document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
-    applyFilters();
-  }
+  viewMode = 'liked';
+  applyFilters();
+});
+
+// ===== 返回按钮 =====
+document.getElementById('view-back-btn').addEventListener('click', function() {
+  viewMode = 'normal';
+  document.getElementById('view-back-bar').classList.remove('show');
+  document.getElementById('main-header').classList.remove('hidden');
+  document.getElementById('tags-bar').classList.remove('hidden');
+  document.getElementById('recent-strip').classList.remove('hidden');
+  document.getElementById('liked-strip').classList.remove('hidden');
+  // 重置标签高亮到“全部”
+  document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');
+  currentTag = 'all';
+  applyFilters();
 });
 
 // ===== Modal helpers =====
@@ -1024,7 +1137,6 @@ if (savedToken) {
   document.getElementById('admin-badge').style.display = '';
   document.getElementById('admin-btn').textContent = '退出';
 }
-// 设置搜索建议
 setupSearchSuggestions();
 fetchArtworks();
 </script>
