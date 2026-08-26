@@ -2,85 +2,89 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>画廊</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>画廊 · 点赞 · 最近浏览</title>
   <style>
-    /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --white:   #ffffff;
-      --bg:      #f8f8f8;
+      --bg: #f8f8f8;
       --surface: #ffffff;
-      --border:  #e5e5e5;
+      --border: #e5e5e5;
       --border2: #d0d0d0;
-      --text:    #1a1a1a;
-      --text2:   #555;
-      --text3:   #999;
-      --accent:  #0096fa;
-      --accent-h:#007dd6;
-      --danger:  #ff4757;
-      --radius:  12px;
-      --radius-s:8px;
-      --shadow:  0 2px 12px rgba(0,0,0,0.08);
-      --shadow-h:0 8px 32px rgba(0,0,0,0.14);
+      --text: #1a1a1a;
+      --text2: #555;
+      --text3: #999;
+      --accent: #0096fa;
+      --accent-h: #007dd6;
+      --danger: #ff4757;
+      --radius: 12px;
+      --radius-s: 8px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --shadow-h: 0 8px 32px rgba(0,0,0,0.14);
+      --heart: #ff4757;
     }
     html { scroll-behavior: smooth; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
     button { cursor: pointer; border: none; background: none; font-family: inherit; }
     a { text-decoration: none; color: inherit; }
     img { display: block; }
 
-    /* ── Header ── */
+    /* Header */
     header {
       position: sticky; top: 0; z-index: 200;
-      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      height: 60px; display: flex; align-items: center; padding: 0 24px; gap: 16px;
+      display: flex; align-items: center; padding: 0 16px; gap: 12px;
+      height: 56px;
     }
     .logo {
-      font-size: 1.25rem; font-weight: 800; color: var(--accent);
-      letter-spacing: -0.02em; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+      font-size: 1.15rem; font-weight: 800; color: var(--accent);
+      white-space: nowrap; display: flex; align-items: center; gap: 6px;
     }
     .logo svg { flex-shrink: 0; }
 
     .search-wrap {
-      flex: 1; max-width: 480px;
+      flex: 1; max-width: 420px;
       display: flex; align-items: center;
       background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: 24px; padding: 0 16px; gap: 8px; transition: border-color .2s;
+      border-radius: 24px; padding: 0 14px; gap: 6px;
+      transition: border-color .2s;
     }
     .search-wrap:focus-within { border-color: var(--accent); background: #fff; }
-    .search-wrap svg { color: var(--text3); flex-shrink: 0; }
     .search-wrap input {
-      flex: 1; border: none; background: transparent; font-size: 0.9rem;
-      color: var(--text); outline: none; padding: 8px 0; font-family: inherit;
+      flex: 1; border: none; background: transparent; font-size: 0.85rem;
+      color: var(--text); outline: none; padding: 6px 0; font-family: inherit;
     }
     .search-wrap input::placeholder { color: var(--text3); }
 
-    .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 
     .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 18px; border-radius: 24px; font-size: 0.875rem; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 6px 14px; border-radius: 24px; font-size: 0.8rem; font-weight: 600;
       transition: all .18s; white-space: nowrap;
     }
     .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: var(--accent-h); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,150,250,0.35); }
-    .btn-outline { border: 1.5px solid var(--border2); color: var(--text2); background: #fff; }
-    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-ghost { color: var(--text2); padding: 7px 12px; border-radius: var(--radius-s); }
+    .btn-primary:hover { background: var(--accent-h); transform: translateY(-1px); }
+    .btn-ghost { color: var(--text2); padding: 6px 10px; border-radius: var(--radius-s); }
     .btn-ghost:hover { background: var(--bg); color: var(--text); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
-    /* ── Sub-nav / Tags bar ── */
+    /* Tags */
     .tags-bar {
       background: #fff; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; gap: 6px;
-      padding: 0 24px; height: 48px; overflow-x: auto;
+      padding: 0 16px; height: 44px; overflow-x: auto;
     }
     .tags-bar::-webkit-scrollbar { display: none; }
     .tag-pill {
-      flex-shrink: 0; padding: 5px 16px; border-radius: 24px; font-size: 0.82rem; font-weight: 500;
+      flex-shrink: 0; padding: 4px 14px; border-radius: 24px; font-size: 0.78rem; font-weight: 500;
       border: 1.5px solid var(--border); color: var(--text2); background: #fff; cursor: pointer;
       transition: all .18s; white-space: nowrap;
     }
@@ -89,257 +93,228 @@
 
     .sort-select {
       margin-left: auto; flex-shrink: 0; border: 1.5px solid var(--border);
-      border-radius: var(--radius-s); padding: 5px 10px; font-size: 0.82rem;
+      border-radius: var(--radius-s); padding: 4px 8px; font-size: 0.78rem;
       color: var(--text2); background: #fff; font-family: inherit; cursor: pointer; outline: none;
     }
-    .sort-select:focus { border-color: var(--accent); }
 
-    /* ── Hero (only visible when empty) ── */
-    .hero {
-      text-align: center; padding: 80px 20px 60px;
-    }
-    .hero h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 12px; }
-    .hero p  { color: var(--text2); font-size: 1rem; max-width: 400px; margin: 0 auto 28px; line-height: 1.6; }
-
-    /* ── Gallery grid (masonry) ── */
-    #gallery-wrap { padding: 28px 24px; }
-
+    /* Gallery */
+    #gallery-wrap { padding: 16px; }
     #gallery {
-      columns: 5; column-gap: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 14px;
     }
-    @media (max-width: 1400px) { #gallery { columns: 4; } }
-    @media (max-width: 1100px) { #gallery { columns: 3; } }
-    @media (max-width:  700px) { #gallery { columns: 2; } #gallery-wrap { padding: 16px; } }
-    @media (max-width:  420px) { #gallery { columns: 1; } }
+    @media (min-width: 700px) { #gallery { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); } }
 
     .artwork-card {
-      break-inside: avoid; margin-bottom: 16px; border-radius: var(--radius);
-      overflow: hidden; background: var(--surface); border: 1px solid var(--border);
-      cursor: pointer; transition: transform .22s, box-shadow .22s;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform .22s, box-shadow .22s;
       position: relative;
     }
-    .artwork-card:hover {
-      transform: translateY(-4px); box-shadow: var(--shadow-h);
-    }
-    .artwork-card:hover .card-overlay { opacity: 1; }
-
+    .artwork-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-h); }
     .card-img-wrap { overflow: hidden; background: #f0f0f0; position: relative; }
-    .card-img-wrap img { width: 100%; display: block; object-fit: cover; transition: transform .3s; }
+    .card-img-wrap img { width: 100%; display: block; aspect-ratio: 1 / 1; object-fit: cover; transition: transform .3s; }
     .artwork-card:hover .card-img-wrap img { transform: scale(1.03); }
 
-    .card-overlay {
-      position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%);
-      opacity: 0; transition: opacity .22s; display: flex; align-items: flex-end; padding: 12px;
+    .card-info { padding: 10px 12px 12px; display: flex; justify-content: space-between; align-items: center; }
+    .card-left { flex: 1; min-width: 0; }
+    .card-title { font-size: 0.85rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta { font-size: 0.7rem; color: var(--text3); display: flex; gap: 8px; align-items: center; }
+
+    .heart-btn {
+      background: none; border: none; font-size: 1.2rem; cursor: pointer;
+      transition: transform .2s; padding: 4px; line-height: 1; flex-shrink: 0;
+      color: #ccc;
+      display: flex; align-items: center; gap: 4px;
     }
-    .card-overlay-tag {
-      background: rgba(255,255,255,0.18); backdrop-filter: blur(4px);
-      border: 1px solid rgba(255,255,255,0.3); color: #fff;
-      font-size: 0.7rem; padding: 3px 9px; border-radius: 12px; letter-spacing: 0.03em;
+    .heart-btn.liked { color: var(--heart); }
+    .heart-btn:active { transform: scale(0.85); }
+    .heart-count { font-size: 0.75rem; color: var(--text3); font-weight: 500; }
+
+    .card-tag {
+      position: absolute; top: 8px; left: 8px;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+      color: #fff; font-size: 0.6rem; padding: 2px 8px; border-radius: 10px;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(255,255,255,0.15);
     }
 
-    .card-info { padding: 12px 14px 14px; }
-    .card-title { font-size: 0.9rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
-    .card-meta  { font-size: 0.75rem; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
-
-    /* Skeleton loader */
-    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
-    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-    .skeleton-card { break-inside: avoid; margin-bottom: 16px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
-    .skeleton-img  { height: 220px; }
-    .skeleton-body { padding: 12px 14px 14px; }
-    .skeleton-line { height: 12px; border-radius: 6px; margin-bottom: 8px; }
+    /* Empty / Skeleton */
+    .empty { text-align: center; padding: 60px 20px; color: var(--text3); grid-column: 1 / -1; }
+    .empty .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+    .skeleton-card {
+      border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border);
+      background: #fff;
+    }
+    .skeleton-img { height: 170px; background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+    .skeleton-body { padding: 10px 12px; }
+    .skeleton-line { height: 12px; border-radius: 6px; background: #f0f0f0; margin-bottom: 6px; }
     .skeleton-line.short { width: 60%; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    /* Empty state */
-    .empty { text-align: center; padding: 80px 20px; color: var(--text3); }
-    .empty .empty-icon { font-size: 3.5rem; margin-bottom: 16px; }
-    .empty p { font-size: 0.95rem; margin-top: 6px; }
-
-    /* ── Lightbox ── */
+    /* Lightbox */
     #lightbox {
       display: none; position: fixed; inset: 0; z-index: 500;
-      background: rgba(15,15,15,0.88); backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.88); backdrop-filter: blur(6px);
       align-items: center; justify-content: center;
+      padding: 16px;
     }
     #lightbox.open { display: flex; }
 
     .lb-container {
-      display: flex; width: min(1160px, 97vw); max-height: 95vh;
+      display: flex; flex-direction: column; max-width: 600px; width: 100%; max-height: 95vh;
       background: #fff; border-radius: 16px; overflow: hidden;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.35); position: relative;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.35); position: relative;
     }
-
     .lb-img-area {
-      flex: 1; background: #111; display: flex; align-items: center;
-      justify-content: center; overflow: hidden; min-height: 400px;
+      background: #111; display: flex; align-items: center; justify-content: center;
+      min-height: 260px; overflow: hidden;
     }
-    .lb-img-area img { max-width: 100%; max-height: 95vh; object-fit: contain; display: block; }
+    .lb-img-area img { max-width: 100%; max-height: 70vh; object-fit: contain; display: block; }
 
-    .lb-side {
-      width: 320px; flex-shrink: 0; background: #fff;
-      border-left: 1px solid var(--border); display: flex; flex-direction: column;
-      overflow: hidden;
-    }
-    .lb-side-scroll { flex: 1; overflow-y: auto; padding: 28px 24px; }
-    .lb-side-scroll::-webkit-scrollbar { width: 4px; }
-    .lb-side-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
+    .lb-side { padding: 16px 18px; }
     .lb-tag-badge {
       display: inline-block; background: #eef6ff; color: var(--accent);
-      font-size: 0.75rem; font-weight: 600; padding: 4px 12px;
-      border-radius: 12px; margin-bottom: 14px;
+      font-size: 0.7rem; font-weight: 600; padding: 3px 12px; border-radius: 12px;
     }
-    .lb-title { font-size: 1.4rem; font-weight: 800; line-height: 1.3; color: var(--text); margin-bottom: 10px; }
-    .lb-date  { font-size: 0.8rem; color: var(--text3); margin-bottom: 18px; }
-    .lb-divider { height: 1px; background: var(--border); margin: 18px 0; }
-    .lb-desc  { font-size: 0.9rem; color: var(--text2); line-height: 1.75; }
+    .lb-title { font-size: 1.2rem; font-weight: 800; margin: 8px 0 4px; }
+    .lb-date { font-size: 0.75rem; color: var(--text3); margin-bottom: 10px; }
+    .lb-desc { font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
+    .lb-divider { height: 1px; background: var(--border); margin: 12px 0; }
 
-    .lb-side-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
-
+    .lb-actions {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 18px; border-top: 1px solid var(--border);
+      flex-wrap: wrap; gap: 8px;
+    }
     .lb-nav-row { display: flex; gap: 8px; }
-    .lb-nav-row .btn { flex: 1; justify-content: center; font-size: 0.82rem; padding: 8px 12px; }
+    .lb-nav-row .btn { font-size: 0.78rem; padding: 6px 14px; }
+    .lb-heart-row { display: flex; align-items: center; gap: 12px; }
+    .lb-heart-btn { font-size: 1.6rem; background: none; border: none; cursor: pointer; transition: transform .2s; color: #ccc; }
+    .lb-heart-btn.liked { color: var(--heart); }
+    .lb-heart-btn:active { transform: scale(0.85); }
+    .lb-heart-count { font-size: 0.9rem; color: var(--text2); font-weight: 500; }
 
     .lb-close {
-      position: absolute; top: 14px; right: 14px; z-index: 10;
-      width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,0.45);
-      color: #fff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
-      border: none; cursor: pointer; transition: background .18s;
+      position: absolute; top: 10px; right: 10px; z-index: 10;
+      width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.5);
+      color: #fff; font-size: 1rem; display: flex; align-items: center; justify-content: center;
+      border: none; cursor: pointer;
     }
     .lb-close:hover { background: rgba(0,0,0,0.7); }
 
     .lb-delete-btn {
-      width: 100%; padding: 8px; border-radius: var(--radius-s); font-size: 0.82rem; font-weight: 600;
+      padding: 6px 14px; border-radius: var(--radius-s); font-size: 0.75rem; font-weight: 600;
       color: var(--danger); border: 1.5px solid var(--danger); background: transparent;
-      cursor: pointer; transition: all .18s; display: none; font-family: inherit;
-    }
-    .lb-delete-btn:hover { background: var(--danger); color: #fff; }
-
-    @media (max-width: 800px) {
-      .lb-container { flex-direction: column; }
-      .lb-side { width: 100%; border-left: none; border-top: 1px solid var(--border); }
-      .lb-img-area { min-height: 260px; }
+      cursor: pointer; display: none; font-family: inherit;
     }
 
-    /* ── Upload Modal ── */
+    /* Recent View */
+    .recent-section {
+      background: #fff; border-top: 1px solid var(--border);
+      padding: 12px 16px; margin-top: 0;
+    }
+    .recent-title { font-size: 0.75rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .recent-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+    .recent-list::-webkit-scrollbar { height: 3px; }
+    .recent-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    .recent-item {
+      flex-shrink: 0; width: 60px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border);
+      cursor: pointer; transition: transform .2s;
+      background: var(--bg);
+    }
+    .recent-item:hover { transform: scale(1.04); }
+    .recent-item img { width: 60px; height: 60px; object-fit: cover; display: block; }
+    .recent-item .ri-title { font-size: 0.55rem; color: var(--text3); text-align: center; padding: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #333; color: #fff; padding: 8px 20px; border-radius: 24px;
+      font-size: 0.8rem; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999;
+    }
+    .toast.show { opacity: 1; }
+
+    /* Auth Modal */
     .modal-backdrop {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
       z-index: 600; align-items: center; justify-content: center;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px); padding: 20px;
     }
     .modal-backdrop.open { display: flex; }
     .modal {
-      background: #fff; border-radius: 16px; padding: 32px; width: min(520px, 95vw);
-      box-shadow: 0 24px 64px rgba(0,0,0,0.18); position: relative; max-height: 95vh; overflow-y: auto;
+      background: #fff; border-radius: 16px; padding: 24px; width: min(400px, 100%);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto;
     }
-    .modal::-webkit-scrollbar { width: 4px; }
-    .modal::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-    .modal-title { font-size: 1.15rem; font-weight: 800; color: var(--text); }
-    .modal-x { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text3); font-size: 1.1rem; transition: background .18s; border: none; cursor: pointer; background: var(--bg); }
-    .modal-x:hover { background: var(--border); color: var(--text); }
-
-    .form-row { margin-bottom: 18px; }
-    .form-row label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .modal-title { font-size: 1.05rem; font-weight: 800; }
+    .modal-x { width: 28px; height: 28px; border-radius: 50%; background: var(--bg); border: none; font-size: 1rem; cursor: pointer; }
+    .form-row { margin-bottom: 14px; }
+    .form-row label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
     .form-row input, .form-row textarea, .form-row select {
       width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-s);
-      padding: 10px 14px; font-size: 0.9rem; font-family: inherit; color: var(--text);
-      outline: none; transition: border-color .18s; background: var(--bg);
+      padding: 8px 12px; font-size: 0.9rem; font-family: inherit; background: var(--bg);
+      outline: none;
     }
-    .form-row input:focus, .form-row textarea:focus, .form-row select:focus { border-color: var(--accent); background: #fff; }
-    .form-row textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
-    .form-row select option { background: #fff; }
-    .form-hint { margin-top: 5px; font-size: 0.75rem; color: var(--text3); line-height: 1.5; }
-
-    /* Drop zone */
+    .form-row input:focus, .form-row textarea:focus { border-color: var(--accent); background: #fff; }
+    .form-row textarea { min-height: 70px; resize: vertical; }
+    .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
     .drop-zone {
-      border: 2px dashed var(--border2); border-radius: var(--radius); padding: 36px 20px;
+      border: 2px dashed var(--border2); border-radius: var(--radius); padding: 24px 16px;
       text-align: center; cursor: pointer; transition: all .2s; color: var(--text3);
       position: relative; background: var(--bg);
     }
     .drop-zone:hover, .drop-zone.drag { border-color: var(--accent); background: #eef6ff; color: var(--accent); }
     .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .dz-icon { font-size: 2.2rem; margin-bottom: 10px; }
-    .dz-text { font-size: 0.9rem; font-weight: 600; }
-    .dz-sub  { font-size: 0.78rem; margin-top: 4px; }
-    #preview-wrap { margin-top: 12px; display: none; position: relative; }
-    #preview-wrap img { max-height: 180px; max-width: 100%; border-radius: var(--radius-s); object-fit: contain; margin: 0 auto; border: 1px solid var(--border); }
-    .preview-remove { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.55); color: #fff; border: none; cursor: pointer; border-radius: 50%; width: 24px; height: 24px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+    .dz-icon { font-size: 2rem; margin-bottom: 6px; }
+    .dz-text { font-size: 0.85rem; font-weight: 600; }
+    .dz-sub { font-size: 0.7rem; margin-top: 4px; }
+    #preview-wrap { margin-top: 10px; display: none; position: relative; }
+    #preview-wrap img { max-height: 150px; max-width: 100%; border-radius: var(--radius-s); object-fit: contain; border: 1px solid var(--border); }
+    .preview-remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.5); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; border: none; cursor: pointer; }
+    .upload-progress { display: none; margin-top: 12px; }
+    .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width .3s; }
+    .progress-text { font-size: 0.75rem; color: var(--text3); text-align: center; margin-top: 4px; }
 
-    /* Progress */
-    .upload-progress { display: none; margin-top: 14px; }
-    .progress-bar   { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
-    .progress-fill  { height: 100%; background: var(--accent); border-radius: 3px; width: 0%; transition: width .3s; }
-    .progress-text  { font-size: 0.78rem; color: var(--text3); text-align: center; margin-top: 6px; }
-
-    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
-
-    /* ── Auth Modal ── */
-    #auth-modal .modal { max-width: 380px; }
-
-    /* ── Toast ── */
-    #toast {
-      position: fixed; bottom: 24px; left: 50%;
-      transform: translateX(-50%) translateY(16px);
-      background: var(--text); color: #fff;
-      padding: 10px 22px; border-radius: 24px; font-size: 0.875rem;
-      opacity: 0; pointer-events: none; transition: all .28s; z-index: 999;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2); max-width: 90vw; text-align: center;
-    }
-    #toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
-    #toast.success { background: #22c55e; }
-    #toast.error   { background: #ef4444; }
-
-    /* Admin badge */
     .admin-badge {
-      display: inline-flex; align-items: center; gap: 5px;
+      display: inline-flex; align-items: center; gap: 4px;
       background: #fff3cd; color: #856404; border: 1px solid #ffc107;
-      font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 12px;
+      font-size: 0.7rem; font-weight: 600; padding: 2px 10px; border-radius: 12px;
     }
-
-    /* Responsive header */
-    @media (max-width: 600px) {
-      header { padding: 0 14px; gap: 10px; }
-      .search-wrap { max-width: none; }
-      .logo span.logo-text { display: none; }
-      .tags-bar { padding: 0 14px; }
+    @media (max-width: 480px) {
+      .header-right .btn span { display: none; }
+      #gallery { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+      .card-info { padding: 8px 10px; }
+      .heart-btn { font-size: 1rem; }
+      .lb-container { max-width: 100%; border-radius: 12px; }
     }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════ HEADER ══════════════════ -->
+<!-- HEADER -->
 <header>
   <div class="logo">
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-      <rect width="28" height="28" rx="8" fill="#0096fa"/>
-      <path d="M7 21 L11 11 L14 17 L17 13 L21 21" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <circle cx="20" cy="9" r="2.5" fill="white"/>
-    </svg>
-    <span class="logo-text">ArtGallery</span>
+    <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="#0096fa"/><path d="M7 21 L11 11 L14 17 L17 13 L21 21" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="9" r="2.5" fill="white"/></svg>
+    <span>ArtGallery</span>
   </div>
-
   <div class="search-wrap">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-    <input type="text" id="search-input" placeholder="搜索画作、描述…" autocomplete="off" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="search-input" placeholder="搜索…" autocomplete="off" />
   </div>
-
-  <div class="header-right" id="header-right">
-    <span class="admin-badge" id="admin-badge" style="display:none">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-      管理员
-    </span>
+  <div class="header-right">
+    <span class="admin-badge" id="admin-badge" style="display:none">管理</span>
     <button class="btn btn-ghost" id="admin-btn">管理</button>
-    <button class="btn btn-primary" id="upload-btn" style="display:none">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      上传作品
-    </button>
+    <button class="btn btn-primary" id="upload-btn" style="display:none">＋ 上传</button>
   </div>
 </header>
 
-<!-- ══════════════════ TAGS BAR ══════════════════ -->
-<div class="tags-bar" id="tags-bar">
+<!-- TAGS -->
+<div class="tags-bar">
   <button class="tag-pill active" data-tag="all">全部</button>
   <button class="tag-pill" data-tag="油画">油画</button>
   <button class="tag-pill" data-tag="水彩">水彩</button>
@@ -349,164 +324,166 @@
   <button class="tag-pill" data-tag="数字艺术">数字艺术</button>
   <button class="tag-pill" data-tag="摄影">摄影</button>
   <button class="tag-pill" data-tag="其他">其他</button>
-  <select class="sort-select" id="sort-select">
-    <option value="newest">最新</option>
-    <option value="oldest">最早</option>
-    <option value="title">名称</option>
-  </select>
+  <select class="sort-select" id="sort-select"><option value="newest">最新</option><option value="oldest">最早</option><option value="title">名称</option></select>
 </div>
 
-<!-- ══════════════════ GALLERY ══════════════════ -->
+<!-- GALLERY -->
 <div id="gallery-wrap">
   <div id="gallery"></div>
 </div>
 
-<!-- ══════════════════ LIGHTBOX ══════════════════ -->
-<div id="lightbox" role="dialog" aria-modal="true" aria-label="画作详情">
+<!-- RECENT VIEW -->
+<div class="recent-section" id="recent-section">
+  <div class="recent-title">⏱️ 最近浏览</div>
+  <div class="recent-list" id="recent-list"></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
   <div class="lb-container">
-
-    <div class="lb-img-area">
-      <img id="lb-img" src="" alt="" />
-    </div>
-
+    <div class="lb-img-area"><img id="lb-img" src="" alt="" /></div>
     <div class="lb-side">
-      <div class="lb-side-scroll">
-        <span class="lb-tag-badge" id="lb-tag"></span>
+      <span class="lb-tag-badge" id="lb-tag"></span>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
         <h2 class="lb-title" id="lb-title"></h2>
-        <p  class="lb-date"  id="lb-date"></p>
-        <div class="lb-divider"></div>
-        <p  class="lb-desc"  id="lb-desc"></p>
-      </div>
-      <div class="lb-side-footer">
-        <div class="lb-nav-row">
-          <button class="btn btn-outline" id="lb-prev">← 上一张</button>
-          <button class="btn btn-outline" id="lb-next">下一张 →</button>
+        <div class="lb-heart-row">
+          <button class="lb-heart-btn" id="lb-heart">🤍</button>
+          <span class="lb-heart-count" id="lb-heart-count">0</span>
         </div>
-        <button class="lb-delete-btn" id="lb-delete">删除此作品</button>
       </div>
+      <p class="lb-date" id="lb-date"></p>
+      <div class="lb-divider"></div>
+      <p class="lb-desc" id="lb-desc"></p>
     </div>
-
-    <button class="lb-close" id="lb-close" aria-label="关闭">✕</button>
+    <div class="lb-actions">
+      <div class="lb-nav-row">
+        <button class="btn btn-ghost" id="lb-prev">← 上一张</button>
+        <button class="btn btn-ghost" id="lb-next">下一张 →</button>
+      </div>
+      <button class="lb-delete-btn" id="lb-delete">删除</button>
+    </div>
+    <button class="lb-close" id="lb-close">✕</button>
   </div>
 </div>
 
-<!-- ══════════════════ UPLOAD MODAL ══════════════════ -->
-<div class="modal-backdrop" id="upload-modal" role="dialog" aria-modal="true">
+<!-- UPLOAD MODAL -->
+<div class="modal-backdrop" id="upload-modal">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">上传作品</span>
-      <button class="modal-x" id="upload-close" aria-label="关闭">✕</button>
-    </div>
-
+    <div class="modal-header"><span class="modal-title">上传作品</span><button class="modal-x" id="upload-close">✕</button></div>
     <div class="form-row">
       <label>图片 *</label>
       <div class="drop-zone" id="drop-zone">
         <div class="dz-icon">🖼️</div>
-        <div class="dz-text">点击选择或拖拽图片</div>
-        <div class="dz-sub">JPG · PNG · WEBP · GIF · 最大 20MB</div>
-        <input type="file" id="file-input" accept="image/*" aria-label="选择图片" />
+        <div class="dz-text">点击选择或拖拽</div>
+        <div class="dz-sub">JPG · PNG · WEBP · 最大 20MB</div>
+        <input type="file" id="file-input" accept="image/*" />
       </div>
-      <div id="preview-wrap">
-        <img id="preview-img" alt="预览" />
-        <button class="preview-remove" id="preview-remove" aria-label="移除图片">✕</button>
-      </div>
+      <div id="preview-wrap"><img id="preview-img" alt="预览" /><button class="preview-remove" id="preview-remove">✕</button></div>
     </div>
-
-    <div class="form-row">
-      <label>标题 *</label>
-      <input type="text" id="art-title" placeholder="给这幅作品起个名字" maxlength="80" />
-    </div>
-
-    <div class="form-row">
-      <label>分类</label>
-      <select id="art-tag">
-        <option value="油画">油画</option>
-        <option value="水彩">水彩</option>
-        <option value="素描">素描</option>
-        <option value="国画">国画</option>
-        <option value="插画">插画</option>
-        <option value="数字艺术">数字艺术</option>
-        <option value="摄影">摄影</option>
-        <option value="其他">其他</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label>描述 <span style="font-weight:400;text-transform:none;letter-spacing:0">（可选）</span></label>
-      <textarea id="art-desc" placeholder="介绍一下这幅作品的创作背景、使用的技法…" maxlength="600"></textarea>
-    </div>
-
-    <div class="upload-progress" id="upload-progress">
-      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-      <div class="progress-text" id="progress-text">准备上传…</div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn btn-ghost" id="upload-cancel">取消</button>
-      <button class="btn btn-primary" id="upload-submit">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
-        发布作品
-      </button>
-    </div>
+    <div class="form-row"><label>标题 *</label><input type="text" id="art-title" placeholder="作品名称" maxlength="80" /></div>
+    <div class="form-row"><label>分类</label><select id="art-tag"><option value="油画">油画</option><option value="水彩">水彩</option><option value="素描">素描</option><option value="国画">国画</option><option value="插画">插画</option><option value="数字艺术">数字艺术</option><option value="摄影">摄影</option><option value="其他">其他</option></select></div>
+    <div class="form-row"><label>描述</label><textarea id="art-desc" placeholder="创作背景…" maxlength="600"></textarea></div>
+    <div class="upload-progress" id="upload-progress"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div><div class="progress-text" id="progress-text">上传中…</div></div>
+    <div class="modal-footer"><button class="btn btn-ghost" id="upload-cancel">取消</button><button class="btn btn-primary" id="upload-submit">发布</button></div>
   </div>
 </div>
 
-<!-- ══════════════════ AUTH MODAL ══════════════════ -->
-<div class="modal-backdrop" id="auth-modal" role="dialog" aria-modal="true">
-  <div class="modal" style="max-width:400px">
-    <div class="modal-header">
-      <span class="modal-title">🔐 管理员登录</span>
-      <button class="modal-x" id="auth-close" aria-label="关闭">✕</button>
-    </div>
-    <p style="font-size:0.87rem;color:var(--text2);margin-bottom:20px;line-height:1.6">
-      输入 GitHub Personal Access Token 以进入管理模式。Token 仅存储在本地，关闭标签页后自动清除。
-    </p>
-    <div class="form-row">
-      <label>GitHub Token</label>
-      <input type="password" id="admin-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-      <p class="form-hint">需要 <code>repo</code> 权限（经典令牌）</p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" id="auth-cancel">取消</button>
-      <button class="btn btn-primary" id="auth-submit">登录</button>
-    </div>
+<!-- AUTH MODAL -->
+<div class="modal-backdrop" id="auth-modal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">🔐 管理员</span><button class="modal-x" id="auth-close">✕</button></div>
+    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:16px;">输入 GitHub Token</p>
+    <div class="form-row"><label>Token</label><input type="password" id="admin-token" placeholder="ghp_xxxxxxxx" autocomplete="off" /></div>
+    <div class="modal-footer"><button class="btn btn-ghost" id="auth-cancel">取消</button><button class="btn btn-primary" id="auth-submit">登录</button></div>
   </div>
 </div>
 
-<!-- ══════════════════ TOAST ══════════════════ -->
-<div id="toast" role="status" aria-live="polite"></div>
+<div class="toast" id="toast"></div>
 
-<!-- ══════════════════ SCRIPT ══════════════════ -->
 <script>
 'use strict';
 
-/* ────────────────────────────────────────────────
-   CONFIG — 硬编码你的仓库信息，无需用户填写
-──────────────────────────────────────────────── */
-const CFG = {
-  owner: 'ljhLJH0102-0721',
-  repo:  'Public',
-  branch: 'main'
-};
-
-/* ────────────────────────────────────────────────
-   GITHUB API  (上传/删除使用，需 Token)
-──────────────────────────────────────────────── */
+// ===== CONFIG =====
+const CFG = { owner: 'ljhLJH0102-0721', repo: 'Public', branch: 'main' };
 const GH = 'https://api.github.com';
 
+// ===== 本地存储 key =====
+const LIKES_KEY = 'ag_likes';
+const RECENT_KEY = 'ag_recent';
+
+// ===== 本地数据 =====
+function getLikes() {
+  try { return JSON.parse(localStorage.getItem(LIKES_KEY)) || {}; } catch { return {}; }
+}
+function saveLikes(likes) {
+  localStorage.setItem(LIKES_KEY, JSON.stringify(likes));
+}
+function getRecent() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch { return []; }
+}
+function saveRecent(recent) {
+  localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
+}
+
+// ===== 点赞 =====
+function toggleLike(id) {
+  const likes = getLikes();
+  likes[id] = !likes[id];
+  saveLikes(likes);
+  return likes[id];
+}
+function isLiked(id) {
+  const likes = getLikes();
+  return !!likes[id];
+}
+function getLikeCount(id) {
+  const likes = getLikes();
+  return likes[id] ? 1 : 0;
+}
+
+// ===== 添加浏览记录 =====
+function addRecent(art) {
+  let recent = getRecent();
+  recent = recent.filter(item => item.id !== art.id);
+  recent.unshift({ id: art.id, title: art.title, imagePath: art.imagePath });
+  if (recent.length > 20) recent = recent.slice(0, 20);
+  saveRecent(recent);
+  renderRecent();
+}
+
+// ===== 渲染最近浏览 =====
+function renderRecent() {
+  const container = document.getElementById('recent-list');
+  const recent = getRecent();
+  if (!recent.length) {
+    container.innerHTML = '<span style="font-size:0.75rem;color:#bbb;">还没有浏览记录</span>';
+    return;
+  }
+  container.innerHTML = recent.map(item => `
+    <div class="recent-item" data-id="${item.id}">
+      <img src="${cdnUrl(item.imagePath)}" alt="${item.title}" loading="lazy" />
+      <div class="ri-title">${escHtml(item.title)}</div>
+    </div>
+  `).join('');
+  container.querySelectorAll('.recent-item').forEach(el => {
+    const id = el.dataset.id;
+    const art = artworks.find(a => a.id === id);
+    if (art) el.addEventListener('click', () => openLightbox(artworks.indexOf(art)));
+  });
+}
+
+// ===== GitHub helpers =====
 function ghHeaders(token) {
-  const h = { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+  const h = { 'Accept': 'application/vnd.github+json' };
   if (token) h['Authorization'] = `Bearer ${token}`;
   return h;
 }
-
 async function ghGetFile(path, token) {
   const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}?ref=${CFG.branch}`, { headers: ghHeaders(token) });
   if (r.status === 404) return null;
-  if (!r.ok) { const e = await r.json().catch(()=>{}); throw new Error(e?.message || `GitHub ${r.status}`); }
+  if (!r.ok) throw new Error(`GitHub ${r.status}`);
   return r.json();
 }
-
 async function ghPutFile(path, base64Content, message, sha, token) {
   const body = { message, content: base64Content, branch: CFG.branch };
   if (sha) body.sha = sha;
@@ -514,182 +491,135 @@ async function ghPutFile(path, base64Content, message, sha, token) {
     method: 'PUT', headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  if (!r.ok) { const e = await r.json().catch(()=>{}); throw new Error(e?.message || `GitHub ${r.status}`); }
+  if (!r.ok) throw new Error(`GitHub ${r.status}`);
   return r.json();
 }
-
 async function ghDeleteFile(path, message, sha, token) {
   const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {
     method: 'DELETE', headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, sha, branch: CFG.branch }),
   });
-  if (!r.ok) { const e = await r.json().catch(()=>{}); throw new Error(e?.message || `GitHub ${r.status}`); }
+  if (!r.ok) throw new Error(`GitHub ${r.status}`);
 }
-
 async function ghVerifyToken(token) {
   const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}`, { headers: ghHeaders(token) });
-  if (!r.ok) throw new Error('Token 无效或无该仓库的访问权限');
+  if (!r.ok) throw new Error('Token 无效');
   return r.json();
 }
+function cdnUrl(path) { return `https://cdn.jsdelivr.net/gh/${CFG.owner}/${CFG.repo}@${CFG.branch}/${path}`; }
 
-/* ────────────────────────────────────────────────
-   CDN URL — 用于公开读取（无需 Token）
-──────────────────────────────────────────────── */
-function cdnUrl(path) {
-  return `https://cdn.jsdelivr.net/gh/${CFG.owner}/${CFG.repo}@${CFG.branch}/${path}`;
-}
-
-/* ────────────────────────────────────────────────
-   ARTWORKS DATA  — 直接从 CDN 读取 artworks.json
-──────────────────────────────────────────────── */
-let artworks    = [];
-let artworksSha = null;  // 用于更新时
+// ===== 数据 =====
+let artworks = [];
+let artworksSha = null;
+let filtered = [];
+let currentTag = 'all';
+let currentSort = 'newest';
+let searchQuery = '';
+let isAdmin = false;
+let adminToken = '';
+let lbIndex = 0;
 
 async function fetchArtworks() {
   showSkeletons();
   try {
-    // 用 CDN 公开读取，不依赖 Token，不会限流
-    const url = cdnUrl('artworks.json');
-    const res = await fetch(url);
-    if (!res.ok) {
-      // 如果 CDN 返回 404，可能是没有 artworks.json，视为空列表
-      if (res.status === 404) {
-        artworks = [];
-        artworksSha = null;
-      } else {
-        throw new Error(`CDN 加载失败 (${res.status})`);
-      }
+    // ⭐ 直接从 GitHub 原始地址读取，永远最新，不带任何缓存
+    const rawUrl = `https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/artworks.json`;
+    const res = await fetch(rawUrl, { cache: 'no-store' });
+    if (res.ok) {
+      artworks = await res.json();
     } else {
-      const data = await res.json();
-      artworks = data;
-      // 为了后续更新，我们还需要获取文件的 SHA（从 GitHub API 获取）
-      // 但这里只是读取，不更新，所以 SHA 不需要。
-      // 但在上传时，我们需要 SHA，那时我们会调用 ghGetFile 获取。
-    }
-  } catch(e) {
-    console.error(e);
-    // 如果 CDN 读取失败，尝试用 GitHub API 直接读取（需要 Token？不，公开仓库也可以无 Token 读取，但有限流风险）
-    // 这里作为 fallback
-    try {
-      const file = await ghGetFile('artworks.json', null);
-      if (file) {
-        artworks = JSON.parse(atob(file.content.replace(/\s/g, '')));
-        artworksSha = file.sha;
+      // 如果 raw 地址失败（偶尔被限流），走 CDN 但加随机参数绕过缓存
+      const cdnFallback = `https://cdn.jsdelivr.net/gh/${CFG.owner}/${CFG.repo}@${CFG.branch}/artworks.json?t=${Date.now()}`;
+      const res2 = await fetch(cdnFallback);
+      if (res2.ok) {
+        artworks = await res2.json();
       } else {
-        artworks = [];
+        const file = await ghGetFile('artworks.json', null);
+        if (file) {
+          artworks = JSON.parse(atob(file.content.replace(/\s/g, '')));
+          artworksSha = file.sha;
+        } else {
+          artworks = [];
+        }
       }
-    } catch(e2) {
-      showError('加载作品列表失败，请刷新重试');
-      return;
     }
+  } catch {
+    artworks = [];
   }
   applyFilters();
+  renderRecent();
 }
 
 async function persistArtworks(token) {
-  // 先获取最新的 SHA
   const file = await ghGetFile('artworks.json', token);
   const sha = file ? file.sha : null;
   const json = JSON.stringify(artworks, null, 2);
   const base64 = btoa(unescape(encodeURIComponent(json)));
-  const result = await ghPutFile('artworks.json', base64, 'chore: update artworks.json', sha, token);
+  const result = await ghPutFile('artworks.json', base64, 'update artworks', sha, token);
   artworksSha = result.content.sha;
 }
 
-/* ────────────────────────────────────────────────
-   STATE
-──────────────────────────────────────────────── */
-let filtered    = [];
-let currentTag  = 'all';
-let currentSort = 'newest';
-let searchQuery = '';
-let isAdmin     = false;
-let adminToken  = '';
-let lbIndex     = 0;
-
-/* ────────────────────────────────────────────────
-   FILTER + SORT
-──────────────────────────────────────────────── */
 function applyFilters() {
   let arr = [...artworks];
   if (currentTag !== 'all') arr = arr.filter(a => a.tag === currentTag);
-  if (searchQuery) {
-    const q = searchQuery;
-    arr = arr.filter(a => a.title.toLowerCase().includes(q) || (a.desc||'').toLowerCase().includes(q));
-  }
+  if (searchQuery) arr = arr.filter(a => a.title.toLowerCase().includes(searchQuery) || (a.desc||'').toLowerCase().includes(searchQuery));
   if (currentSort === 'newest') arr.sort((a,b) => b.date - a.date);
   if (currentSort === 'oldest') arr.sort((a,b) => a.date - b.date);
-  if (currentSort === 'title')  arr.sort((a,b) => a.title.localeCompare(b.title, 'zh'));
+  if (currentSort === 'title') arr.sort((a,b) => a.title.localeCompare(b.title, 'zh'));
   filtered = arr;
   renderGallery();
 }
 
-/* ────────────────────────────────────────────────
-   RENDER
-──────────────────────────────────────────────── */
-function showSkeletons(n = 12) {
-  const g = document.getElementById('gallery');
-  g.innerHTML = Array.from({length: n}, () => `
-    <div class="skeleton-card">
-      <div class="skeleton skeleton-img" style="height:${160 + Math.random()*120|0}px"></div>
-      <div class="skeleton-body">
-        <div class="skeleton skeleton-line"></div>
-        <div class="skeleton skeleton-line short"></div>
-      </div>
-    </div>`).join('');
-}
-
-function showError(msg) {
-  document.getElementById('gallery').innerHTML = `
-    <div class="empty" style="grid-column:1/-1">
-      <div class="empty-icon">⚠️</div>
-      <p style="color:#ef4444">${escHtml(msg)}</p>
-    </div>`;
+function showSkeletons(n = 8) {
+  document.getElementById('gallery').innerHTML = Array.from({length:n}, () =>
+    `<div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>`
+  ).join('');
 }
 
 function renderGallery() {
   const g = document.getElementById('gallery');
-  document.title = `画廊 · ${artworks.length} 件作品`;
-
   if (!filtered.length) {
-    g.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">${artworks.length === 0 ? '🎨' : '🔍'}</div>
-        <p style="font-weight:600;color:var(--text2)">${artworks.length === 0 ? '还没有作品' : '没有符合条件的作品'}</p>
-        <p>${artworks.length === 0 ? '登录管理员后上传第一幅作品吧！' : '试试调整筛选条件'}</p>
-      </div>`;
+    g.innerHTML = `<div class="empty"><div class="empty-icon">🖼️</div><p>${artworks.length===0?'还没有作品':'没有匹配的作品'}</p></div>`;
     return;
   }
-
   g.innerHTML = '';
   filtered.forEach((art, idx) => {
-    const src  = cdnUrl(art.imagePath);
+    const liked = isLiked(art.id);
     const card = document.createElement('div');
     card.className = 'artwork-card';
-    card.setAttribute('role', 'button');
-    card.setAttribute('tabindex', '0');
-    card.setAttribute('aria-label', `查看：${art.title}`);
     card.innerHTML = `
       <div class="card-img-wrap">
-        <img src="${escHtml(src)}" alt="${escHtml(art.title)}" loading="lazy" />
-        <div class="card-overlay"><span class="card-overlay-tag">${escHtml(art.tag)}</span></div>
+        <img src="${cdnUrl(art.imagePath)}" alt="${art.title}" loading="lazy" />
+        <span class="card-tag">${escHtml(art.tag)}</span>
       </div>
       <div class="card-info">
-        <div class="card-title">${escHtml(art.title)}</div>
-        <div class="card-meta">
-          <span>${escHtml(art.tag)}</span>
-          <span>${fmtDate(art.date)}</span>
+        <div class="card-left">
+          <div class="card-title">${escHtml(art.title)}</div>
+          <div class="card-meta">${fmtDate(art.date)}</div>
         </div>
-      </div>`;
-    card.addEventListener('click',   () => openLightbox(idx));
-    card.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') openLightbox(idx); });
+        <button class="heart-btn ${liked?'liked':''}" data-id="${art.id}">
+          ${liked ? '❤️' : '🤍'}
+          <span class="heart-count">${liked ? 1 : 0}</span>
+        </button>
+      </div>
+    `;
+    card.querySelector('.heart-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = e.currentTarget.dataset.id;
+      const nowLiked = toggleLike(id);
+      const btn = e.currentTarget;
+      btn.innerHTML = `${nowLiked ? '❤️' : '🤍'} <span class="heart-count">${nowLiked ? 1 : 0}</span>`;
+      btn.classList.toggle('liked', nowLiked);
+    });
+    card.addEventListener('click', () => {
+      openLightbox(idx);
+      addRecent(art);
+    });
     g.appendChild(card);
   });
 }
 
-/* ────────────────────────────────────────────────
-   LIGHTBOX
-──────────────────────────────────────────────── */
+// ===== Lightbox =====
 function openLightbox(idx) {
   lbIndex = Math.max(0, Math.min(idx, filtered.length - 1));
   paintLightbox();
@@ -703,219 +633,152 @@ function closeLightbox() {
 function paintLightbox() {
   const art = filtered[lbIndex];
   if (!art) return;
-  document.getElementById('lb-img').src   = cdnUrl(art.imagePath);
-  document.getElementById('lb-img').alt   = art.title;
-  document.getElementById('lb-tag').textContent   = art.tag;
+  document.getElementById('lb-img').src = cdnUrl(art.imagePath);
+  document.getElementById('lb-tag').textContent = art.tag;
   document.getElementById('lb-title').textContent = art.title;
-  document.getElementById('lb-date').textContent  = '发布于 ' + fmtDate(art.date);
-  document.getElementById('lb-desc').textContent  = art.desc || '暂无描述。';
-  document.getElementById('lb-delete').style.display   = isAdmin ? 'block' : 'none';
-  document.getElementById('lb-delete').dataset.id      = art.id;
+  document.getElementById('lb-date').textContent = fmtDate(art.date);
+  document.getElementById('lb-desc').textContent = art.desc || '暂无描述';
+  const liked = isLiked(art.id);
+  document.getElementById('lb-heart').textContent = liked ? '❤️' : '🤍';
+  document.getElementById('lb-heart').classList.toggle('liked', liked);
+  document.getElementById('lb-heart-count').textContent = liked ? 1 : 0;
+  document.getElementById('lb-delete').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('lb-delete').dataset.id = art.id;
   document.getElementById('lb-delete').dataset.imgpath = art.imagePath || '';
   document.getElementById('lb-prev').disabled = lbIndex === 0;
   document.getElementById('lb-next').disabled = lbIndex === filtered.length - 1;
 }
-
 document.getElementById('lb-close').addEventListener('click', closeLightbox);
 document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox')) closeLightbox(); });
 document.getElementById('lb-prev').addEventListener('click', () => { if (lbIndex > 0) { lbIndex--; paintLightbox(); } });
 document.getElementById('lb-next').addEventListener('click', () => { if (lbIndex < filtered.length - 1) { lbIndex++; paintLightbox(); } });
-
 document.addEventListener('keydown', e => {
-  const lb = document.getElementById('lightbox');
-  if (!lb.classList.contains('open')) return;
-  if (e.key === 'Escape')      closeLightbox();
-  if (e.key === 'ArrowLeft'  && lbIndex > 0)                { lbIndex--; paintLightbox(); }
-  if (e.key === 'ArrowRight' && lbIndex < filtered.length-1){ lbIndex++; paintLightbox(); }
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft' && lbIndex > 0) { lbIndex--; paintLightbox(); }
+  if (e.key === 'ArrowRight' && lbIndex < filtered.length - 1) { lbIndex++; paintLightbox(); }
 });
 
-document.getElementById('lb-delete').addEventListener('click', async () => {
-  if (!isAdmin) return;
-  const id      = document.getElementById('lb-delete').dataset.id;
-  const imgPath = document.getElementById('lb-delete').dataset.imgpath;
-  if (!confirm('确定要删除这幅作品吗？')) return;
+document.getElementById('lb-heart').addEventListener('click', function() {
+  const art = filtered[lbIndex];
+  if (!art) return;
+  const liked = toggleLike(art.id);
+  this.textContent = liked ? '❤️' : '🤍';
+  this.classList.toggle('liked', liked);
+  document.getElementById('lb-heart-count').textContent = liked ? 1 : 0;
+  renderGallery();
+});
 
-  document.getElementById('lb-delete').disabled = true;
-  document.getElementById('lb-delete').textContent = '删除中…';
+document.getElementById('lb-delete').addEventListener('click', async function() {
+  if (!isAdmin) return;
+  const id = this.dataset.id;
+  const imgPath = this.dataset.imgpath;
+  if (!confirm('删除此作品？')) return;
   try {
     if (imgPath) {
-      const imgFile = await ghGetFile(imgPath, adminToken);
-      if (imgFile) await ghDeleteFile(imgPath, `remove: delete image ${imgPath}`, imgFile.sha, adminToken);
+      const file = await ghGetFile(imgPath, adminToken);
+      if (file) await ghDeleteFile(imgPath, `delete ${imgPath}`, file.sha, adminToken);
     }
     artworks = artworks.filter(a => a.id !== id);
     await persistArtworks(adminToken);
     closeLightbox();
     applyFilters();
-    toast('作品已删除', 'success');
-  } catch(e) {
-    toast('删除失败：' + e.message, 'error');
-  } finally {
-    document.getElementById('lb-delete').disabled = false;
-    document.getElementById('lb-delete').textContent = '删除此作品';
-  }
+    toast('已删除');
+  } catch(e) { toast('删除失败'); }
 });
 
-/* ────────────────────────────────────────────────
-   UPLOAD
-──────────────────────────────────────────────── */
-let pickedFile    = null;
-let pickedDataUrl = null;
-
-const fileInput  = document.getElementById('file-input');
-const dropZone   = document.getElementById('drop-zone');
+// ===== Upload =====
+let pickedFile = null, pickedDataUrl = null;
+const fileInput = document.getElementById('file-input');
+const dropZone = document.getElementById('drop-zone');
 const previewImg = document.getElementById('preview-img');
-const previewWrap= document.getElementById('preview-wrap');
+const previewWrap = document.getElementById('preview-wrap');
 
 function handlePick(file) {
-  if (!file) return;
-  if (!file.type.startsWith('image/')) { toast('请选择图片文件', 'error'); return; }
-  if (file.size > 20 * 1024 * 1024)   { toast('图片不能超过 20 MB', 'error'); return; }
+  if (!file || !file.type.startsWith('image/')) return toast('请选图片');
+  if (file.size > 20*1024*1024) return toast('图片最大20MB');
   pickedFile = file;
   const reader = new FileReader();
-  reader.onload = e => {
-    pickedDataUrl = e.target.result;
-    previewImg.src = pickedDataUrl;
-    previewWrap.style.display = 'block';
-    dropZone.style.display = 'none';
-  };
+  reader.onload = e => { pickedDataUrl = e.target.result; previewImg.src = pickedDataUrl; previewWrap.style.display = 'block'; dropZone.style.display = 'none'; };
   reader.readAsDataURL(file);
 }
-
 fileInput.addEventListener('change', e => handlePick(e.target.files[0]));
-dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault(); dropZone.classList.remove('drag');
-  handlePick(e.dataTransfer.files[0]);
-});
-
-document.getElementById('preview-remove').addEventListener('click', () => {
-  pickedFile = null; pickedDataUrl = null;
-  previewImg.src = ''; previewWrap.style.display = 'none';
-  dropZone.style.display = ''; fileInput.value = '';
-});
-
-document.getElementById('upload-btn').addEventListener('click',    () => openModal('upload-modal'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag'); handlePick(e.dataTransfer.files[0]); });
+document.getElementById('preview-remove').addEventListener('click', () => { pickedFile = null; pickedDataUrl = null; previewImg.src = ''; previewWrap.style.display = 'none'; dropZone.style.display = ''; fileInput.value = ''; });
+document.getElementById('upload-btn').addEventListener('click', () => openModal('upload-modal'));
 document.getElementById('upload-cancel').addEventListener('click', () => closeModal('upload-modal'));
-document.getElementById('upload-close').addEventListener('click',  () => closeModal('upload-modal'));
+document.getElementById('upload-close').addEventListener('click', () => closeModal('upload-modal'));
 
 function resetUploadForm() {
-  pickedFile = null; pickedDataUrl = null;
-  fileInput.value = ''; previewImg.src = '';
-  previewWrap.style.display = 'none'; dropZone.style.display = '';
-  document.getElementById('art-title').value = '';
-  document.getElementById('art-desc').value  = '';
-  document.getElementById('art-tag').value   = '油画';
+  pickedFile = null; pickedDataUrl = null; fileInput.value = ''; previewImg.src = ''; previewWrap.style.display = 'none'; dropZone.style.display = '';
+  document.getElementById('art-title').value = ''; document.getElementById('art-desc').value = '';
+  document.getElementById('art-tag').value = '油画';
   document.getElementById('upload-progress').style.display = 'none';
   document.getElementById('progress-fill').style.width = '0%';
 }
-
 function setProgress(pct, label) {
   document.getElementById('upload-progress').style.display = 'block';
-  document.getElementById('progress-fill').style.width = `${pct}%`;
+  document.getElementById('progress-fill').style.width = pct + '%';
   document.getElementById('progress-text').textContent = label;
 }
-
 document.getElementById('upload-submit').addEventListener('click', async () => {
   const title = document.getElementById('art-title').value.trim();
-  const tag   = document.getElementById('art-tag').value;
-  const desc  = document.getElementById('art-desc').value.trim();
-
-  if (!pickedFile)  { toast('请先选择一张图片', 'error'); return; }
-  if (!title)       { toast('请填写作品标题', 'error'); return; }
-
+  const tag = document.getElementById('art-tag').value;
+  const desc = document.getElementById('art-desc').value.trim();
+  if (!pickedFile) return toast('请选图');
+  if (!title) return toast('请填标题');
   const btn = document.getElementById('upload-submit');
   btn.disabled = true; btn.textContent = '上传中…';
-
   try {
-    setProgress(15, '读取图片…');
-    const base64raw  = pickedDataUrl.split(',')[1];
-
-    const ext      = (pickedFile.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
-    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
-    const imgPath  = `images/${safeName}`;
-
-    setProgress(40, '上传图片…');
-    await ghPutFile(imgPath, base64raw, `feat: add artwork "${title}"`, null, adminToken);
-
-    setProgress(75, '更新画廊列表…');
-    const artwork = {
-      id:        `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`,
-      title, tag, desc,
-      date:      Date.now(),
-      imagePath: imgPath,
-    };
+    setProgress(20, '读取…');
+    const base64 = pickedDataUrl.split(',')[1];
+    const ext = (pickedFile.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`;
+    const imgPath = `images/${filename}`;
+    setProgress(50, '上传…');
+    await ghPutFile(imgPath, base64, `add ${title}`, null, adminToken);
+    setProgress(80, '更新列表…');
+    const artwork = { id: Date.now().toString(36)+'-'+Math.random().toString(36).slice(2), title, tag, desc, date: Date.now(), imagePath: imgPath };
     artworks.unshift(artwork);
     await persistArtworks(adminToken);
-
-    setProgress(100, '发布成功！');
-    setTimeout(() => {
-      closeModal('upload-modal');
-      resetUploadForm();
-      applyFilters();
-      toast('作品发布成功！', 'success');
-    }, 500);
-
-  } catch(e) {
-    toast('上传失败：' + e.message, 'error');
-    console.error(e);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg> 发布作品`;
-  }
+    setProgress(100, '完成！');
+    setTimeout(() => { closeModal('upload-modal'); resetUploadForm(); applyFilters(); toast('发布成功'); }, 500);
+  } catch(e) { toast('上传失败'); } finally { btn.disabled = false; btn.textContent = '发布'; }
 });
 
-/* ────────────────────────────────────────────────
-   AUTH
-──────────────────────────────────────────────── */
+// ===== Auth =====
 document.getElementById('admin-btn').addEventListener('click', () => {
   if (isAdmin) {
-    isAdmin = false; adminToken = '';
-    sessionStorage.removeItem('ag_token');
-    document.getElementById('upload-btn').style.display  = 'none';
+    isAdmin = false; adminToken = ''; sessionStorage.removeItem('ag_token');
+    document.getElementById('upload-btn').style.display = 'none';
     document.getElementById('admin-badge').style.display = 'none';
     document.getElementById('admin-btn').textContent = '管理';
-    if (document.getElementById('lightbox').classList.contains('open')) paintLightbox();
-    toast('已退出管理员模式');
-  } else {
-    openModal('auth-modal');
-    setTimeout(() => document.getElementById('admin-token').focus(), 80);
-  }
+    toast('已退出');
+  } else openModal('auth-modal');
 });
-
 document.getElementById('auth-submit').addEventListener('click', doLogin);
 document.getElementById('auth-cancel').addEventListener('click', () => closeModal('auth-modal'));
-document.getElementById('auth-close').addEventListener('click',  () => closeModal('auth-modal'));
+document.getElementById('auth-close').addEventListener('click', () => closeModal('auth-modal'));
 document.getElementById('admin-token').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
 async function doLogin() {
   const token = document.getElementById('admin-token').value.trim();
-  if (!token) { toast('请输入 Token', 'error'); return; }
-  const btn = document.getElementById('auth-submit');
-  btn.disabled = true; btn.textContent = '验证中…';
+  if (!token) return toast('输入Token');
   try {
     await ghVerifyToken(token);
     isAdmin = true; adminToken = token;
     sessionStorage.setItem('ag_token', token);
-    document.getElementById('admin-token').value = '';
-    document.getElementById('upload-btn').style.display  = '';
+    document.getElementById('upload-btn').style.display = '';
     document.getElementById('admin-badge').style.display = '';
-    document.getElementById('admin-btn').textContent = '退出管理';
+    document.getElementById('admin-btn').textContent = '退出';
     closeModal('auth-modal');
-    toast('已进入管理员模式', 'success');
-    if (document.getElementById('lightbox').classList.contains('open')) paintLightbox();
-  } catch(e) {
-    toast(e.message, 'error');
-    document.getElementById('admin-token').classList.add('shake');
-    setTimeout(() => document.getElementById('admin-token').classList.remove('shake'), 400);
-  } finally {
-    btn.disabled = false; btn.textContent = '登录';
-  }
+    toast('登录成功');
+  } catch(e) { toast('Token无效'); }
 }
 
-/* ────────────────────────────────────────────────
-   FILTER CONTROLS
-──────────────────────────────────────────────── */
+// ===== Filters =====
 document.querySelectorAll('.tag-pill').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
@@ -924,67 +787,35 @@ document.querySelectorAll('.tag-pill').forEach(btn => {
     applyFilters();
   });
 });
-document.getElementById('sort-select').addEventListener('change', e => {
-  currentSort = e.target.value; applyFilters();
-});
-document.getElementById('search-input').addEventListener('input', e => {
-  searchQuery = e.target.value.trim().toLowerCase(); applyFilters();
-});
+document.getElementById('sort-select').addEventListener('change', e => { currentSort = e.target.value; applyFilters(); });
+document.getElementById('search-input').addEventListener('input', e => { searchQuery = e.target.value.trim().toLowerCase(); applyFilters(); });
 
-/* ────────────────────────────────────────────────
-   MODAL HELPERS
-──────────────────────────────────────────────── */
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-  document.body.style.overflow = '';
-}
+// ===== Modal helpers =====
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
 ['upload-modal','auth-modal'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => {
-    if (e.target === document.getElementById(id)) closeModal(id);
-  });
+  document.getElementById(id).addEventListener('click', e => { if (e.target === document.getElementById(id)) closeModal(id); });
 });
 
-/* ────────────────────────────────────────────────
-   TOAST
-──────────────────────────────────────────────── */
-let toastT;
-function toast(msg, type = '') {
+// ===== Toast =====
+let toastTimer;
+function toast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = `visible${type ? ' '+type : ''}`;
-  clearTimeout(toastT);
-  toastT = setTimeout(() => { el.className = ''; }, 3000);
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
 }
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(ts) { return new Date(ts).toLocaleDateString('zh-CN', { year:'numeric', month:'short', day:'numeric' }); }
 
-/* ────────────────────────────────────────────────
-   UTILS
-──────────────────────────────────────────────── */
-function escHtml(s) {
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function fmtDate(ts) {
-  return new Date(ts).toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' });
-}
-
-/* ────────────────────────────────────────────────
-   INIT — 直接加载，无需配置
-──────────────────────────────────────────────── */
-// 恢复会话（如果有 Token）
-const savedTok = sessionStorage.getItem('ag_token');
-if (savedTok) {
-  adminToken = savedTok; isAdmin = true;
-  document.getElementById('upload-btn').style.display  = '';
+// ===== Init =====
+const savedToken = sessionStorage.getItem('ag_token');
+if (savedToken) {
+  adminToken = savedToken; isAdmin = true;
+  document.getElementById('upload-btn').style.display = '';
   document.getElementById('admin-badge').style.display = '';
-  document.getElementById('admin-btn').textContent     = '退出管理';
+  document.getElementById('admin-btn').textContent = '退出';
 }
-
-// 开始加载作品
 fetchArtworks();
 </script>
 </body>
