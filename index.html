@@ -88,11 +88,12 @@
     .announce-actions input {
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 3px 12px;
-      font-size: 0.8rem;
+      padding: 6px 16px;
+      font-size: 0.85rem;
       background: #fff;
       outline: none;
-      width: 160px;
+      width: 240px;
+      min-width: 120px;
     }
     .announce-actions input:focus { border-color: var(--accent); }
     .announce-actions .btn-sm {
@@ -535,7 +536,7 @@
       .detail-body { padding: 12px; }
       .detail-title-text { font-size: 1.1rem; }
       #announcement-bar { font-size: 0.75rem; padding: 4px 12px; }
-      .announce-actions input { width: 100px; }
+      .announce-actions input { width: 160px; }
     }
   </style>
 </head>
@@ -756,7 +757,7 @@ function addRecent(art) {
 }
 
 // ================================================================
-// 公告数据
+// 公告数据（修复乱码）
 // ================================================================
 let announcements = [];
 let annSha = null;
@@ -767,11 +768,15 @@ async function fetchAnnouncements() {
     const file = await ghGetFile(ANN_FILE, null);
     if (file) {
       annSha = file.sha;
-      announcements = JSON.parse(atob(file.content.replace(/\s/g, '')));
+      // 正确解码 UTF-8
+      const binary = atob(file.content.replace(/\s/g, ''));
+      const utf8Text = decodeURIComponent(escape(binary));
+      announcements = JSON.parse(utf8Text);
     } else {
       announcements = [];
     }
   } catch (e) {
+    console.error('公告加载失败', e);
     announcements = [];
   }
   renderAnnouncements();
@@ -779,7 +784,9 @@ async function fetchAnnouncements() {
 
 async function saveAnnouncements(token) {
   const json = JSON.stringify(announcements, null, 2);
-  const base64 = btoa(unescape(encodeURIComponent(json)));
+  // 正确编码 UTF-8
+  const utf8Bytes = unescape(encodeURIComponent(json));
+  const base64 = btoa(utf8Bytes);
   const result = await ghPutFile(ANN_FILE, base64, 'update announcements', annSha, token);
   annSha = result.content.sha;
 }
@@ -787,9 +794,7 @@ async function saveAnnouncements(token) {
 function renderAnnouncements() {
   const container = document.getElementById('announce-text');
   const empty = document.getElementById('announce-empty');
-  // 移除之前动态添加的项（保留第一个 span 是 📢）
-  const children = container.children;
-  // 保留第一个和第二个（📢 和 empty 占位），后面全部移除
+  // 移除之前动态添加的项（保留第一个和第二个）
   while (container.children.length > 2) {
     container.removeChild(container.lastChild);
   }
@@ -807,7 +812,7 @@ function renderAnnouncements() {
     `;
     container.appendChild(wrapper);
   });
-  // 绑定删除事件（仅管理员可见，但点击事件始终绑定，由 isAdmin 控制显示）
+  // 绑定删除事件
   document.querySelectorAll('.del-ann').forEach(el => {
     el.addEventListener('click', async function(e) {
       e.stopPropagation();
@@ -820,7 +825,7 @@ function renderAnnouncements() {
       toast('公告已删除');
     });
   });
-  // 根据管理员状态显示删除按钮
+  // 根据管理员状态显示删除按钮和发布栏
   if (isAdmin) {
     document.getElementById('announcement-bar').classList.add('admin-mode');
     document.getElementById('announce-actions').style.display = 'flex';
@@ -848,7 +853,6 @@ document.getElementById('announce-post').addEventListener('click', async functio
   toast('公告发布成功');
 });
 
-// 回车发布公告
 document.getElementById('announce-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     document.getElementById('announce-post').click();
@@ -856,7 +860,7 @@ document.getElementById('announce-input').addEventListener('keydown', function(e
 });
 
 // ================================================================
-// 渲染底部横条（最近浏览 + 我喜欢）
+// 渲染底部横条
 // ================================================================
 function renderRecentStrip() {
   const container = document.getElementById('recent-list');
@@ -1224,7 +1228,7 @@ function loadGiscus(artId) {
 }
 
 // ================================================================
-// 双击 Logo 返回首页（并重置搜索和分类）
+// 双击 Logo 返回首页
 // ================================================================
 document.querySelector('.logo').addEventListener('dblclick', function() {
   document.getElementById('search-input').value = '';
@@ -1428,7 +1432,6 @@ if (savedToken) {
 }
 
 setupSearchSuggestions();
-// 先加载作品，再加载公告
 fetchArtworks();
 fetchAnnouncements();
 </script>
