@@ -55,7 +55,6 @@
       display: block;
     }
 
-    /* ----- 公告栏 ----- */
     #announcement-bar {
       background: var(--announce-bg);
       color: var(--announce-text);
@@ -136,7 +135,6 @@
       font-size: 0.8rem;
     }
 
-    /* ----- 顶部导航 ----- */
     header {
       position: sticky;
       top: 0;
@@ -279,7 +277,6 @@
       transform: none !important;
     }
 
-    /* ----- 标签栏 ----- */
     .tags-bar {
       background: #fff;
       border-bottom: 1px solid var(--border);
@@ -339,7 +336,6 @@
       outline: none;
     }
 
-    /* ----- 视图返回栏 ----- */
     .view-back-bar {
       display: none;
       padding: 12px 16px;
@@ -372,7 +368,6 @@
       color: var(--text);
     }
 
-    /* ----- 主视图 ----- */
     #main-view {
       display: block;
     }
@@ -534,7 +529,6 @@
       }
     }
 
-    /* ----- 底部横条 ----- */
     .bottom-strip {
       background: #fff;
       border-top: 1px solid var(--border);
@@ -626,7 +620,6 @@
       padding: 6px 0;
     }
 
-    /* ----- 详情页 ----- */
     #detail-view {
       display: none;
       background: #fff;
@@ -807,7 +800,6 @@
       width: 100%;
     }
 
-    /* ----- Toast ----- */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -827,7 +819,6 @@
       opacity: 1;
     }
 
-    /* ----- Modals ----- */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -1039,9 +1030,6 @@
 </head>
 <body>
 
-  <!-- ============================================================
-   公告栏
-   ============================================================ -->
   <div id="announcement-bar">
     <div class="announce-text" id="announce-text">
       <span>📢</span>
@@ -1053,23 +1041,15 @@
     </div>
   </div>
 
-  <!-- ============================================================
-   视图返回栏
-   ============================================================ -->
   <div class="view-back-bar" id="view-back-bar">
     <span class="back-btn" id="view-back-btn">← 返回全部</span>
     <span class="view-title" id="view-title">❤️ 我喜欢</span>
   </div>
 
-  <!-- ============================================================
-   MAIN VIEW
-   ============================================================ -->
   <div id="main-view">
 
-    <!-- HEADER -->
     <header id="main-header">
       <div class="logo" id="logo">
-        <!-- 鸾尾花 SVG 图标 -->
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M32 8 C24 16, 12 22, 16 36 C18 44, 28 48, 32 42 C36 48, 46 44, 48 36 C52 22, 40 16, 32 8Z" fill="#6a4e9c" stroke="#5a3e8c" stroke-width="1.5" />
           <path d="M32 8 C32 8, 28 28, 28 42" stroke="#f0ecf5" stroke-width="2" stroke-linecap="round" />
@@ -1087,15 +1067,12 @@
       </div>
       <div class="header-right">
         <span class="admin-badge" id="admin-badge" style="display:none">管理</span>
-        <span id="auth-section">
-          <!-- 由 JS 动态渲染 -->
-        </span>
+        <span id="auth-section"></span>
         <button class="btn btn-ghost" id="admin-btn">管理</button>
         <button class="btn btn-primary" id="upload-btn" style="display:none">＋ 上传</button>
       </div>
     </header>
 
-    <!-- TAGS -->
     <div class="tags-bar" id="tags-bar">
       <button class="tag-pill active" data-tag="all">全部</button>
       <button class="tag-pill" data-tag="油画">油画</button>
@@ -1109,12 +1086,10 @@
       <select class="sort-select" id="sort-select"><option value="newest">最新</option><option value="oldest">最早</option><option value="title">名称</option></select>
     </div>
 
-    <!-- GALLERY -->
     <div id="gallery-wrap">
       <div id="gallery"></div>
     </div>
 
-    <!-- BOTTOM STRIPS -->
     <div class="bottom-strip" id="recent-strip">
       <div class="strip-header">
         <span class="strip-title">⏱️ 最近浏览</span>
@@ -1130,11 +1105,8 @@
       <div class="strip-list" id="liked-list"></div>
     </div>
 
-  </div><!-- end main-view -->
+  </div>
 
-  <!-- ============================================================
-   DETAIL VIEW
-   ============================================================ -->
   <div id="detail-view">
     <div class="detail-header">
       <span class="detail-back" id="detail-back">← 返回</span>
@@ -1162,7 +1134,6 @@
     </div>
   </div>
 
-  <!-- UPLOAD MODAL -->
   <div class="modal-backdrop" id="upload-modal">
     <div class="modal">
       <div class="modal-header"><span class="modal-title">上传作品</span><button class="modal-x" id="upload-close">✕</button></div>
@@ -1184,7 +1155,6 @@
     </div>
   </div>
 
-  <!-- AUTH MODAL (管理员登录 - 已废弃，保留兼容) -->
   <div class="modal-backdrop" id="auth-modal" style="display:none;">
     <div class="modal">
       <div class="modal-header"><span class="modal-title">🔐 管理员</span><button class="modal-x" id="auth-close">✕</button></div>
@@ -1194,10 +1164,6 @@
     </div>
   </div>
 
-  <!-- ============================================================
-   USERBASE 登录 / 注册 / 设置 模态框
-   ============================================================ -->
-  <!-- 登录 -->
   <div class="modal-backdrop" id="login-modal">
     <div class="modal" style="max-width:360px;">
       <div class="modal-header"><span class="modal-title">登录</span><button class="modal-x" onclick="closeModal('login-modal')">✕</button></div>
@@ -1207,7 +1173,6 @@
     </div>
   </div>
 
-  <!-- 注册（含邮箱） -->
   <div class="modal-backdrop" id="signup-modal">
     <div class="modal" style="max-width:360px;">
       <div class="modal-header"><span class="modal-title">注册</span><button class="modal-x" onclick="closeModal('signup-modal')">✕</button></div>
@@ -1218,7 +1183,6 @@
     </div>
   </div>
 
-  <!-- 个人设置（显示名 + 邮箱） -->
   <div class="modal-backdrop" id="settings-modal">
     <div class="modal" style="max-width:360px;">
       <div class="modal-header"><span class="modal-title">⚙️ 个人设置</span><button class="modal-x" onclick="closeModal('settings-modal')">✕</button></div>
@@ -1228,7 +1192,6 @@
     </div>
   </div>
 
-  <!-- 补充信息（首次登录弹窗） -->
   <div class="modal-backdrop" id="first-setup-modal">
     <div class="modal" style="max-width:360px;">
       <div class="modal-header"><span class="modal-title">📝 完善信息</span></div>
@@ -1241,23 +1204,16 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- Userbase SDK -->
-  <script src="https://www.unpkg.com/userbase-js@latest/dist/userbase.js">
+  <script src="https://www.unpkg.com/userbase-js@2.7.0/dist/userbase.js">
   </script>
 
   <script>
     'use strict';
 
-    // ================================================================
-    // CONFIG
-    // ================================================================
     const USERBASE_APP_ID = '6c6e05da-87ac-4af4-afdd-69719d48a0d1';
-    const IMGBB_API_KEY = '你的ImgBB_API_Key'; // 替换为你的 ImgBB API Key
+    const IMGBB_API_KEY = '36bdc3532d8eb5a1eaa72d6f022fd087';
     const ADMIN_USERNAME = 'admin';
 
-    // ================================================================
-    // GISCUS 配置
-    // ================================================================
     const GISCUS_CONFIG = {
       repo: 'ljhLJH0102-0721/Public',
       repoId: 'R_kgDOUEWNDg',
@@ -1272,9 +1228,6 @@
       loading: 'lazy'
     };
 
-    // ================================================================
-    // 本地存储（仅用于“最近浏览”）
-    // ================================================================
     const RECENT_KEY = 'ag_recent';
 
     function getRecent() {
@@ -1292,28 +1245,24 @@
       renderRecentStrip();
     }
 
-    // ================================================================
-    // Userbase 数据库操作
-    // ================================================================
     let db = null;
     let artworks = [];
     let announcements = [];
     let currentUser = null;
-    let currentUserInfo = null; // {username, displayName, email}
+    let currentUserInfo = null;
     let isAdmin = false;
 
-    // 初始化 Userbase 并打开数据库
     async function initUserbase() {
       try {
         await userbase.init({ appId: USERBASE_APP_ID });
-        const session = await userbase.getSession();
-        if (session && session.user) {
-          currentUser = session.user;
-          // 加载用户信息
-          await loadUserInfo(session.user.username);
+
+        // 修复：使用 getCurrentUser 代替 getSession
+        const user = await userbase.getCurrentUser();
+        if (user) {
+          currentUser = user;
+          await loadUserInfo(user.username);
           isAdmin = (currentUser.username === ADMIN_USERNAME);
           updateUIForLoggedIn();
-          // 检查是否首次登录（没有 email 或 displayName 则弹窗）
           if (!currentUserInfo || !currentUserInfo.email || !currentUserInfo.displayName) {
             openModal('first-setup-modal');
           }
@@ -1321,7 +1270,6 @@
           updateUIForLoggedOut();
         }
 
-        // 打开数据库
         db = await userbase.openDatabase({
           databaseName: 'gallery-data',
           changeHandler: function(items) {
@@ -1329,7 +1277,6 @@
           }
         });
 
-        // 首次加载
         await loadAllData();
 
       } catch (e) {
@@ -1338,7 +1285,6 @@
       }
     }
 
-    // 加载用户信息（从 users 集合）
     async function loadUserInfo(username) {
       if (!db) return;
       try {
@@ -1354,10 +1300,8 @@
       }
     }
 
-    // 保存用户信息（插入或更新）
     async function saveUserInfo(data) {
       if (!db) throw new Error('数据库未初始化');
-      // 查找是否已存在
       const items = await db.getItems();
       const existing = items.find(item => item.itemName === 'user' && item.data.username === data.username);
       if (existing) {
@@ -1365,11 +1309,9 @@
       } else {
         await db.insertItem({ itemName: 'user', data });
       }
-      // 更新 currentUserInfo
       currentUserInfo = { ...currentUserInfo, ...data };
     }
 
-    // 检查邮箱是否已被其他用户使用
     async function isEmailTaken(email, excludeUsername = null) {
       if (!db) return false;
       const items = await db.getItems();
@@ -1377,7 +1319,6 @@
       return userItems.some(item => item.data.email === email && item.data.username !== excludeUsername);
     }
 
-    // 加载所有数据（artworks + announcements）
     async function loadAllData() {
       if (!db) return;
       try {
@@ -1401,7 +1342,6 @@
       }
     }
 
-    // 插入或更新数据
     async function upsertItem(itemName, data, id) {
       if (!db) throw new Error('数据库未初始化');
       if (id) {
@@ -1420,9 +1360,6 @@
       return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6);
     }
 
-    // ================================================================
-    // 用户 UI 更新
-    // ================================================================
     function updateUIForLoggedIn() {
       const displayName = currentUserInfo && currentUserInfo.displayName ? currentUserInfo.displayName : currentUser
         .username;
@@ -1455,23 +1392,18 @@
       renderAnnouncements();
     }
 
-    // ================================================================
-    // 用户认证操作
-    // ================================================================
     async function signUp(username, password, email) {
       try {
-        // 先检查邮箱是否已被使用
         const taken = await isEmailTaken(email);
         if (taken) {
           toast('该邮箱已被注册', 'error');
           throw new Error('邮箱已被注册');
         }
         const user = await userbase.signUp({ username, password, email, rememberMe: 'session' });
-        // 保存用户信息到 users 集合
         await saveUserInfo({
           username: user.username,
           email: email,
-          displayName: username // 默认显示名同用户名
+          displayName: username
         });
         currentUser = user;
         currentUserInfo = { username: user.username, email, displayName: username };
@@ -1493,7 +1425,6 @@
         await loadUserInfo(user.username);
         isAdmin = (user.username === ADMIN_USERNAME);
         updateUIForLoggedIn();
-        // 如果用户信息不完整，弹出补全窗口
         if (!currentUserInfo || !currentUserInfo.email || !currentUserInfo.displayName) {
           openModal('first-setup-modal');
         }
@@ -1531,14 +1462,12 @@
       openModal('settings-modal');
     }
 
-    // 保存设置（显示名 + 邮箱）
     async function saveSettings() {
       const displayName = document.getElementById('settings-displayname').value.trim();
       const email = document.getElementById('settings-email').value.trim();
       if (!email) { toast('邮箱不能为空', 'error'); return; }
       if (!email.includes('@')) { toast('邮箱格式不正确', 'error'); return; }
       if (!displayName) { toast('显示名不能为空', 'error'); return; }
-      // 检查邮箱是否被他人占用
       const taken = await isEmailTaken(email, currentUser.username);
       if (taken) {
         toast('该邮箱已被其他用户使用', 'error');
@@ -1557,7 +1486,6 @@
 
     document.getElementById('settings-save').addEventListener('click', saveSettings);
 
-    // 首次完善信息
     document.getElementById('first-submit').addEventListener('click', async function() {
       const displayName = document.getElementById('first-displayname').value.trim();
       const email = document.getElementById('first-email').value.trim();
@@ -1580,7 +1508,6 @@
       }
     });
 
-    // 登录 / 注册按钮事件
     document.getElementById('login-submit').addEventListener('click', async function() {
       const username = document.getElementById('login-username').value.trim();
       const password = document.getElementById('login-password').value.trim();
@@ -1612,9 +1539,6 @@
       if (e.key === 'Enter') document.getElementById('signup-submit').click();
     });
 
-    // ================================================================
-    // 公告管理
-    // ================================================================
     function renderAnnouncements() {
       const container = document.getElementById('announce-text');
       const empty = document.getElementById('announce-empty');
@@ -1676,9 +1600,6 @@
       }
     });
 
-    // ================================================================
-    // 画作数据操作
-    // ================================================================
     async function addArtwork(artworkData) {
       try {
         await upsertItem('artwork', artworkData);
@@ -1733,9 +1654,6 @@
       return (art.likes || []).length;
     }
 
-    // ================================================================
-    // 搜索建议
-    // ================================================================
     function setupSearchSuggestions() {
       const input = document.getElementById('search-input');
       const sugg = document.getElementById('suggestions');
@@ -1765,9 +1683,6 @@
       });
     }
 
-    // ================================================================
-    // 画廊核心功能
-    // ================================================================
     let filtered = [];
     let currentTag = 'all';
     let currentSort = 'newest';
@@ -1970,9 +1885,6 @@
       }
     }
 
-    // ================================================================
-    // 上传功能
-    // ================================================================
     let pickedFile = null,
       pickedDataUrl = null;
     const fileInput = document.getElementById('file-input');
@@ -2101,9 +2013,6 @@
       }
     });
 
-    // ================================================================
-    // 详情页内点赞、删除
-    // ================================================================
     document.getElementById('detail-heart').addEventListener('click', async function() {
       const art = currentDetailArt;
       if (!art) return;
@@ -2134,9 +2043,6 @@
       }
     });
 
-    // ================================================================
-    // Giscus 评论区
-    // ================================================================
     function loadGiscus(artId) {
       const container = document.getElementById('giscus-container');
       container.innerHTML = '';
@@ -2167,9 +2073,6 @@
       }, 300);
     }
 
-    // ================================================================
-    // 双击 Logo 返回首页
-    // ================================================================
     document.querySelector('.logo').addEventListener('dblclick', function() {
       document.getElementById('search-input').value = '';
       searchQuery = '';
@@ -2186,9 +2089,6 @@
       toast('已返回首页');
     });
 
-    // ================================================================
-    // 事件绑定
-    // ================================================================
     document.getElementById('view-back-btn').addEventListener('click', exitLikedView);
     document.getElementById('liked-more').addEventListener('click', showLikedView);
     document.getElementById('detail-back').addEventListener('click', closeDetail);
@@ -2207,9 +2107,6 @@
     document.getElementById('sort-select').addEventListener('change', e => { currentSort = e.target.value;
       applyFilters(); });
 
-    // ================================================================
-    // Modal Helpers
-    // ================================================================
     function openModal(id) { document.getElementById(id).classList.add('open');
       document.body.style.overflow = 'hidden'; }
 
@@ -2221,9 +2118,6 @@
       });
     });
 
-    // ================================================================
-    // Toast
-    // ================================================================
     let toastTimer;
 
     function toast(msg, type = '') {
@@ -2242,9 +2136,6 @@
       return new Date(ts).toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
     }
 
-    // ================================================================
-    // Init
-    // ================================================================
     setupSearchSuggestions();
     initUserbase();
   </script>
