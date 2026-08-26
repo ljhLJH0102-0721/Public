@@ -1256,19 +1256,16 @@
       try {
         await userbase.init({ appId: USERBASE_APP_ID });
 
-        // 修复：使用 getCurrentUser 获取当前用户（2.x 版本 API）
-        // 如果报错，再尝试用 userbase.getUser()
+        // 正确获取当前用户：优先 getCurrentUser，降级 getSession
         let user = null;
         try {
           user = await userbase.getCurrentUser();
         } catch (e) {
-          // 如果 getCurrentUser 不存在，尝试 getSession
           try {
             const session = await userbase.getSession();
             user = session ? session.user : null;
           } catch (e2) {
-            // 最后尝试 getUser
-            user = await userbase.getUser();
+            user = null;
           }
         }
 
