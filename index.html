@@ -43,6 +43,14 @@
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; padding: 0 16px; gap: 12px;
       height: 56px;
+      transition: transform 0.3s;
+    }
+    header.hidden {
+      transform: translateY(-100%);
+      pointer-events: none;
+      height: 0;
+      padding: 0;
+      overflow: hidden;
     }
     .logo {
       font-size: 1.15rem; font-weight: 800; color: var(--accent);
@@ -107,6 +115,15 @@
       background: #fff; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; gap: 6px;
       padding: 0 16px; height: 44px; overflow-x: auto;
+      transition: transform 0.3s, height 0.3s, padding 0.3s;
+    }
+    .tags-bar.hidden {
+      transform: translateY(-100%);
+      pointer-events: none;
+      height: 0;
+      padding: 0;
+      border: none;
+      overflow: hidden;
     }
     .tags-bar::-webkit-scrollbar { display: none; }
     .tag-pill {
@@ -121,6 +138,35 @@
       margin-left: auto; flex-shrink: 0; border: 1.5px solid var(--border);
       border-radius: var(--radius-s); padding: 4px 8px; font-size: 0.78rem;
       color: var(--text2); background: #fff; font-family: inherit; cursor: pointer; outline: none;
+    }
+
+    /* ----- 视图返回栏（“我喜欢”独立页面时显示） ----- */
+    .view-back-bar {
+      display: none;
+      padding: 12px 16px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 150;
+    }
+    .view-back-bar.show { display: flex; }
+    .view-back-bar .back-btn {
+      font-size: 1.1rem;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .view-back-bar .back-btn:hover { text-decoration: underline; }
+    .view-back-bar .view-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
     }
 
     /* ----- 主视图 ----- */
@@ -190,6 +236,16 @@
       border-top: 1px solid var(--border);
       padding: 12px 16px;
       margin-top: 0;
+      transition: transform 0.3s, opacity 0.3s, height 0.3s, padding 0.3s;
+    }
+    .bottom-strip.hidden {
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none;
+      height: 0;
+      padding: 0;
+      border: none;
+      overflow: hidden;
     }
     .strip-header {
       display: flex;
@@ -407,12 +463,20 @@
 <body>
 
 <!-- ============================================================
+   视图返回栏（“我喜欢”独立页面时显示）
+   ============================================================ -->
+<div class="view-back-bar" id="view-back-bar">
+  <span class="back-btn" id="view-back-btn">← 返回全部</span>
+  <span class="view-title" id="view-title">❤️ 我喜欢</span>
+</div>
+
+<!-- ============================================================
    MAIN VIEW (画廊主界面)
    ============================================================ -->
 <div id="main-view">
 
   <!-- HEADER -->
-  <header>
+  <header id="main-header">
     <div class="logo">
       <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="#0096fa"/><path d="M7 21 L11 11 L14 17 L17 13 L21 21" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="9" r="2.5" fill="white"/></svg>
       <span>ArtGallery</span>
@@ -430,7 +494,7 @@
   </header>
 
   <!-- TAGS -->
-  <div class="tags-bar">
+  <div class="tags-bar" id="tags-bar">
     <button class="tag-pill active" data-tag="all">全部</button>
     <button class="tag-pill" data-tag="油画">油画</button>
     <button class="tag-pill" data-tag="水彩">水彩</button>
@@ -548,7 +612,7 @@ const CFG = { owner: 'ljhLJH0102-0721', repo: 'Public', branch: 'main' };
 const GH = 'https://api.github.com';
 
 // ================================================================
-// GISCUS 配置
+// GISCUS 配置（已修复：使用 pathname 映射）
 // ================================================================
 const GISCUS_CONFIG = {
   repo: 'ljhLJH0102-0721/Public',
@@ -732,6 +796,11 @@ let adminToken = '';
 
 let currentDetailArt = null;
 
+// ================================================================
+// 视图状态（用于“我喜欢”独立页面）
+// ================================================================
+let isLikedView = false;
+
 async function fetchArtworks() {
   showSkeletons();
   try {
@@ -827,6 +896,10 @@ function renderGallery() {
       btn.innerHTML = `${nowLiked ? '❤️' : '🤍'} <span class="heart-count">${nowLiked ? 1 : 0}</span>`;
       btn.classList.toggle('liked', nowLiked);
       renderLikedStrip();
+      // 如果在“我喜欢”视图下，重新应用过滤
+      if (isLikedView) {
+        showLikedView();
+      }
     });
     card.addEventListener('click', () => {
       openDetail(idx);
@@ -835,6 +908,55 @@ function renderGallery() {
     g.appendChild(card);
   });
 }
+
+// ================================================================
+// “我喜欢”独立视图
+// ================================================================
+function showLikedView() {
+  const likes = getLikes();
+  const likedIds = Object.keys(likes).filter(id => likes[id] === true);
+  const likedArts = artworks.filter(a => likedIds.includes(a.id));
+  if (!likedArts.length) {
+    toast('还没有喜欢的作品');
+    // 如果当前在 liked 视图但没有作品，返回正常视图
+    if (isLikedView) {
+      exitLikedView();
+    }
+    return;
+  }
+  isLikedView = true;
+  filtered = likedArts;
+  renderGallery();
+  // 隐藏主 UI 元素
+  document.getElementById('main-header').classList.add('hidden');
+  document.getElementById('tags-bar').classList.add('hidden');
+  document.getElementById('recent-strip').classList.add('hidden');
+  document.getElementById('liked-strip').classList.add('hidden');
+  document.getElementById('view-back-bar').classList.add('show');
+  document.getElementById('view-title').textContent = '❤️ 我喜欢';
+  // 取消所有标签高亮
+  document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+}
+
+function exitLikedView() {
+  isLikedView = false;
+  document.getElementById('main-header').classList.remove('hidden');
+  document.getElementById('tags-bar').classList.remove('hidden');
+  document.getElementById('recent-strip').classList.remove('hidden');
+  document.getElementById('liked-strip').classList.remove('hidden');
+  document.getElementById('view-back-bar').classList.remove('show');
+  // 恢复全部显示
+  document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');
+  currentTag = 'all';
+  applyFilters();
+}
+
+// 返回按钮
+document.getElementById('view-back-btn').addEventListener('click', exitLikedView);
+
+// 我喜欢“查看全部”
+document.getElementById('liked-more').addEventListener('click', showLikedView);
 
 // ================================================================
 // 详情页 (帖子样式)
@@ -893,6 +1015,10 @@ function closeDetail() {
   // 恢复原始路径
   history.pushState(null, '', '/');
   currentDetailArt = null;
+  // 如果当前是 liked 视图，刷新视图
+  if (isLikedView) {
+    showLikedView();
+  }
 }
 
 document.getElementById('detail-back').addEventListener('click', closeDetail);
@@ -905,6 +1031,9 @@ document.getElementById('detail-heart').addEventListener('click', function() {
   this.classList.toggle('liked', liked);
   renderGallery();
   renderLikedStrip();
+  if (isLikedView) {
+    showLikedView();
+  }
 });
 
 document.getElementById('detail-delete').addEventListener('click', async function() {
@@ -927,7 +1056,7 @@ document.getElementById('detail-delete').addEventListener('click', async functio
 });
 
 // ================================================================
-// Giscus 评论区加载 (使用 pathname 映射，每幅画独立)
+// Giscus 评论区加载（使用 pathname 映射，每幅画独立）
 // ================================================================
 function loadGiscus(artId) {
   const container = document.getElementById('giscus-container');
@@ -943,7 +1072,7 @@ function loadGiscus(artId) {
   script.setAttribute('data-repo-id', GISCUS_CONFIG.repoId);
   script.setAttribute('data-category', GISCUS_CONFIG.category);
   script.setAttribute('data-category-id', GISCUS_CONFIG.categoryId);
-  script.setAttribute('data-mapping', GISCUS_CONFIG.pathname);
+  script.setAttribute('data-mapping', GISCUS_CONFIG.mapping);
   script.setAttribute('data-strict', GISCUS_CONFIG.strict);
   script.setAttribute('data-reactions-enabled', GISCUS_CONFIG.reactionsEnabled);
   script.setAttribute('data-emit-metadata', GISCUS_CONFIG.emitMetadata);
@@ -1062,6 +1191,10 @@ async function doLogin() {
 // ================================================================
 document.querySelectorAll('.tag-pill').forEach(btn => {
   btn.addEventListener('click', () => {
+    // 如果当前在 liked 视图，先退出
+    if (isLikedView) {
+      exitLikedView();
+    }
     document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentTag = btn.dataset.tag;
@@ -1069,17 +1202,6 @@ document.querySelectorAll('.tag-pill').forEach(btn => {
   });
 });
 document.getElementById('sort-select').addEventListener('change', e => { currentSort = e.target.value; applyFilters(); });
-
-document.getElementById('liked-more').addEventListener('click', function() {
-  const likes = getLikes();
-  const likedIds = Object.keys(likes).filter(id => likes[id] === true);
-  const likedArts = artworks.filter(a => likedIds.includes(a.id));
-  if (!likedArts.length) { toast('还没有喜欢的作品'); return; }
-  filtered = likedArts;
-  renderGallery();
-  document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
-  toast('❤️ 显示全部喜欢的作品');
-});
 
 // ================================================================
 // Modal helpers
