@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>鸾尾花论坛 · 画作展示</title>
   <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
     :root {
       --bg: #f8f8f8;
@@ -296,9 +294,6 @@
       border: none;
       overflow: hidden;
     }
-    .tags-bar::-webkit-scrollbar {
-      display: none;
-    }
     .tag-pill {
       flex-shrink: 0;
       padding: 4px 14px;
@@ -572,13 +567,6 @@
       gap: 10px;
       overflow-x: auto;
       padding-bottom: 4px;
-    }
-    .strip-list::-webkit-scrollbar {
-      height: 3px;
-    }
-    .strip-list::-webkit-scrollbar-thumb {
-      background: var(--border2);
-      border-radius: 2px;
     }
     .strip-item {
       flex-shrink: 0;
@@ -1252,22 +1240,13 @@
     let currentUserInfo = null;
     let isAdmin = false;
 
+    // ---------- Userbase 初始化 ----------
     async function initUserbase() {
       try {
         await userbase.init({ appId: USERBASE_APP_ID });
 
-        // 正确获取当前用户：优先 getCurrentUser，降级 getSession
-        let user = null;
-        try {
-          user = await userbase.getCurrentUser();
-        } catch (e) {
-          try {
-            const session = await userbase.getSession();
-            user = session ? session.user : null;
-          } catch (e2) {
-            user = null;
-          }
-        }
+        // 只用 getCurrentUser，没有不存在的 getUser
+        const user = await userbase.getCurrentUser();
 
         if (user) {
           currentUser = user;
@@ -1292,7 +1271,8 @@
 
       } catch (e) {
         console.error('Userbase init error:', e);
-        toast('初始化失败：' + e.message, 'error');
+        toast('初始化失败，请刷新重试或检查网络', 'error');
+        updateUIForLoggedOut();
       }
     }
 
@@ -1371,6 +1351,7 @@
       return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6);
     }
 
+    // ---------- UI 更新 ----------
     function updateUIForLoggedIn() {
       const displayName = currentUserInfo && currentUserInfo.displayName ? currentUserInfo.displayName : currentUser
         .username;
@@ -1403,6 +1384,7 @@
       renderAnnouncements();
     }
 
+    // ---------- 认证 ----------
     async function signUp(username, password, email) {
       try {
         const taken = await isEmailTaken(email);
@@ -1550,6 +1532,7 @@
       if (e.key === 'Enter') document.getElementById('signup-submit').click();
     });
 
+    // ---------- 公告 ----------
     function renderAnnouncements() {
       const container = document.getElementById('announce-text');
       const empty = document.getElementById('announce-empty');
@@ -1611,6 +1594,7 @@
       }
     });
 
+    // ---------- 画作 ----------
     async function addArtwork(artworkData) {
       try {
         await upsertItem('artwork', artworkData);
@@ -1665,6 +1649,7 @@
       return (art.likes || []).length;
     }
 
+    // ---------- 搜索 ----------
     function setupSearchSuggestions() {
       const input = document.getElementById('search-input');
       const sugg = document.getElementById('suggestions');
@@ -1694,6 +1679,7 @@
       });
     }
 
+    // ---------- 画廊 ----------
     let filtered = [];
     let currentTag = 'all';
     let currentSort = 'newest';
@@ -1896,6 +1882,7 @@
       }
     }
 
+    // ---------- 上传 ----------
     let pickedFile = null,
       pickedDataUrl = null;
     const fileInput = document.getElementById('file-input');
