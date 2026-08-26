@@ -324,6 +324,8 @@
   <button class="tag-pill" data-tag="数字艺术">数字艺术</button>
   <button class="tag-pill" data-tag="摄影">摄影</button>
   <button class="tag-pill" data-tag="其他">其他</button>
+  <!-- 👇 新增 “我喜欢” 标签 -->
+  <button class="tag-pill" data-tag="liked">❤️ 我喜欢</button>
   <select class="sort-select" id="sort-select"><option value="newest">最新</option><option value="oldest">最早</option><option value="title">名称</option></select>
 </div>
 
@@ -435,10 +437,6 @@ function toggleLike(id) {
 function isLiked(id) {
   const likes = getLikes();
   return !!likes[id];
-}
-function getLikeCount(id) {
-  const likes = getLikes();
-  return likes[id] ? 1 : 0;
 }
 
 // ===== 添加浏览记录 =====
@@ -561,8 +559,20 @@ async function persistArtworks(token) {
 
 function applyFilters() {
   let arr = [...artworks];
-  if (currentTag !== 'all') arr = arr.filter(a => a.tag === currentTag);
-  if (searchQuery) arr = arr.filter(a => a.title.toLowerCase().includes(searchQuery) || (a.desc||'').toLowerCase().includes(searchQuery));
+  // 分类过滤
+  if (currentTag !== 'all' && currentTag !== 'liked') {
+    arr = arr.filter(a => a.tag === currentTag);
+  }
+  // 我喜欢 特殊过滤
+  if (currentTag === 'liked') {
+    const likes = getLikes();
+    arr = arr.filter(a => likes[a.id] === true);
+  }
+  // 搜索过滤
+  if (searchQuery) {
+    arr = arr.filter(a => a.title.toLowerCase().includes(searchQuery) || (a.desc||'').toLowerCase().includes(searchQuery));
+  }
+  // 排序
   if (currentSort === 'newest') arr.sort((a,b) => b.date - a.date);
   if (currentSort === 'oldest') arr.sort((a,b) => a.date - b.date);
   if (currentSort === 'title') arr.sort((a,b) => a.title.localeCompare(b.title, 'zh'));
@@ -610,6 +620,10 @@ function renderGallery() {
       const btn = e.currentTarget;
       btn.innerHTML = `${nowLiked ? '❤️' : '🤍'} <span class="heart-count">${nowLiked ? 1 : 0}</span>`;
       btn.classList.toggle('liked', nowLiked);
+      // 如果当前在“我喜欢”标签页，实时刷新列表（取消点赞会移除）
+      if (currentTag === 'liked') {
+        applyFilters();
+      }
     });
     card.addEventListener('click', () => {
       openLightbox(idx);
@@ -666,7 +680,12 @@ document.getElementById('lb-heart').addEventListener('click', function() {
   this.textContent = liked ? '❤️' : '🤍';
   this.classList.toggle('liked', liked);
   document.getElementById('lb-heart-count').textContent = liked ? 1 : 0;
+  // 更新卡片上的点赞状态
   renderGallery();
+  // 如果当前在“我喜欢”标签页，重新过滤
+  if (currentTag === 'liked') {
+    applyFilters();
+  }
 });
 
 document.getElementById('lb-delete').addEventListener('click', async function() {
