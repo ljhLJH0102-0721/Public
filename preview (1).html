@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>画廊</title>
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --white:   #ffffff;
+      --bg:      #f8f8f8;
+      --surface: #ffffff;
+      --border:  #e5e5e5;
+      --border2: #d0d0d0;
+      --text:    #1a1a1a;
+      --text2:   #555;
+      --text3:   #999;
+      --accent:  #0096fa;
+      --accent-h:#007dd6;
+      --danger:  #ff4757;
+      --radius:  12px;
+      --radius-s:8px;
+      --shadow:  0 2px 12px rgba(0,0,0,0.08);
+      --shadow-h:0 8px 32px rgba(0,0,0,0.14);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; }
+
+    /* ── Header ── */
+    header {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: 60px; display: flex; align-items: center; padding: 0 24px; gap: 16px;
+    }
+    .logo {
+      font-size: 1.25rem; font-weight: 800; color: var(--accent);
+      letter-spacing: -0.02em; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+    }
+    .logo svg { flex-shrink: 0; }
+
+    .search-wrap {
+      flex: 1; max-width: 480px;
+      display: flex; align-items: center;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 24px; padding: 0 16px; gap: 8px; transition: border-color .2s;
+    }
+    .search-wrap:focus-within { border-color: var(--accent); background: #fff; }
+    .search-wrap svg { color: var(--text3); flex-shrink: 0; }
+    .search-wrap input {
+      flex: 1; border: none; background: transparent; font-size: 0.9rem;
+      color: var(--text); outline: none; padding: 8px 0; font-family: inherit;
+    }
+    .search-wrap input::placeholder { color: var(--text3); }
+
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 18px; border-radius: 24px; font-size: 0.875rem; font-weight: 600;
+      transition: all .18s; white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-h); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,150,250,0.35); }
+    .btn-outline { border: 1.5px solid var(--border2); color: var(--text2); background: #fff; }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-ghost { color: var(--text2); padding: 7px 12px; border-radius: var(--radius-s); }
+    .btn-ghost:hover { background: var(--bg); color: var(--text); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    /* ── Sub-nav / Tags bar ── */
+    .tags-bar {
+      background: #fff; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 24px; height: 48px; overflow-x: auto;
+    }
+    .tags-bar::-webkit-scrollbar { display: none; }
+    .tag-pill {
+      flex-shrink: 0; padding: 5px 16px; border-radius: 24px; font-size: 0.82rem; font-weight: 500;
+      border: 1.5px solid var(--border); color: var(--text2); background: #fff; cursor: pointer;
+      transition: all .18s; white-space: nowrap;
+    }
+    .tag-pill:hover { border-color: var(--accent); color: var(--accent); }
+    .tag-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .sort-select {
+      margin-left: auto; flex-shrink: 0; border: 1.5px solid var(--border);
+      border-radius: var(--radius-s); padding: 5px 10px; font-size: 0.82rem;
+      color: var(--text2); background: #fff; font-family: inherit; cursor: pointer; outline: none;
+    }
+    .sort-select:focus { border-color: var(--accent); }
+
+    /* ── Hero (only visible when empty) ── */
+    .hero {
+      text-align: center; padding: 80px 20px 60px;
+    }
+    .hero h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 12px; }
+    .hero p  { color: var(--text2); font-size: 1rem; max-width: 400px; margin: 0 auto 28px; line-height: 1.6; }
+
+    /* ── Gallery grid (masonry) ── */
+    #gallery-wrap { padding: 28px 24px; }
+
+    #gallery {
+      columns: 5; column-gap: 16px;
+    }
+    @media (max-width: 1400px) { #gallery { columns: 4; } }
+    @media (max-width: 1100px) { #gallery { columns: 3; } }
+    @media (max-width:  700px) { #gallery { columns: 2; } #gallery-wrap { padding: 16px; } }
+    @media (max-width:  420px) { #gallery { columns: 1; } }
+
+    .artwork-card {
+      break-inside: avoid; margin-bottom: 16px; border-radius: var(--radius);
+      overflow: hidden; background: var(--surface); border: 1px solid var(--border);
+      cursor: pointer; transition: transform .22s, box-shadow .22s;
+      position: relative;
+    }
+    .artwork-card:hover {
+      transform: translateY(-4px); box-shadow: var(--shadow-h);
+    }
+    .artwork-card:hover .card-overlay { opacity: 1; }
+
+    .card-img-wrap { overflow: hidden; background: #f0f0f0; position: relative; }
+    .card-img-wrap img { width: 100%; display: block; object-fit: cover; transition: transform .3s; }
+    .artwork-card:hover .card-img-wrap img { transform: scale(1.03); }
+
+    .card-overlay {
+      position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%);
+      opacity: 0; transition: opacity .22s; display: flex; align-items: flex-end; padding: 12px;
+    }
+    .card-overlay-tag {
+      background: rgba(255,255,255,0.18); backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.3); color: #fff;
+      font-size: 0.7rem; padding: 3px 9px; border-radius: 12px; letter-spacing: 0.03em;
+    }
+
+    .card-info { padding: 12px 14px 14px; }
+    .card-title { font-size: 0.9rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+    .card-meta  { font-size: 0.75rem; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+    /* Skeleton loader */
+    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .skeleton-card { break-inside: avoid; margin-bottom: 16px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+    .skeleton-img  { height: 220px; }
+    .skeleton-body { padding: 12px 14px 14px; }
+    .skeleton-line { height: 12px; border-radius: 6px; margin-bottom: 8px; }
+    .skeleton-line.short { width: 60%; }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 80px 20px; color: var(--text3); }
+    .empty .empty-icon { font-size: 3.5rem; margin-bottom: 16px; }
+    .empty p { font-size: 0.95rem; margin-top: 6px; }
+
+    /* ── Lightbox ── */
+    #lightbox {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(15,15,15,0.88); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+    }
+    #lightbox.open { display: flex; }
+
+    .lb-container {
+      display: flex; width: min(1160px, 97vw); max-height: 95vh;
+      background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.35); position: relative;
+    }
+
+    .lb-img-area {
+      flex: 1; background: #111; display: flex; align-items: center;
+      justify-content: center; overflow: hidden; min-height: 400px;
+    }
+    .lb-img-area img { max-width: 100%; max-height: 95vh; object-fit: contain; display: block; }
+
+    .lb-side {
+      width: 320px; flex-shrink: 0; background: #fff;
+      border-left: 1px solid var(--border); display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .lb-side-scroll { flex: 1; overflow-y: auto; padding: 28px 24px; }
+    .lb-side-scroll::-webkit-scrollbar { width: 4px; }
+    .lb-side-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    .lb-tag-badge {
+      display: inline-block; background: #eef6ff; color: var(--accent);
+      font-size: 0.75rem; font-weight: 600; padding: 4px 12px;
+      border-radius: 12px; margin-bottom: 14px;
+    }
+    .lb-title { font-size: 1.4rem; font-weight: 800; line-height: 1.3; color: var(--text); margin-bottom: 10px; }
+    .lb-date  { font-size: 0.8rem; color: var(--text3); margin-bottom: 18px; }
+    .lb-divider { height: 1px; background: var(--border); margin: 18px 0; }
+    .lb-desc  { font-size: 0.9rem; color: var(--text2); line-height: 1.75; }
+
+    .lb-side-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+
+    .lb-nav-row { display: flex; gap: 8px; }
+    .lb-nav-row .btn { flex: 1; justify-content: center; font-size: 0.82rem; padding: 8px 12px; }
+
+    .lb-close {
+      position: absolute; top: 14px; right: 14px; z-index: 10;
+      width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,0.45);
+      color: #fff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+      border: none; cursor: pointer; transition: background .18s;
+    }
+    .lb-close:hover { background: rgba(0,0,0,0.7); }
+
+    .lb-delete-btn {
+      width: 100%; padding: 8px; border-radius: var(--radius-s); font-size: 0.82rem; font-weight: 600;
+      color: var(--danger); border: 1.5px solid var(--danger); background: transparent;
+      cursor: pointer; transition: all .18s; display: none; font-family: inherit;
+    }
+    .lb-delete-btn:hover { background: var(--danger); color: #fff; }
+
+    @media (max-width: 800px) {
+      .lb-container { flex-direction: column; }
+      .lb-side { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+      .lb-img-area { min-height: 260px; }
+    }
+
+    /* ── Upload Modal ── */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 600; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 16px; padding: 32px; width: min(520px, 95vw);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.18); position: relative; max-height: 95vh; overflow-y: auto;
+    }
+    .modal::-webkit-scrollbar { width: 4px; }
+    .modal::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .modal-title { font-size: 1.15rem; font-weight: 800; color: var(--text); }
+    .modal-x { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text3); font-size: 1.1rem; transition: background .18s; border: none; cursor: pointer; background: var(--bg); }
+    .modal-x:hover { background: var(--border); color: var(--text); }
+
+    .form-row { margin-bottom: 18px; }
+    .form-row label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-row input, .form-row textarea, .form-row select {
+      width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-s);
+      padding: 10px 14px; font-size: 0.9rem; font-family: inherit; color: var(--text);
+      outline: none; transition: border-color .18s; background: var(--bg);
+    }
+    .form-row input:focus, .form-row textarea:focus, .form-row select:focus { border-color: var(--accent); background: #fff; }
+    .form-row textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
+    .form-row select option { background: #fff; }
+    .form-hint { margin-top: 5px; font-size: 0.75rem; color: var(--text3); line-height: 1.5; }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2px dashed var(--border2); border-radius: var(--radius); padding: 36px 20px;
+      text-align: center; cursor: pointer; transition: all .2s; color: var(--text3);
+      position: relative; background: var(--bg);
+    }
+    .drop-zone:hover, .drop-zone.drag { border-color: var(--accent); background: #eef6ff; color: var(--accent); }
+    .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .dz-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .dz-text { font-size: 0.9rem; font-weight: 600; }
+    .dz-sub  { font-size: 0.78rem; margin-top: 4px; }
+    #preview-wrap { margin-top: 12px; display: none; position: relative; }
+    #preview-wrap img { max-height: 180px; max-width: 100%; border-radius: var(--radius-s); object-fit: contain; margin: 0 auto; border: 1px solid var(--border); }
+    .preview-remove { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.55); color: #fff; border: none; cursor: pointer; border-radius: 50%; width: 24px; height: 24px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+
+    /* Progress */
+    .upload-progress { display: none; margin-top: 14px; }
+    .progress-bar   { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .progress-fill  { height: 100%; background: var(--accent); border-radius: 3px; width: 0%; transition: width .3s; }
+    .progress-text  { font-size: 0.78rem; color: var(--text3); text-align: center; margin-top: 6px; }
+
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+    /* ── Auth Modal ── */
+    #auth-modal .modal { max-width: 380px; }
+
+    /* ── Setup Modal ── */
+    #setup-modal .modal { max-width: 460px; }
+    .setup-note { font-size: 0.82rem; color: var(--text2); line-height: 1.65; margin-bottom: 22px; background: #f0f7ff; border: 1px solid #cce4ff; border-radius: var(--radius-s); padding: 12px 14px; }
+    code { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 0.82em; font-family: monospace; color: var(--accent); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--text); color: #fff;
+      padding: 10px 22px; border-radius: 24px; font-size: 0.875rem;
+      opacity: 0; pointer-events: none; transition: all .28s; z-index: 999;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2); max-width: 90vw; text-align: center;
+    }
+    #toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.success { background: #22c55e; }
+    #toast.error   { background: #ef4444; }
+
+    /* Admin badge */
+    .admin-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #fff3cd; color: #856404; border: 1px solid #ffc107;
+      font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 12px;
+    }
+
+    /* Responsive header */
+    @media (max-width: 600px) {
+      header { padding: 0 14px; gap: 10px; }
+      .search-wrap { max-width: none; }
+      .logo span.logo-text { display: none; }
+      .tags-bar { padding: 0 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ HEADER ══════════════════ -->
+<header>
+  <div class="logo">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <rect width="28" height="28" rx="8" fill="#0096fa"/>
+      <path d="M7 21 L11 11 L14 17 L17 13 L21 21" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="20" cy="9" r="2.5" fill="white"/>
+    </svg>
+    <span class="logo-text">ArtGallery</span>
+  </div>
+
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="search-input" placeholder="搜索画作、描述…" autocomplete="off" />
+  </div>
+
+  <div class="header-right" id="header-right">
+    <span class="admin-badge" id="admin-badge" style="display:none">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+      管理员
+    </span>
+    <button class="btn btn-ghost" id="admin-btn">管理</button>
+    <button class="btn btn-primary" id="upload-btn" style="display:none">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      上传作品
+    </button>
+  </div>
+</header>
+
+<!-- ══════════════════ TAGS BAR ══════════════════ -->
+<div class="tags-bar" id="tags-bar">
+  <button class="tag-pill active" data-tag="all">全部</button>
+  <button class="tag-pill" data-tag="油画">油画</button>
+  <button class="tag-pill" data-tag="水彩">水彩</button>
+  <button class="tag-pill" data-tag="素描">素描</button>
+  <button class="tag-pill" data-tag="国画">国画</button>
+  <button class="tag-pill" data-tag="插画">插画</button>
+  <button class="tag-pill" data-tag="数字艺术">数字艺术</button>
+  <button class="tag-pill" data-tag="摄影">摄影</button>
+  <button class="tag-pill" data-tag="其他">其他</button>
+  <select class="sort-select" id="sort-select">
+    <option value="newest">最新</option>
+    <option value="oldest">最早</option>
+    <option value="title">名称</option>
+  </select>
+</div>
+
+<!-- ══════════════════ GALLERY ══════════════════ -->
+<div id="gallery-wrap">
+  <div id="gallery"></div>
+</div>
+
+<!-- ══════════════════ LIGHTBOX ══════════════════ -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="画作详情">
+  <div class="lb-container">
+
+    <div class="lb-img-area">
+      <img id="lb-img" src="" alt="" />
+    </div>
+
+    <div class="lb-side">
+      <div class="lb-side-scroll">
+        <span class="lb-tag-badge" id="lb-tag"></span>
+        <h2 class="lb-title" id="lb-title"></h2>
+        <p  class="lb-date"  id="lb-date"></p>
+        <div class="lb-divider"></div>
+        <p  class="lb-desc"  id="lb-desc"></p>
+      </div>
+      <div class="lb-side-footer">
+        <div class="lb-nav-row">
+          <button class="btn btn-outline" id="lb-prev">← 上一张</button>
+          <button class="btn btn-outline" id="lb-next">下一张 →</button>
+        </div>
+        <button class="lb-delete-btn" id="lb-delete">删除此作品</button>
+      </div>
+    </div>
+
+    <button class="lb-close" id="lb-close" aria-label="关闭">✕</button>
+  </div>
+</div>
+
+<!-- ══════════════════ UPLOAD MODAL ══════════════════ -->
+<div class="modal-backdrop" id="upload-modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">上传作品</span>
+      <button class="modal-x" id="upload-close" aria-label="关闭">✕</button>
+    </div>
+
+    <div class="form-row">
+      <label>图片 *</label>
+      <div class="drop-zone" id="drop-zone">
+        <div class="dz-icon">🖼️</div>
+        <div class="dz-text">点击选择或拖拽图片</div>
+        <div class="dz-sub">JPG · PNG · WEBP · GIF · 最大 20MB</div>
+        <input type="file" id="file-input" accept="image/*" aria-label="选择图片" />
+      </div>
+      <div id="preview-wrap">
+        <img id="preview-img" alt="预览" />
+        <button class="preview-remove" id="preview-remove" aria-label="移除图片">✕</button>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>标题 *</label>
+      <input type="text" id="art-title" placeholder="给这幅作品起个名字" maxlength="80" />
+    </div>
+
+    <div class="form-row">
+      <label>分类</label>
+      <select id="art-tag">
+        <option value="油画">油画</option>
+        <option value="水彩">水彩</option>
+        <option value="素描">素描</option>
+        <option value="国画">国画</option>
+        <option value="插画">插画</option>
+        <option value="数字艺术">数字艺术</option>
+        <option value="摄影">摄影</option>
+        <option value="其他">其他</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>描述 <span style="font-weight:400;text-transform:none;letter-spacing:0">（可选）</span></label>
+      <textarea id="art-desc" placeholder="介绍一下这幅作品的创作背景、使用的技法…" maxlength="600"></textarea>
+    </div>
+
+    <div class="upload-progress" id="upload-progress">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-text" id="progress-text">准备上传…</div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="upload-cancel">取消</button>
+      <button class="btn btn-primary" id="upload-submit">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+        发布作品
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ AUTH MODAL ══════════════════ -->
+<div class="modal-backdrop" id="auth-modal" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <span class="modal-title">🔐 管理员登录</span>
+      <button class="modal-x" id="auth-close" aria-label="关闭">✕</button>
+    </div>
+    <p style="font-size:0.87rem;color:var(--text2);margin-bottom:20px;line-height:1.6">
+      输入 GitHub Personal Access Token 以进入管理模式。Token 仅存储在本地，关闭标签页后自动清除。
+    </p>
+    <div class="form-row">
+      <label>GitHub Token</label>
+      <input type="password" id="admin-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <p class="form-hint">需要 <code>contents: write</code> 权限（Fine-grained token）</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="auth-cancel">取消</button>
+      <button class="btn btn-primary" id="auth-submit">登录</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ SETUP MODAL ══════════════════ -->
+<div class="modal-backdrop" id="setup-modal" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <span class="modal-title">⚙️ 连接 GitHub 仓库</span>
+    </div>
+    <div class="setup-note">
+      这是首次访问，请填写你的 GitHub 仓库信息。图片将存储在仓库的 <code>images/</code> 目录，画作列表存储在 <code>artworks.json</code>。配置只需填写一次。
+    </div>
+    <div class="form-row">
+      <label>GitHub 用户名</label>
+      <input type="text" id="cfg-owner" placeholder="your-username" />
+    </div>
+    <div class="form-row">
+      <label>仓库名称</label>
+      <input type="text" id="cfg-repo" placeholder="my-gallery" />
+    </div>
+    <div class="form-row">
+      <label>分支</label>
+      <input type="text" id="cfg-branch" placeholder="main" value="main" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" id="setup-save">保存并连接</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ TOAST ══════════════════ -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ══════════════════ SCRIPT ══════════════════ -->
+<script>
+'use strict';
+
+/* ────────────────────────────────────────────────
+   CONFIG
+──────────────────────────────────────────────── */
+let CFG = { owner: '', repo: '', branch: 'main' };
+
+function loadCfg() {
+  try { const s = localStorage.getItem('ag_cfg'); if (s) Object.assign(CFG, JSON.parse(s)); } catch(_) {}
+}
+function saveCfg() {
+  localStorage.setItem('ag_cfg', JSON.stringify(CFG));
+}
+function cfgReady() { return !!(CFG.owner && CFG.repo); }
+
+/* ────────────────────────────────────────────────
+   GITHUB API
+──────────────────────────────────────────────── */
+const GH = 'https://api.github.com';
+
+function ghHeaders(token) {
+  const h = { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+  if (token) h['Authorization'] = `Bearer ${token}`;
+  return h;
+}
+
+async function ghGetFile(path, token) {
+  const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}?ref=${CFG.branch}`, { headers: ghHeaders(token) });
+  if (r.status === 404) return null;
+  if (!r.ok) { const e = await r.json().catch(()=>{}); throw new Error(e?.message || `GitHub ${r.status}`); }
+  return r.json();
+}
+
+async function ghPutFile(path, base64Content, message, sha, token) {
+  const body = { message, content: base64Content, branch: CFG.branch };
+  if (sha) body.sha = sha;
+  const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {
+    method: 'PUT', headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!r.ok) { const e = await r.json().catch(()=>{}); throw new Error(e?.message || `GitHub ${r.status}`); }
+  return r.json();
+}
+
+async function ghDeleteFile(path, message, sha, token) {
+  const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {
+    method: 'DELETE', headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, sha, branch: CFG.branch }),
+  });
+  if (!r.ok) { const e = await r.json().catch(()=>{}); throw new Error(e?.message || `GitHub ${r.status}`); }
+}
+
+async function ghVerifyToken(token) {
+  const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}`, { headers: ghHeaders(token) });
+  if (!r.ok) throw new Error('Token 无效或无该仓库的访问权限');
+  return r.json();
+}
+
+// Public CDN URL — no token needed for visitors
+function cdnUrl(path) {
+  // Use a timestamp-busting trick: append ?v=sha-prefix when available
+  return `https://cdn.jsdelivr.net/gh/${CFG.owner}/${CFG.repo}@${CFG.branch}/${path}`;
+}
+
+/* ────────────────────────────────────────────────
+   ARTWORKS DATA
+──────────────────────────────────────────────── */
+let artworks    = [];
+let artworksSha = null;
+
+async function fetchArtworks() {
+  showSkeletons();
+  try {
+    const file = await ghGetFile('artworks.json', null);
+    if (file) {
+      artworksSha = file.sha;
+      const decoded = decodeURIComponent(escape(atob(file.content.replace(/\s/g, ''))));
+      artworks = JSON.parse(decoded);
+    } else {
+      artworks = [];
+      artworksSha = null;
+    }
+  } catch(e) {
+    console.error(e);
+    showError('加载失败：' + e.message);
+    return;
+  }
+  applyFilters();
+}
+
+async function persistArtworks(token) {
+  const json    = JSON.stringify(artworks, null, 2);
+  const base64  = btoa(unescape(encodeURIComponent(json)));
+  const result  = await ghPutFile('artworks.json', base64, 'chore: update artworks.json', artworksSha, token);
+  artworksSha   = result.content.sha;
+}
+
+/* ────────────────────────────────────────────────
+   STATE
+──────────────────────────────────────────────── */
+let filtered    = [];
+let currentTag  = 'all';
+let currentSort = 'newest';
+let searchQuery = '';
+let isAdmin     = false;
+let adminToken  = '';
+let lbIndex     = 0;
+
+/* ────────────────────────────────────────────────
+   FILTER + SORT
+──────────────────────────────────────────────── */
+function applyFilters() {
+  let arr = [...artworks];
+  if (currentTag !== 'all') arr = arr.filter(a => a.tag === currentTag);
+  if (searchQuery) {
+    const q = searchQuery;
+    arr = arr.filter(a => a.title.toLowerCase().includes(q) || (a.desc||'').toLowerCase().includes(q));
+  }
+  if (currentSort === 'newest') arr.sort((a,b) => b.date - a.date);
+  if (currentSort === 'oldest') arr.sort((a,b) => a.date - b.date);
+  if (currentSort === 'title')  arr.sort((a,b) => a.title.localeCompare(b.title, 'zh'));
+  filtered = arr;
+  renderGallery();
+}
+
+/* ────────────────────────────────────────────────
+   RENDER
+──────────────────────────────────────────────── */
+function showSkeletons(n = 12) {
+  const g = document.getElementById('gallery');
+  g.innerHTML = Array.from({length: n}, () => `
+    <div class="skeleton-card">
+      <div class="skeleton skeleton-img" style="height:${160 + Math.random()*120|0}px"></div>
+      <div class="skeleton-body">
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line short"></div>
+      </div>
+    </div>`).join('');
+}
+
+function showError(msg) {
+  document.getElementById('gallery').innerHTML = `
+    <div class="empty" style="grid-column:1/-1">
+      <div class="empty-icon">⚠️</div>
+      <p style="color:#ef4444">${escHtml(msg)}</p>
+    </div>`;
+  document.getElementById('count-label') && (document.getElementById('count-label').textContent = '');
+}
+
+function renderGallery() {
+  const g = document.getElementById('gallery');
+
+  // Update count in page title area — reuse section-title or just console
+  document.title = `画廊 · ${artworks.length} 件作品`;
+
+  if (!filtered.length) {
+    g.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">${artworks.length === 0 ? '🎨' : '🔍'}</div>
+        <p style="font-weight:600;color:var(--text2)">${artworks.length === 0 ? '还没有作品' : '没有符合条件的作品'}</p>
+        <p>${artworks.length === 0 ? '登录管理员后上传第一幅作品吧！' : '试试调整筛选条件'}</p>
+      </div>`;
+    return;
+  }
+
+  g.innerHTML = '';
+  filtered.forEach((art, idx) => {
+    const src  = cdnUrl(art.imagePath);
+    const card = document.createElement('div');
+    card.className = 'artwork-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `查看：${art.title}`);
+    card.innerHTML = `
+      <div class="card-img-wrap">
+        <img src="${escHtml(src)}" alt="${escHtml(art.title)}" loading="lazy" />
+        <div class="card-overlay"><span class="card-overlay-tag">${escHtml(art.tag)}</span></div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">${escHtml(art.title)}</div>
+        <div class="card-meta">
+          <span>${escHtml(art.tag)}</span>
+          <span>${fmtDate(art.date)}</span>
+        </div>
+      </div>`;
+    card.addEventListener('click',   () => openLightbox(idx));
+    card.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') openLightbox(idx); });
+    g.appendChild(card);
+  });
+}
+
+/* ────────────────────────────────────────────────
+   LIGHTBOX
+──────────────────────────────────────────────── */
+function openLightbox(idx) {
+  lbIndex = Math.max(0, Math.min(idx, filtered.length - 1));
+  paintLightbox();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function paintLightbox() {
+  const art = filtered[lbIndex];
+  if (!art) return;
+  document.getElementById('lb-img').src   = cdnUrl(art.imagePath);
+  document.getElementById('lb-img').alt   = art.title;
+  document.getElementById('lb-tag').textContent   = art.tag;
+  document.getElementById('lb-title').textContent = art.title;
+  document.getElementById('lb-date').textContent  = '发布于 ' + fmtDate(art.date);
+  document.getElementById('lb-desc').textContent  = art.desc || '暂无描述。';
+  document.getElementById('lb-delete').style.display   = isAdmin ? 'block' : 'none';
+  document.getElementById('lb-delete').dataset.id      = art.id;
+  document.getElementById('lb-delete').dataset.imgpath = art.imagePath || '';
+  document.getElementById('lb-prev').disabled = lbIndex === 0;
+  document.getElementById('lb-next').disabled = lbIndex === filtered.length - 1;
+}
+
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox')) closeLightbox(); });
+document.getElementById('lb-prev').addEventListener('click', () => { if (lbIndex > 0) { lbIndex--; paintLightbox(); } });
+document.getElementById('lb-next').addEventListener('click', () => { if (lbIndex < filtered.length - 1) { lbIndex++; paintLightbox(); } });
+
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape')      closeLightbox();
+  if (e.key === 'ArrowLeft'  && lbIndex > 0)                { lbIndex--; paintLightbox(); }
+  if (e.key === 'ArrowRight' && lbIndex < filtered.length-1){ lbIndex++; paintLightbox(); }
+});
+
+document.getElementById('lb-delete').addEventListener('click', async () => {
+  if (!isAdmin) return;
+  const id      = document.getElementById('lb-delete').dataset.id;
+  const imgPath = document.getElementById('lb-delete').dataset.imgpath;
+  if (!confirm('确定要删除这幅作品吗？')) return;
+
+  document.getElementById('lb-delete').disabled = true;
+  document.getElementById('lb-delete').textContent = '删除中…';
+  try {
+    if (imgPath) {
+      const imgFile = await ghGetFile(imgPath, adminToken);
+      if (imgFile) await ghDeleteFile(imgPath, `remove: delete image ${imgPath}`, imgFile.sha, adminToken);
+    }
+    artworks = artworks.filter(a => a.id !== id);
+    await persistArtworks(adminToken);
+    closeLightbox();
+    applyFilters();
+    toast('作品已删除', 'success');
+  } catch(e) {
+    toast('删除失败：' + e.message, 'error');
+  } finally {
+    document.getElementById('lb-delete').disabled = false;
+    document.getElementById('lb-delete').textContent = '删除此作品';
+  }
+});
+
+/* ────────────────────────────────────────────────
+   UPLOAD
+──────────────────────────────────────────────── */
+let pickedFile    = null;
+let pickedDataUrl = null;
+
+const fileInput  = document.getElementById('file-input');
+const dropZone   = document.getElementById('drop-zone');
+const previewImg = document.getElementById('preview-img');
+const previewWrap= document.getElementById('preview-wrap');
+
+function handlePick(file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('请选择图片文件', 'error'); return; }
+  if (file.size > 20 * 1024 * 1024)   { toast('图片不能超过 20 MB', 'error'); return; }
+  pickedFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    pickedDataUrl = e.target.result;
+    previewImg.src = pickedDataUrl;
+    previewWrap.style.display = 'block';
+    dropZone.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+fileInput.addEventListener('change', e => handlePick(e.target.files[0]));
+dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag');
+  handlePick(e.dataTransfer.files[0]);
+});
+
+document.getElementById('preview-remove').addEventListener('click', () => {
+  pickedFile = null; pickedDataUrl = null;
+  previewImg.src = ''; previewWrap.style.display = 'none';
+  dropZone.style.display = ''; fileInput.value = '';
+});
+
+document.getElementById('upload-btn').addEventListener('click',    () => openModal('upload-modal'));
+document.getElementById('upload-cancel').addEventListener('click', () => closeModal('upload-modal'));
+document.getElementById('upload-close').addEventListener('click',  () => closeModal('upload-modal'));
+
+function resetUploadForm() {
+  pickedFile = null; pickedDataUrl = null;
+  fileInput.value = ''; previewImg.src = '';
+  previewWrap.style.display = 'none'; dropZone.style.display = '';
+  document.getElementById('art-title').value = '';
+  document.getElementById('art-desc').value  = '';
+  document.getElementById('art-tag').value   = '油画';
+  document.getElementById('upload-progress').style.display = 'none';
+  document.getElementById('progress-fill').style.width = '0%';
+}
+
+function setProgress(pct, label) {
+  document.getElementById('upload-progress').style.display = 'block';
+  document.getElementById('progress-fill').style.width = `${pct}%`;
+  document.getElementById('progress-text').textContent = label;
+}
+
+document.getElementById('upload-submit').addEventListener('click', async () => {
+  const title = document.getElementById('art-title').value.trim();
+  const tag   = document.getElementById('art-tag').value;
+  const desc  = document.getElementById('art-desc').value.trim();
+
+  if (!pickedFile)  { toast('请先选择一张图片', 'error'); return; }
+  if (!title)       { toast('请填写作品标题', 'error'); return; }
+
+  const btn = document.getElementById('upload-submit');
+  btn.disabled = true; btn.textContent = '上传中…';
+
+  try {
+    setProgress(15, '读取图片…');
+    const base64raw  = pickedDataUrl.split(',')[1];
+
+    // Sanitize filename
+    const ext      = (pickedFile.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const imgPath  = `images/${safeName}`;
+
+    setProgress(40, '上传图片…');
+    await ghPutFile(imgPath, base64raw, `feat: add artwork "${title}"`, null, adminToken);
+
+    setProgress(75, '更新画廊列表…');
+    const artwork = {
+      id:        `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`,
+      title, tag, desc,
+      date:      Date.now(),
+      imagePath: imgPath,
+    };
+    artworks.unshift(artwork);
+    await persistArtworks(adminToken);
+
+    setProgress(100, '发布成功！');
+    setTimeout(() => {
+      closeModal('upload-modal');
+      resetUploadForm();
+      applyFilters();
+      toast('作品发布成功！', 'success');
+    }, 500);
+
+  } catch(e) {
+    toast('上传失败：' + e.message, 'error');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg> 发布作品`;
+  }
+});
+
+/* ────────────────────────────────────────────────
+   AUTH
+──────────────────────────────────────────────── */
+document.getElementById('admin-btn').addEventListener('click', () => {
+  if (isAdmin) {
+    isAdmin = false; adminToken = '';
+    sessionStorage.removeItem('ag_token');
+    document.getElementById('upload-btn').style.display  = 'none';
+    document.getElementById('admin-badge').style.display = 'none';
+    document.getElementById('admin-btn').textContent = '管理';
+    if (document.getElementById('lightbox').classList.contains('open')) paintLightbox();
+    toast('已退出管理员模式');
+  } else {
+    openModal('auth-modal');
+    setTimeout(() => document.getElementById('admin-token').focus(), 80);
+  }
+});
+
+document.getElementById('auth-submit').addEventListener('click', doLogin);
+document.getElementById('auth-cancel').addEventListener('click', () => closeModal('auth-modal'));
+document.getElementById('auth-close').addEventListener('click',  () => closeModal('auth-modal'));
+document.getElementById('admin-token').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+async function doLogin() {
+  const token = document.getElementById('admin-token').value.trim();
+  if (!token) { toast('请输入 Token', 'error'); return; }
+  const btn = document.getElementById('auth-submit');
+  btn.disabled = true; btn.textContent = '验证中…';
+  try {
+    await ghVerifyToken(token);
+    isAdmin = true; adminToken = token;
+    sessionStorage.setItem('ag_token', token);
+    document.getElementById('admin-token').value = '';
+    document.getElementById('upload-btn').style.display  = '';
+    document.getElementById('admin-badge').style.display = '';
+    document.getElementById('admin-btn').textContent = '退出管理';
+    closeModal('auth-modal');
+    toast('已进入管理员模式', 'success');
+    if (document.getElementById('lightbox').classList.contains('open')) paintLightbox();
+  } catch(e) {
+    toast(e.message, 'error');
+    document.getElementById('admin-token').classList.add('shake');
+    setTimeout(() => document.getElementById('admin-token').classList.remove('shake'), 400);
+  } finally {
+    btn.disabled = false; btn.textContent = '登录';
+  }
+}
+
+/* ────────────────────────────────────────────────
+   SETUP
+──────────────────────────────────────────────── */
+document.getElementById('setup-save').addEventListener('click', () => {
+  const owner  = document.getElementById('cfg-owner').value.trim();
+  const repo   = document.getElementById('cfg-repo').value.trim();
+  const branch = document.getElementById('cfg-branch').value.trim() || 'main';
+  if (!owner || !repo) { toast('用户名和仓库名不能为空', 'error'); return; }
+  CFG = { owner, repo, branch };
+  saveCfg();
+  closeModal('setup-modal');
+  fetchArtworks();
+  toast('配置已保存，正在加载…', 'success');
+});
+
+/* ────────────────────────────────────────────────
+   FILTER CONTROLS
+──────────────────────────────────────────────── */
+document.querySelectorAll('.tag-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTag = btn.dataset.tag;
+    applyFilters();
+  });
+});
+document.getElementById('sort-select').addEventListener('change', e => {
+  currentSort = e.target.value; applyFilters();
+});
+document.getElementById('search-input').addEventListener('input', e => {
+  searchQuery = e.target.value.trim().toLowerCase(); applyFilters();
+});
+
+/* ────────────────────────────────────────────────
+   MODAL HELPERS
+──────────────────────────────────────────────── */
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+['upload-modal','auth-modal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target === document.getElementById(id)) closeModal(id);
+  });
+});
+
+/* ────────────────────────────────────────────────
+   TOAST
+──────────────────────────────────────────────── */
+let toastT;
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `visible${type ? ' '+type : ''}`;
+  clearTimeout(toastT);
+  toastT = setTimeout(() => { el.className = ''; }, 3000);
+}
+
+/* ────────────────────────────────────────────────
+   UTILS
+──────────────────────────────────────────────── */
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(ts) {
+  return new Date(ts).toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' });
+}
+
+/* ────────────────────────────────────────────────
+   INIT
+──────────────────────────────────────────────── */
+loadCfg();
+
+// Restore session if same tab
+const savedTok = sessionStorage.getItem('ag_token');
+if (savedTok) {
+  adminToken = savedTok; isAdmin = true;
+  document.getElementById('upload-btn').style.display  = '';
+  document.getElementById('admin-badge').style.display = '';
+  document.getElementById('admin-btn').textContent     = '退出管理';
+}
+
+if (!cfgReady()) {
+  openModal('setup-modal');
+} else {
+  fetchArtworks();
+}
+</script>
+</body>
+</html>
