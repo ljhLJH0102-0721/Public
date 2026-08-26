@@ -19,7 +19,7 @@
       --radius: 12px;
       --radius-s: 8px;
       --shadow: 0 2px 12px rgba(0,0,0,0.08);
-      --shadow-h: 0 8px 32px rgba(0,0,0,0.14);
+      --shadow-h: 0 8px 24px rgba(0,0,0,0.12);
       --heart: #ff4757;
     }
     html { scroll-behavior: smooth; }
@@ -55,8 +55,11 @@
     .logo {
       font-size: 1.15rem; font-weight: 800; color: var(--accent);
       white-space: nowrap; display: flex; align-items: center; gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.2s;
     }
-    .logo svg { flex-shrink: 0; }
+    .logo:active { opacity: 0.6; }
 
     .search-wrap {
       flex: 1; max-width: 420px;
@@ -187,13 +190,18 @@
       background: var(--surface);
       border: 1px solid var(--border);
       cursor: pointer;
-      transition: transform .22s, box-shadow .22s;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      will-change: transform;
+      backface-visibility: hidden;
       position: relative;
     }
-    .artwork-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-h); }
+    .artwork-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-h);
+    }
     .card-img-wrap { overflow: hidden; background: #f0f0f0; position: relative; }
-    .card-img-wrap img { width: 100%; display: block; aspect-ratio: 1 / 1; object-fit: cover; transition: transform .3s; }
-    .artwork-card:hover .card-img-wrap img { transform: scale(1.03); }
+    .card-img-wrap img { width: 100%; display: block; aspect-ratio: 1 / 1; object-fit: cover; transition: filter 0.15s; }
+    .artwork-card:hover .card-img-wrap img { filter: brightness(1.02); }
 
     .card-info { padding: 10px 12px 12px; display: flex; justify-content: space-between; align-items: center; }
     .card-left { flex: 1; min-width: 0; }
@@ -477,7 +485,7 @@
 
   <!-- HEADER -->
   <header id="main-header">
-    <div class="logo">
+    <div class="logo" id="logo">
       <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="#0096fa"/><path d="M7 21 L11 11 L14 17 L17 13 L21 21" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="9" r="2.5" fill="white"/></svg>
       <span>ArtGallery</span>
     </div>
@@ -798,32 +806,40 @@ let isLikedView = false;
 
 async function fetchArtworks() {
   showSkeletons();
+
+  // 先从缓存读取（5分钟内有效）
+  const cached = localStorage.getItem('artworks_cache');
+  if (cached) {
+    try {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < 5 * 60 * 1000) {
+        artworks = data;
+        applyFilters();
+        renderRecentStrip();
+        renderLikedStrip();
+      }
+    } catch(e) {}
+  }
+
   try {
     const rawUrl = `https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/artworks.json`;
     const res = await fetch(rawUrl, { cache: 'no-store' });
+    let data;
     if (res.ok) {
-      artworks = await res.json();
+      data = await res.json();
     } else {
       const cdnFallback = `https://cdn.jsdelivr.net/gh/${CFG.owner}/${CFG.repo}@${CFG.branch}/artworks.json?t=${Date.now()}`;
       const res2 = await fetch(cdnFallback);
-      if (res2.ok) {
-        artworks = await res2.json();
-      } else {
-        const file = await ghGetFile('artworks.json', null);
-        if (file) {
-          artworks = JSON.parse(atob(file.content.replace(/\s/g, '')));
-          artworksSha = file.sha;
-        } else {
-          artworks = [];
-        }
-      }
+      data = res2.ok ? await res2.json() : [];
     }
+    artworks = data;
+    localStorage.setItem('artworks_cache', JSON.stringify({ data, timestamp: Date.now() }));
+    applyFilters();
+    renderRecentStrip();
+    renderLikedStrip();
   } catch {
-    artworks = [];
+    if (!artworks.length) { artworks = []; applyFilters(); }
   }
-  applyFilters();
-  renderRecentStrip();
-  renderLikedStrip();
 }
 
 async function persistArtworks(token) {
@@ -1003,38 +1019,38 @@ function closeDetail() {
 }
 
 // ================================================================
-// Giscus 评论区加载（使用 term 映射，不改变路径）
+// Giscus 评论区加载（延迟加载，不阻塞渲染）
 // ================================================================
 function loadGiscus(artId) {
   const container = document.getElementById('giscus-container');
   container.innerHTML = '';
 
-  const term = `gallery-${artId}`;
-
-  const script = document.createElement('script');
-  script.src = 'https://giscus.app/client.js';
-  script.setAttribute('data-repo', GISCUS_CONFIG.repo);
-  script.setAttribute('data-repo-id', GISCUS_CONFIG.repoId);
-  script.setAttribute('data-category', GISCUS_CONFIG.category);
-  script.setAttribute('data-category-id', GISCUS_CONFIG.categoryId);
-  script.setAttribute('data-mapping', 'term');
-  script.setAttribute('data-term', term);
-  script.setAttribute('data-strict', GISCUS_CONFIG.strict);
-  script.setAttribute('data-reactions-enabled', GISCUS_CONFIG.reactionsEnabled);
-  script.setAttribute('data-emit-metadata', GISCUS_CONFIG.emitMetadata);
-  script.setAttribute('data-input-position', GISCUS_CONFIG.inputPosition);
-  script.setAttribute('data-theme', GISCUS_CONFIG.theme);
-  script.setAttribute('data-lang', GISCUS_CONFIG.lang);
-  script.setAttribute('data-loading', GISCUS_CONFIG.loading);
-  script.crossOrigin = 'anonymous';
-  script.async = true;
-
-  container.appendChild(script);
-
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'https://giscus.app/default.css';
-  container.appendChild(link);
+  // 延迟 300ms 加载，先让页面渲染出来
+  setTimeout(() => {
+    const term = `gallery-${artId}`;
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', GISCUS_CONFIG.repo);
+    script.setAttribute('data-repo-id', GISCUS_CONFIG.repoId);
+    script.setAttribute('data-category', GISCUS_CONFIG.category);
+    script.setAttribute('data-category-id', GISCUS_CONFIG.categoryId);
+    script.setAttribute('data-mapping', 'term');
+    script.setAttribute('data-term', term);
+    script.setAttribute('data-strict', GISCUS_CONFIG.strict);
+    script.setAttribute('data-reactions-enabled', GISCUS_CONFIG.reactionsEnabled);
+    script.setAttribute('data-emit-metadata', GISCUS_CONFIG.emitMetadata);
+    script.setAttribute('data-input-position', GISCUS_CONFIG.inputPosition);
+    script.setAttribute('data-theme', GISCUS_CONFIG.theme);
+    script.setAttribute('data-lang', GISCUS_CONFIG.lang);
+    script.setAttribute('data-loading', GISCUS_CONFIG.loading);
+    script.crossOrigin = 'anonymous';
+    script.async = true;
+    container.appendChild(script);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://giscus.app/default.css';
+    container.appendChild(link);
+  }, 300);
 }
 
 // ================================================================
@@ -1074,6 +1090,21 @@ document.getElementById('detail-delete').addEventListener('click', async functio
     renderLikedStrip();
     toast('已删除');
   } catch(e) { toast('删除失败'); }
+});
+
+// ================================================================
+// 双击标题返回主页
+// ================================================================
+document.querySelector('.logo').addEventListener('dblclick', function() {
+  if (document.getElementById('detail-view').classList.contains('open')) {
+    closeDetail();
+  }
+  if (isLikedView) {
+    exitLikedView();
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  fetchArtworks();
+  toast('已返回首页');
 });
 
 // ================================================================
