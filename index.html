@@ -1245,7 +1245,7 @@
       try {
         await userbase.init({ appId: USERBASE_APP_ID });
 
-        // 只用 getCurrentUser，没有不存在的 getUser
+        // 只用 getCurrentUser，不用不存在的 getUser
         const user = await userbase.getCurrentUser();
 
         if (user) {
