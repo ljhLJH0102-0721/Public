@@ -8,7 +8,7 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#f8f8f8;--surface:#fff;--border:#e5e5e5;--border2:#d0d0d0;--text:#1a1a1a;--text2:#555;--text3:#999;--accent:#6a4e9c;--accent-h:#5a3e8c;--accent-bg:#f0ecf5;--radius:12px;--radius-s:8px;--shadow:0 2px 12px rgba(0,0,0,0.08);--shadow-h:0 8px 24px rgba(0,0,0,0.12);--heart:#ff4757;--danger:#e74c3c;--announce-bg:#f0ecf5;--announce-text:#3d2a5c}
     html{scroll-behavior:smooth}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s}
     button{cursor:pointer;border:none;background:none;font-family:inherit}
     a{text-decoration:none;color:inherit}
     img{display:block}
@@ -38,6 +38,7 @@
     #suggestions .sug-item{padding:8px 14px;cursor:pointer;font-size:.85rem;color:var(--text);border-bottom:1px solid var(--bg)}
     #suggestions .sug-item:hover{background:var(--bg)}
     #suggestions .sug-item:last-child{border-bottom:none}
+    .header-actions{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
     .header-right{margin-left:auto;display:flex;align-items:center;gap:6px}
     .btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:24px;font-size:.8rem;font-weight:600;transition:all .18s;white-space:nowrap}
     .btn-primary{background:var(--accent);color:#fff}
@@ -59,6 +60,35 @@
     .user-dropdown-item.danger{color:var(--danger)}
     .user-dropdown-item.danger:hover{background:#fef2f2}
     .user-avatar-wrap{position:relative}
+
+    /* 热度榜按钮和浮层 */
+    .hot-btn{background:var(--accent);color:#fff;border-radius:20px;padding:4px 14px;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:4px;cursor:pointer;transition:background .2s}
+    .hot-btn:hover{background:var(--accent-h)}
+    .hot-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-h);min-width:240px;z-index:401;overflow:hidden;max-height:400px;overflow-y:auto}
+    .hot-dropdown.open{display:block}
+    .hot-dropdown .hd-title{padding:12px 16px;font-weight:700;border-bottom:1px solid var(--border);background:var(--bg);font-size:.9rem;color:var(--text)}
+    .hot-item{display:flex;align-items:center;padding:8px 16px;gap:10px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+    .hot-item:hover{background:var(--bg)}
+    .hot-item .rank{width:24px;font-weight:700;color:var(--text3);font-size:.85rem;text-align:center}
+    .hot-item .rank.top1{color:#ffd700}
+    .hot-item .rank.top2{color:#c0c0c0}
+    .hot-item .rank.top3{color:#cd7f32}
+    .hot-item .info{flex:1;min-width:0}
+    .hot-item .info .title{font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hot-item .info .meta{font-size:.7rem;color:var(--text3)}
+    .hot-item .likes{font-size:.8rem;color:var(--heart);font-weight:600}
+    .hot-empty{padding:20px;text-align:center;color:var(--text3)}
+    .hot-wrap{position:relative;display:inline-block}
+
+    /* 背景设置模态框 */
+    .bg-options{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+    .bg-preset{width:44px;height:44px;border-radius:50%;border:2px solid var(--border);cursor:pointer;transition:transform .2s;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.2)}
+    .bg-preset:hover{transform:scale(1.08)}
+    .bg-preset.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+    .bg-custom-wrap{display:flex;align-items:center;gap:10px;margin-top:8px}
+    .bg-custom-wrap label{font-size:.8rem;color:var(--text2);font-weight:500}
+    .bg-custom-wrap input[type="color"]{width:44px;height:44px;border:2px solid var(--border);border-radius:50%;cursor:pointer;padding:2px;background:none}
+
     .tags-bar{background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;padding:0 16px;height:44px;overflow-x:auto;transition:transform .3s,height .3s,padding .3s}
     .tags-bar.hidden{transform:translateY(-100%);pointer-events:none;height:0;padding:0;border:none;overflow:hidden}
     .tags-bar::-webkit-scrollbar{display:none}
@@ -195,7 +225,7 @@
     .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .3s}
     .progress-text{font-size:.75rem;color:var(--text3);text-align:center;margin-top:4px}
     .admin-badge{display:inline-flex;align-items:center;gap:4px;background:#fff3cd;color:#856404;border:1px solid #ffc107;font-size:.7rem;font-weight:600;padding:2px 10px;border-radius:12px}
-    @media(max-width:480px){.header-right .btn span{display:none}#gallery{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}.card-info{padding:8px 10px}.detail-body{padding:12px}.detail-title-text{font-size:1.1rem}#announcement-bar{font-size:.75rem;padding:4px 12px}.announce-actions input{width:160px}}
+    @media(max-width:480px){.header-right .btn span{display:none}#gallery{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}.card-info{padding:8px 10px}.detail-body{padding:12px}.detail-title-text{font-size:1.1rem}#announcement-bar{font-size:.75rem;padding:4px 12px}.announce-actions input{width:160px}.header-actions .hot-btn span{display:none}}
   </style>
 </head>
 <body>
@@ -231,23 +261,34 @@
         <input type="text" id="search-input" placeholder="搜索作品…" autocomplete="off" />
         <div id="suggestions"></div>
       </div>
-      <div class="header-right">
-        <span class="admin-badge" id="admin-badge" style="display:none">管理</span>
-        <button class="btn btn-outline" id="login-btn">登录</button>
-        <div class="user-avatar-wrap" id="user-avatar-wrap" style="display:none">
-          <div class="user-avatar-btn" id="user-avatar-btn" title="我的账号"></div>
-          <div class="user-dropdown" id="user-dropdown">
-            <div class="user-dropdown-header">
-              <div class="ud-name" id="ud-name"></div>
-              <div class="ud-email" id="ud-email"></div>
-            </div>
-            <div class="user-dropdown-item" id="dd-liked">❤️ 我喜欢的</div>
-            <div class="user-dropdown-item" id="dd-change-nick">✏️ 修改昵称</div>
-            <div class="user-dropdown-item danger" id="dd-logout">退出登录</div>
+      <div class="header-actions">
+        <!-- 热度榜按钮 -->
+        <div class="hot-wrap">
+          <div class="hot-btn" id="hot-btn">🔥 <span>热度榜</span></div>
+          <div class="hot-dropdown" id="hot-dropdown">
+            <div class="hd-title">🔥 热度榜</div>
+            <div id="hot-list"></div>
           </div>
         </div>
-        <button class="btn btn-ghost" id="admin-btn" style="font-size:0.72rem;color:var(--text3);">管理员</button>
-        <button class="btn btn-primary" id="upload-btn" style="display:none">＋ 上传</button>
+        <div class="header-right">
+          <span class="admin-badge" id="admin-badge" style="display:none">管理</span>
+          <button class="btn btn-outline" id="login-btn">登录</button>
+          <div class="user-avatar-wrap" id="user-avatar-wrap" style="display:none">
+            <div class="user-avatar-btn" id="user-avatar-btn" title="我的账号"></div>
+            <div class="user-dropdown" id="user-dropdown">
+              <div class="user-dropdown-header">
+                <div class="ud-name" id="ud-name"></div>
+                <div class="ud-email" id="ud-email"></div>
+              </div>
+              <div class="user-dropdown-item" id="dd-liked">❤️ 我喜欢的</div>
+              <div class="user-dropdown-item" id="dd-bg">🎨 更换背景</div>
+              <div class="user-dropdown-item" id="dd-change-nick">✏️ 修改昵称</div>
+              <div class="user-dropdown-item danger" id="dd-logout">退出登录</div>
+            </div>
+          </div>
+          <button class="btn btn-ghost" id="admin-btn" style="font-size:0.72rem;color:var(--text3);">管理员</button>
+          <button class="btn btn-primary" id="upload-btn" style="display:none">＋ 上传</button>
+        </div>
       </div>
     </header>
     <div class="tags-bar" id="tags-bar">
@@ -364,6 +405,29 @@
       </div>
     </div>
   </div>
+  <!-- 背景设置模态框 -->
+  <div class="modal-backdrop" id="bg-modal">
+    <div class="modal">
+      <div class="modal-header"><span class="modal-title">🎨 更换背景</span><button class="modal-x" id="bg-close">✕</button></div>
+      <p style="font-size:.85rem;color:var(--text2);margin-bottom:12px;">选择预设背景或自定义颜色</p>
+      <div class="bg-options" id="bg-options">
+        <div class="bg-preset" style="background:#f5f3f0;" data-color="#f5f3f0">☀️</div>
+        <div class="bg-preset" style="background:#1e1e1e;color:#fff;" data-color="#1e1e1e">🌙</div>
+        <div class="bg-preset" style="background:#2b2b2b;color:#fff;" data-color="#2b2b2b">🖤</div>
+        <div class="bg-preset" style="background:#faf0e6;" data-color="#faf0e6">📜</div>
+        <div class="bg-preset" style="background:#d4e9ff;" data-color="#d4e9ff">💧</div>
+        <div class="bg-preset" style="background:#fce4d6;" data-color="#fce4d6">🌸</div>
+        <div class="bg-preset" style="background:#e6d5c9;" data-color="#e6d5c9">🪵</div>
+      </div>
+      <div class="bg-custom-wrap">
+        <label>自定义</label>
+        <input type="color" id="bg-custom-color" value="#f5f3f0" />
+      </div>
+      <div class="modal-footer" style="border:none;padding:0;margin-top:16px;">
+        <button class="btn btn-ghost" id="bg-reset">重置默认</button>
+      </div>
+    </div>
+  </div>
   <div class="modal-backdrop" id="nick-modal">
     <div class="modal">
       <div class="modal-header"><span class="modal-title">修改昵称</span><button class="modal-x" id="nick-close">✕</button></div>
@@ -389,7 +453,6 @@
         const params=new URLSearchParams();
         if(select)params.set('select',select);
         filters.forEach(f=>params.set(f[0],f[1]));
-        // 移除错误地将 Prefer 添加到 URL 参数中的代码
         const headers={apikey:SUPA_ANON,'Content-Type':'application/json','Authorization':'Bearer '+_session.access_token};
         if(returning)headers['Prefer']='return=representation';
         if([...params].length)url+='?'+params.toString();
@@ -442,6 +505,22 @@
     function renderCommentSection(artworkId){const inputArea=document.getElementById('comment-input-area');const listEl=document.getElementById('comment-list');const loadingEl=document.getElementById('comment-loading');if(supa.user){inputArea.innerHTML='<div class="comment-input-wrap"><textarea id="new-comment-text" placeholder="写下你的想法…" rows="2" maxlength="1000"></textarea><button class="btn btn-primary submit-comment" id="submit-comment-btn">发送</button></div>';document.getElementById('submit-comment-btn').addEventListener('click',async()=>{const ta=document.getElementById('new-comment-text');const content=ta.value.trim();if(!content){toast('请输入评论内容');return}const btn=document.getElementById('submit-comment-btn');btn.disabled=true;btn.textContent='发送中…';try{await supa.addComment(supa.user.id,artworkId,content);ta.value='';toast('评论成功','success');await loadComments(artworkId)}catch(e){if(e.message==='SESSION_EXPIRED'){toast('登录已过期，请重新登录','error');supa.saveSession(null);updateUserUI();renderCommentSection(artworkId)}else{toast('评论失败：'+e.message,'error')}}finally{btn.disabled=false;btn.textContent='发送'}})}else{inputArea.innerHTML='<p class="comment-login-tip"><a id="comment-login-link">登录</a> 后参与评论</p>';document.getElementById('comment-login-link').addEventListener('click',openUserAuthModal)}loadComments(artworkId)}
     async function loadComments(artworkId){const listEl=document.getElementById('comment-list');const loadingEl=document.getElementById('comment-loading');loadingEl.style.display='block';listEl.innerHTML='';try{const comments=await supa.getComments(artworkId);loadingEl.style.display='none';if(!comments.length){listEl.innerHTML='<div class="comment-empty">还没有评论，快来第一个发言吧 😊</div>';return}listEl.innerHTML='';comments.forEach(c=>{const nickname=c.profiles?.nickname||'匿名用户';const initial=[...nickname][0]||'?';const canDel=isAdmin||(supa.user&&supa.user.id===c.user_id);const item=document.createElement('div');item.className='comment-item';item.innerHTML='<div class="comment-avatar" style="background:'+strColor(c.user_id)+'">'+escHtml(initial)+'</div><div class="comment-body"><div class="comment-header"><span class="comment-name">'+escHtml(nickname)+'</span><span class="comment-time">'+fmtDate(new Date(c.created_at).getTime())+'</span>'+(canDel?'<span class="comment-del" data-id="'+c.id+'">删除</span>':'')+'</div><div class="comment-text">'+escHtml(c.content)+'</div></div>';if(canDel){item.querySelector('.comment-del').addEventListener('click',async()=>{if(!confirm('删除此评论？'))return;try{await supa.deleteComment(c.id);toast('已删除');await loadComments(artworkId)}catch{toast('删除失败','error')}})}listEl.appendChild(item)})}catch(e){loadingEl.style.display='none';if(e.message==='SESSION_EXPIRED'){supa.saveSession(null);updateUserUI();listEl.innerHTML='<div class="comment-empty">登录已过期，请<a onclick="openUserAuthModal()" style="color:var(--accent);cursor:pointer;">重新登录</a></div>';renderCommentSection(artworkId)}else{listEl.innerHTML='<div class="comment-empty">评论加载失败：'+escHtml(e.message)+'</div>'}}}
     function strColor(str){const colors=['#6a4e9c','#e67e22','#27ae60','#e74c3c','#2980b9','#8e44ad','#16a085','#d35400'];let h=0;for(const c of(str||''))h=(h*31+c.charCodeAt(0))&0xffffffff;return colors[Math.abs(h)%colors.length]}
+    // 热度榜
+    function renderHotList(){const container=document.getElementById('hot-list');const sorted=artworks.slice().sort((a,b)=>(b.likes?.length||0)-(a.likes?.length||0)).slice(0,10);if(!sorted.length){container.innerHTML='<div class="hot-empty">暂无作品</div>';return}container.innerHTML='';sorted.forEach((art,index)=>{const rank=index+1;const likeCount=art.likes?.length||0;const rankClass=rank===1?'top1':rank===2?'top2':rank===3?'top3':'';const div=document.createElement('div');div.className='hot-item';div.innerHTML='<div class="rank '+rankClass+'">#'+rank+'</div><div class="info"><div class="title">'+escHtml(art.title)+'</div><div class="meta">'+escHtml(art.tag)+'</div></div><div class="likes">❤️ '+likeCount+'</div>';div.addEventListener('click',()=>{const idx=artworks.indexOf(art);if(idx!==-1){openDetail(idx);document.getElementById('hot-dropdown').classList.remove('open');}});container.appendChild(div)})}
+    document.getElementById('hot-btn').addEventListener('click',function(e){e.stopPropagation();renderHotList();document.getElementById('hot-dropdown').classList.toggle('open')});
+    document.addEventListener('click',function(e){if(!e.target.closest('.hot-wrap')){document.getElementById('hot-dropdown').classList.remove('open')}});
+    // 背景颜色设置
+    const BG_STORAGE_KEY='bg_color';
+    function loadBg(){try{const color=localStorage.getItem(BG_STORAGE_KEY);if(color){document.body.style.background=color;document.getElementById('bg-custom-color').value=color;document.querySelectorAll('.bg-preset').forEach(el=>el.classList.toggle('active',el.dataset.color===color))}}catch{}}
+    function saveBg(color){localStorage.setItem(BG_STORAGE_KEY,color);document.body.style.background=color;document.getElementById('bg-custom-color').value=color;document.querySelectorAll('.bg-preset').forEach(el=>el.classList.toggle('active',el.dataset.color===color))}
+    document.querySelectorAll('.bg-preset').forEach(el=>{el.addEventListener('click',function(){saveBg(this.dataset.color)})});
+    document.getElementById('bg-custom-color').addEventListener('input',function(){saveBg(this.value)});
+    document.getElementById('bg-reset').addEventListener('click',function(){localStorage.removeItem(BG_STORAGE_KEY);document.body.style.background='';document.getElementById('bg-custom-color').value='#f5f3f0';document.querySelectorAll('.bg-preset').forEach(el=>el.classList.remove('active'));closeModal('bg-modal');toast('已恢复默认背景')});
+    // 打开背景设置
+    document.getElementById('dd-bg').addEventListener('click',function(){document.getElementById('user-dropdown').classList.remove('open');openModal('bg-modal')});
+    document.getElementById('bg-close').addEventListener('click',function(){closeModal('bg-modal')});
+    document.getElementById('bg-modal').addEventListener('click',function(e){if(e.target===this)closeModal('bg-modal')});
+    // 其他函数...
     let pickedFile=null,pickedDataUrl=null;const fileInput=document.getElementById('file-input');const dropZone=document.getElementById('drop-zone');const previewImg=document.getElementById('preview-img');const previewWrap=document.getElementById('preview-wrap');
     function handlePick(file){if(!file||!file.type.startsWith('image/'))return toast('请选图片');if(file.size>100*1024*1024)return toast('图片最大 100MB');pickedFile=file;const reader=new FileReader();reader.onload=e=>{pickedDataUrl=e.target.result;previewImg.src=pickedDataUrl;previewWrap.style.display='block';dropZone.style.display='none'};reader.readAsDataURL(file)}
     fileInput.addEventListener('change',e=>handlePick(e.target.files[0]));
@@ -490,11 +569,11 @@
     document.querySelector('.logo').addEventListener('dblclick',()=>{document.getElementById('search-input').value='';searchQuery='';document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('active'));document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');currentTag='all';if(document.getElementById('detail-view').classList.contains('open'))closeDetail();if(isLikedView)exitLikedView();fetchArtworks();window.scrollTo({top:0,behavior:'smooth'});toast('已返回首页')});
     function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden'}
     function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow=''}
-    ['upload-modal','auth-modal','user-auth-modal','nick-modal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))closeModal(id)})});
+    ['upload-modal','auth-modal','user-auth-modal','nick-modal','bg-modal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))closeModal(id)})});
     let toastTimer;function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show'+(type?' '+type:'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.className='toast',2500)}
     function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
     function fmtDate(ts){return new Date(ts).toLocaleDateString('zh-CN',{year:'numeric',month:'short',day:'numeric'})}
-    (async()=>{const savedToken=sessionStorage.getItem('ag_token');if(savedToken){adminToken=savedToken;isAdmin=true;document.getElementById('upload-btn').style.display='';document.getElementById('admin-badge').style.display='';document.getElementById('admin-btn').textContent='退出管理';document.getElementById('announce-actions').style.display='flex';document.getElementById('announcement-bar').classList.add('admin-mode')}if(supa.loadSession()){try{await onUserLoggedIn()}catch{supa.saveSession(null);updateUserUI()}}else{updateUserUI()}setupSearchSuggestions();fetchArtworks();fetchAnnouncements()})();
+    (async()=>{const savedToken=sessionStorage.getItem('ag_token');if(savedToken){adminToken=savedToken;isAdmin=true;document.getElementById('upload-btn').style.display='';document.getElementById('admin-badge').style.display='';document.getElementById('admin-btn').textContent='退出管理';document.getElementById('announce-actions').style.display='flex';document.getElementById('announcement-bar').classList.add('admin-mode')}if(supa.loadSession()){try{await onUserLoggedIn()}catch{supa.saveSession(null);updateUserUI()}}else{updateUserUI()}loadBg();setupSearchSuggestions();fetchArtworks();fetchAnnouncements()})();
   </script>
 </body>
 </html>
