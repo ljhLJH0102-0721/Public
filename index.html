@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <title>鸾尾花论坛 · 画作展示</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     :root {
       --bg: #f8f8f8;
       --surface: #ffffff;
@@ -18,13 +23,15 @@
       --accent-h: #5a3e8c;
       --radius: 12px;
       --radius-s: 8px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.08);
-      --shadow-h: 0 8px 24px rgba(0,0,0,0.12);
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      --shadow-h: 0 8px 24px rgba(0, 0, 0, 0.12);
       --heart: #ff4757;
       --announce-bg: #f0ecf5;
       --announce-text: #3d2a5c;
     }
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
       background: var(--bg);
@@ -33,11 +40,20 @@
       margin: 0;
       padding: 0;
     }
-    button { cursor: pointer; border: none; background: none; font-family: inherit; }
-    a { text-decoration: none; color: inherit; }
-    img { display: block; }
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    img {
+      display: block;
+    }
 
-    /* ----- 公告栏（顶栏） ----- */
     #announcement-bar {
       background: var(--announce-bg);
       color: var(--announce-text);
@@ -62,7 +78,7 @@
     #announcement-bar .announce-text span {
       padding: 2px 8px;
       border-radius: 12px;
-      background: rgba(106,78,156,0.12);
+      background: rgba(106, 78, 156, 0.12);
       font-size: 0.8rem;
     }
     #announcement-bar .announce-text .ann-item {
@@ -77,8 +93,12 @@
       padding: 0 4px;
       display: none;
     }
-    #announcement-bar .announce-text .ann-item .del-ann:hover { text-decoration: underline; }
-    .admin-mode .announce-text .ann-item .del-ann { display: inline-block; }
+    #announcement-bar .announce-text .ann-item .del-ann:hover {
+      text-decoration: underline;
+    }
+    .admin-mode .announce-text .ann-item .del-ann {
+      display: inline-block;
+    }
     .announce-actions {
       display: flex;
       gap: 6px;
@@ -95,7 +115,9 @@
       width: 240px;
       min-width: 120px;
     }
-    .announce-actions input:focus { border-color: var(--accent); }
+    .announce-actions input:focus {
+      border-color: var(--accent);
+    }
     .announce-actions .btn-sm {
       padding: 2px 12px;
       border-radius: 16px;
@@ -104,16 +126,25 @@
       color: #fff;
       font-weight: 600;
     }
-    .announce-actions .btn-sm:hover { background: var(--accent-h); }
-    .announce-empty { color: var(--text3); font-size: 0.8rem; }
+    .announce-actions .btn-sm:hover {
+      background: var(--accent-h);
+    }
+    .announce-empty {
+      color: var(--text3);
+      font-size: 0.8rem;
+    }
 
-    /* ----- 顶部导航 ----- */
     header {
-      position: sticky; top: 0; z-index: 200;
-      background: rgba(255,255,255,0.92);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; padding: 0 16px; gap: 12px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
       height: 56px;
       transition: transform 0.3s;
     }
@@ -125,29 +156,56 @@
       overflow: hidden;
     }
     .logo {
-      font-size: 1.15rem; font-weight: 700; color: var(--accent);
-      white-space: nowrap; display: flex; align-items: center; gap: 8px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       cursor: pointer;
       user-select: none;
       transition: opacity 0.2s;
     }
-    .logo:active { opacity: 0.6; }
-    .logo svg { flex-shrink: 0; width: 28px; height: 28px; }
+    .logo:active {
+      opacity: 0.6;
+    }
+    .logo svg {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+    }
 
     .search-wrap {
-      flex: 1; max-width: 420px;
-      display: flex; align-items: center;
-      background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: 24px; padding: 0 14px; gap: 6px;
+      flex: 1;
+      max-width: 420px;
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 0 14px;
+      gap: 6px;
       transition: border-color .2s;
       position: relative;
     }
-    .search-wrap:focus-within { border-color: var(--accent); background: #fff; }
-    .search-wrap input {
-      flex: 1; border: none; background: transparent; font-size: 0.85rem;
-      color: var(--text); outline: none; padding: 6px 0; font-family: inherit;
+    .search-wrap:focus-within {
+      border-color: var(--accent);
+      background: #fff;
     }
-    .search-wrap input::placeholder { color: var(--text3); }
+    .search-wrap input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 0.85rem;
+      color: var(--text);
+      outline: none;
+      padding: 6px 0;
+      font-family: inherit;
+    }
+    .search-wrap input::placeholder {
+      color: var(--text3);
+    }
 
     #suggestions {
       position: absolute;
@@ -170,27 +228,63 @@
       color: var(--text);
       border-bottom: 1px solid var(--bg);
     }
-    #suggestions .sug-item:hover { background: var(--bg); }
-    #suggestions .sug-item:last-child { border-bottom: none; }
+    #suggestions .sug-item:hover {
+      background: var(--bg);
+    }
+    #suggestions .sug-item:last-child {
+      border-bottom: none;
+    }
 
-    .header-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     .btn {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 6px 14px; border-radius: 24px; font-size: 0.8rem; font-weight: 600;
-      transition: all .18s; white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 14px;
+      border-radius: 24px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all .18s;
+      white-space: nowrap;
     }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: var(--accent-h); transform: translateY(-1px); }
-    .btn-ghost { color: var(--text2); padding: 6px 10px; border-radius: var(--radius-s); }
-    .btn-ghost:hover { background: var(--bg); color: var(--text); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--accent-h);
+      transform: translateY(-1px);
+    }
+    .btn-ghost {
+      color: var(--text2);
+      padding: 6px 10px;
+      border-radius: var(--radius-s);
+    }
+    .btn-ghost:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
 
-    /* ----- 标签栏 ----- */
     .tags-bar {
-      background: #fff; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 6px;
-      padding: 0 16px; height: 44px; overflow-x: auto;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 16px;
+      height: 44px;
+      overflow-x: auto;
       transition: transform 0.3s, height 0.3s, padding 0.3s;
     }
     .tags-bar.hidden {
@@ -201,22 +295,43 @@
       border: none;
       overflow: hidden;
     }
-    .tags-bar::-webkit-scrollbar { display: none; }
     .tag-pill {
-      flex-shrink: 0; padding: 4px 14px; border-radius: 24px; font-size: 0.78rem; font-weight: 500;
-      border: 1.5px solid var(--border); color: var(--text2); background: #fff; cursor: pointer;
-      transition: all .18s; white-space: nowrap;
+      flex-shrink: 0;
+      padding: 4px 14px;
+      border-radius: 24px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      color: var(--text2);
+      background: #fff;
+      cursor: pointer;
+      transition: all .18s;
+      white-space: nowrap;
     }
-    .tag-pill:hover { border-color: var(--accent); color: var(--accent); }
-    .tag-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .tag-pill:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .tag-pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
 
     .sort-select {
-      margin-left: auto; flex-shrink: 0; border: 1.5px solid var(--border);
-      border-radius: var(--radius-s); padding: 4px 8px; font-size: 0.78rem;
-      color: var(--text2); background: #fff; font-family: inherit; cursor: pointer; outline: none;
+      margin-left: auto;
+      flex-shrink: 0;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-s);
+      padding: 4px 8px;
+      font-size: 0.78rem;
+      color: var(--text2);
+      background: #fff;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
     }
 
-    /* ----- 视图返回栏（“我喜欢”独立页面时显示） ----- */
     .view-back-bar {
       display: none;
       padding: 12px 16px;
@@ -228,7 +343,9 @@
       top: 0;
       z-index: 150;
     }
-    .view-back-bar.show { display: flex; }
+    .view-back-bar.show {
+      display: flex;
+    }
     .view-back-bar .back-btn {
       font-size: 1.1rem;
       color: var(--accent);
@@ -238,24 +355,35 @@
       align-items: center;
       gap: 6px;
     }
-    .view-back-bar .back-btn:hover { text-decoration: underline; }
+    .view-back-bar .back-btn:hover {
+      text-decoration: underline;
+    }
     .view-back-bar .view-title {
       font-size: 0.95rem;
       font-weight: 700;
       color: var(--text);
     }
 
-    /* ----- 主视图 ----- */
-    #main-view { display: block; }
-    #main-view.hidden { display: none; }
+    #main-view {
+      display: block;
+    }
+    #main-view.hidden {
+      display: none;
+    }
 
-    #gallery-wrap { padding: 16px; }
+    #gallery-wrap {
+      padding: 16px;
+    }
     #gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
       gap: 14px;
     }
-    @media (min-width: 700px) { #gallery { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); } }
+    @media (min-width: 700px) {
+      #gallery {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+    }
 
     .artwork-card {
       border-radius: var(--radius);
@@ -272,46 +400,131 @@
       transform: translateY(-3px);
       box-shadow: var(--shadow-h);
     }
-    .card-img-wrap { overflow: hidden; background: #f0f0f0; position: relative; }
-    .card-img-wrap img { width: 100%; display: block; aspect-ratio: 1 / 1; object-fit: cover; transition: filter 0.15s; }
-    .artwork-card:hover .card-img-wrap img { filter: brightness(1.02); }
+    .card-img-wrap {
+      overflow: hidden;
+      background: #f0f0f0;
+      position: relative;
+    }
+    .card-img-wrap img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      transition: filter 0.15s;
+    }
+    .artwork-card:hover .card-img-wrap img {
+      filter: brightness(1.02);
+    }
 
-    .card-info { padding: 10px 12px 12px; display: flex; justify-content: space-between; align-items: center; }
-    .card-left { flex: 1; min-width: 0; }
-    .card-title { font-size: 0.85rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .card-meta { font-size: 0.7rem; color: var(--text3); display: flex; gap: 8px; align-items: center; }
+    .card-info {
+      padding: 10px 12px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-left {
+      flex: 1;
+      min-width: 0;
+    }
+    .card-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-meta {
+      font-size: 0.7rem;
+      color: var(--text3);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
 
     .heart-btn {
-      background: none; border: none; font-size: 1.2rem; cursor: pointer;
-      transition: transform .2s; padding: 4px; line-height: 1; flex-shrink: 0;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform .2s;
+      padding: 4px;
+      line-height: 1;
+      flex-shrink: 0;
       color: #ccc;
-      display: flex; align-items: center; gap: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
-    .heart-btn.liked { color: var(--heart); }
-    .heart-btn:active { transform: scale(0.85); }
-    .heart-count { font-size: 0.75rem; color: var(--text3); font-weight: 500; }
+    .heart-btn.liked {
+      color: var(--heart);
+    }
+    .heart-btn:active {
+      transform: scale(0.85);
+    }
+    .heart-count {
+      font-size: 0.75rem;
+      color: var(--text3);
+      font-weight: 500;
+    }
 
     .card-tag {
-      position: absolute; top: 8px; left: 8px;
-      background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
-      color: #fff; font-size: 0.6rem; padding: 2px 8px; border-radius: 10px;
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      font-size: 0.6rem;
+      padding: 2px 8px;
+      border-radius: 10px;
       letter-spacing: 0.04em;
-      border: 1px solid rgba(255,255,255,0.15);
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
-    .empty { text-align: center; padding: 60px 20px; color: var(--text3); grid-column: 1 / -1; }
-    .empty .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text3);
+      grid-column: 1 / -1;
+    }
+    .empty .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
     .skeleton-card {
-      border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
       background: #fff;
     }
-    .skeleton-img { height: 170px; background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
-    .skeleton-body { padding: 10px 12px; }
-    .skeleton-line { height: 12px; border-radius: 6px; background: #f0f0f0; margin-bottom: 6px; }
-    .skeleton-line.short { width: 60%; }
-    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .skeleton-img {
+      height: 170px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    .skeleton-body {
+      padding: 10px 12px;
+    }
+    .skeleton-line {
+      height: 12px;
+      border-radius: 6px;
+      background: #f0f0f0;
+      margin-bottom: 6px;
+    }
+    .skeleton-line.short {
+      width: 60%;
+    }
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
 
-    /* ----- 底部横条 ----- */
     .bottom-strip {
       background: #fff;
       border-top: 1px solid var(--border);
@@ -335,58 +548,110 @@
       margin-bottom: 8px;
     }
     .strip-title {
-      font-size: 0.75rem; font-weight: 700; color: var(--text3);
-      text-transform: uppercase; letter-spacing: 0.06em;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
     .strip-more {
-      font-size: 0.7rem; color: var(--accent); cursor: pointer; font-weight: 600;
+      font-size: 0.7rem;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
     }
-    .strip-more:hover { text-decoration: underline; }
+    .strip-more:hover {
+      text-decoration: underline;
+    }
     .strip-list {
-      display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
     }
-    .strip-list::-webkit-scrollbar { height: 3px; }
-    .strip-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
     .strip-item {
-      flex-shrink: 0; width: 60px; border-radius: 8px; overflow: hidden;
-      border: 1px solid var(--border); cursor: pointer; transition: transform .2s;
-      background: var(--bg); position: relative;
+      flex-shrink: 0;
+      width: 60px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform .2s;
+      background: var(--bg);
+      position: relative;
     }
-    .strip-item:hover { transform: scale(1.04); }
-    .strip-item img { width: 60px; height: 60px; object-fit: cover; display: block; }
+    .strip-item:hover {
+      transform: scale(1.04);
+    }
+    .strip-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      display: block;
+    }
     .strip-item .si-title {
-      font-size: 0.5rem; color: var(--text3); text-align: center; padding: 2px 0;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      background: rgba(255,255,255,0.8); position: absolute; bottom: 0; left: 0; right: 0;
+      font-size: 0.5rem;
+      color: var(--text3);
+      text-align: center;
+      padding: 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: rgba(255, 255, 255, 0.8);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
     }
-    .strip-empty { font-size: 0.75rem; color: #bbb; padding: 6px 0; }
+    .strip-empty {
+      font-size: 0.75rem;
+      color: #bbb;
+      padding: 6px 0;
+    }
 
-    /* ----- 详情页 ----- */
     #detail-view {
       display: none;
       background: #fff;
       min-height: 100vh;
       padding: 0 0 40px 0;
     }
-    #detail-view.open { display: block; }
+    #detail-view.open {
+      display: block;
+    }
 
     .detail-header {
-      display: flex; align-items: center; padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
       border-bottom: 1px solid var(--border);
-      position: sticky; top: 0;
-      background: rgba(255,255,255,0.95);
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(8px);
       z-index: 50;
       gap: 12px;
     }
     .detail-back {
-      font-size: 1.1rem; color: var(--accent); cursor: pointer; font-weight: 600;
-      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+      font-size: 1.1rem;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
     }
-    .detail-back:hover { text-decoration: underline; }
+    .detail-back:hover {
+      text-decoration: underline;
+    }
     .detail-title {
-      font-size: 1.05rem; font-weight: 700; color: var(--text);
-      flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .detail-body {
@@ -413,26 +678,58 @@
       display: block;
       transition: transform 0.2s;
     }
-    .detail-image-wrap.zoomed { cursor: zoom-out; }
-    .detail-image-wrap.zoomed img { transform: scale(1.8); cursor: grab; }
-    .detail-image-wrap.zoomed img:active { cursor: grabbing; }
+    .detail-image-wrap.zoomed {
+      cursor: zoom-out;
+    }
+    .detail-image-wrap.zoomed img {
+      transform: scale(1.8);
+      cursor: grab;
+    }
+    .detail-image-wrap.zoomed img:active {
+      cursor: grabbing;
+    }
 
-    .detail-info { margin-top: 20px; }
+    .detail-info {
+      margin-top: 20px;
+    }
     .detail-tag {
-      display: inline-block; background: #eef6ff; color: var(--accent);
-      font-size: 0.75rem; font-weight: 600; padding: 3px 12px; border-radius: 12px;
+      display: inline-block;
+      background: #eef6ff;
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 12px;
+      border-radius: 12px;
     }
     .detail-title-text {
-      font-size: 1.4rem; font-weight: 800; color: var(--text); margin: 8px 0 4px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      margin: 8px 0 4px;
     }
-    .detail-date { font-size: 0.8rem; color: var(--text3); margin-bottom: 12px; }
+    .detail-date {
+      font-size: 0.8rem;
+      color: var(--text3);
+      margin-bottom: 12px;
+    }
     .detail-desc {
-      font-size: 0.92rem; color: var(--text2); line-height: 1.8;
-      margin-bottom: 16px; white-space: pre-wrap; word-break: break-word;
+      font-size: 0.92rem;
+      color: var(--text2);
+      line-height: 1.8;
+      margin-bottom: 16px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .detail-uploader {
+      font-size: 0.75rem;
+      color: var(--text3);
+      margin-top: 4px;
     }
 
     .detail-actions {
-      display: flex; align-items: center; gap: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       padding: 12px 0;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
@@ -440,13 +737,27 @@
       flex-wrap: wrap;
     }
     .detail-heart-btn {
-      font-size: 1.6rem; background: none; border: none; cursor: pointer;
-      color: #ccc; transition: transform .2s;
-      display: flex; align-items: center; gap: 8px;
+      font-size: 1.6rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ccc;
+      transition: transform .2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .detail-heart-btn.liked { color: var(--heart); }
-    .detail-heart-btn:active { transform: scale(0.85); }
-    .detail-heart-count { font-size: 0.95rem; color: var(--text2); font-weight: 500; }
+    .detail-heart-btn.liked {
+      color: var(--heart);
+    }
+    .detail-heart-btn:active {
+      transform: scale(0.85);
+    }
+    .detail-heart-count {
+      font-size: 0.95rem;
+      color: var(--text2);
+      font-weight: 500;
+    }
 
     .detail-delete {
       margin-left: auto;
@@ -460,980 +771,1311 @@
       display: none;
       font-family: inherit;
     }
-    .detail-delete:hover { background: var(--danger); color: #fff; }
+    .detail-delete:hover {
+      background: var(--danger);
+      color: #fff;
+    }
 
     .comment-section {
       margin-top: 20px;
     }
     .comment-section .cs-title {
-      font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 16px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
     }
     .giscus {
       width: 100%;
     }
 
-    /* ----- Toast ----- */
     .toast {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: #333; color: #fff; padding: 8px 20px; border-radius: 24px;
-      font-size: 0.8rem; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 24px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+      z-index: 999;
     }
-    .toast.show { opacity: 1; }
+    .toast.show {
+      opacity: 1;
+    }
 
-    /* ----- Modals ----- */
     .modal-backdrop {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-      z-index: 600; align-items: center; justify-content: center;
-      backdrop-filter: blur(4px); padding: 20px;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 600;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      padding: 20px;
     }
-    .modal-backdrop.open { display: flex; }
+    .modal-backdrop.open {
+      display: flex;
+    }
     .modal {
-      background: #fff; border-radius: 16px; padding: 24px; width: min(400px, 100%);
-      box-shadow: 0 24px 64px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto;
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      width: min(400px, 100%);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+      max-height: 95vh;
+      overflow-y: auto;
     }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .modal-title { font-size: 1.05rem; font-weight: 800; }
-    .modal-x { width: 28px; height: 28px; border-radius: 50%; background: var(--bg); border: none; font-size: 1rem; cursor: pointer; }
-    .form-row { margin-bottom: 14px; }
-    .form-row label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
-    .form-row input, .form-row textarea, .form-row select {
-      width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-s);
-      padding: 8px 12px; font-size: 0.9rem; font-family: inherit; background: var(--bg);
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .modal-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+    .modal-x {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .form-row {
+      margin-bottom: 14px;
+    }
+    .form-row label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 4px;
+    }
+    .form-row input,
+    .form-row textarea,
+    .form-row select {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-s);
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: var(--bg);
       outline: none;
     }
-    .form-row input:focus, .form-row textarea:focus { border-color: var(--accent); background: #fff; }
-    .form-row textarea { min-height: 70px; resize: vertical; }
-    .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
-    .drop-zone {
-      border: 2px dashed var(--border2); border-radius: var(--radius); padding: 24px 16px;
-      text-align: center; cursor: pointer; transition: all .2s; color: var(--text3);
-      position: relative; background: var(--bg);
+    .form-row input:focus,
+    .form-row textarea:focus {
+      border-color: var(--accent);
+      background: #fff;
     }
-    .drop-zone:hover, .drop-zone.drag { border-color: var(--accent); background: #eef6ff; color: var(--accent); }
-    .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .dz-icon { font-size: 2rem; margin-bottom: 6px; }
-    .dz-text { font-size: 0.85rem; font-weight: 600; }
-    .dz-sub { font-size: 0.7rem; margin-top: 4px; }
-    #preview-wrap { margin-top: 10px; display: none; position: relative; }
-    #preview-wrap img { max-height: 150px; max-width: 100%; border-radius: var(--radius-s); object-fit: contain; border: 1px solid var(--border); }
-    .preview-remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.5); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; border: none; cursor: pointer; }
-    .upload-progress { display: none; margin-top: 12px; }
-    .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width .3s; }
-    .progress-text { font-size: 0.75rem; color: var(--text3); text-align: center; margin-top: 4px; }
+    .form-row textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+    .modal-footer {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 16px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+    .drop-zone {
+      border: 2px dashed var(--border2);
+      border-radius: var(--radius);
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      color: var(--text3);
+      position: relative;
+      background: var(--bg);
+    }
+    .drop-zone:hover,
+    .drop-zone.drag {
+      border-color: var(--accent);
+      background: #eef6ff;
+      color: var(--accent);
+    }
+    .drop-zone input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .dz-icon {
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
+    .dz-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .dz-sub {
+      font-size: 0.7rem;
+      margin-top: 4px;
+    }
+    #preview-wrap {
+      margin-top: 10px;
+      display: none;
+      position: relative;
+    }
+    #preview-wrap img {
+      max-height: 150px;
+      max-width: 100%;
+      border-radius: var(--radius-s);
+      object-fit: contain;
+      border: 1px solid var(--border);
+    }
+    .preview-remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      font-size: 0.7rem;
+      border: none;
+      cursor: pointer;
+    }
+    .upload-progress {
+      display: none;
+      margin-top: 12px;
+    }
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width .3s;
+    }
+    .progress-text {
+      font-size: 0.75rem;
+      color: var(--text3);
+      text-align: center;
+      margin-top: 4px;
+    }
 
     .admin-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: #fff3cd; color: #856404; border: 1px solid #ffc107;
-      font-size: 0.7rem; font-weight: 600; padding: 2px 10px; border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffc107;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 12px;
     }
 
     @media (max-width: 480px) {
-      .header-right .btn span { display: none; }
-      #gallery { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-      .card-info { padding: 8px 10px; }
-      .heart-btn { font-size: 1rem; }
-      .detail-body { padding: 12px; }
-      .detail-title-text { font-size: 1.1rem; }
-      #announcement-bar { font-size: 0.75rem; padding: 4px 12px; }
-      .announce-actions input { width: 160px; }
+      .header-right .btn span {
+        display: none;
+      }
+      #gallery {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+      }
+      .card-info {
+        padding: 8px 10px;
+      }
+      .heart-btn {
+        font-size: 1rem;
+      }
+      .detail-body {
+        padding: 12px;
+      }
+      .detail-title-text {
+        font-size: 1.1rem;
+      }
+      #announcement-bar {
+        font-size: 0.75rem;
+        padding: 4px 12px;
+      }
+      .announce-actions input {
+        width: 160px;
+      }
     }
   </style>
 </head>
 <body>
 
-<!-- ============================================================
-   公告栏（顶栏）
-   ============================================================ -->
-<div id="announcement-bar">
-  <div class="announce-text" id="announce-text">
-    <span>📢</span>
-    <span class="announce-empty" id="announce-empty">暂无公告</span>
-  </div>
-  <div class="announce-actions" id="announce-actions" style="display:none;">
-    <input type="text" id="announce-input" placeholder="新公告内容…" maxlength="200" />
-    <button class="btn-sm" id="announce-post">发布</button>
-  </div>
-</div>
-
-<!-- ============================================================
-   视图返回栏（“我喜欢”独立页面时显示）
-   ============================================================ -->
-<div class="view-back-bar" id="view-back-bar">
-  <span class="back-btn" id="view-back-btn">← 返回全部</span>
-  <span class="view-title" id="view-title">❤️ 我喜欢</span>
-</div>
-
-<!-- ============================================================
-   MAIN VIEW (画廊主界面)
-   ============================================================ -->
-<div id="main-view">
-
-  <!-- HEADER -->
-  <header id="main-header">
-    <div class="logo" id="logo">
-      <!-- 鸾尾花 SVG 图标 -->
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32 8 C24 16, 12 22, 16 36 C18 44, 28 48, 32 42 C36 48, 46 44, 48 36 C52 22, 40 16, 32 8Z" fill="#6a4e9c" stroke="#5a3e8c" stroke-width="1.5"/>
-        <path d="M32 8 C32 8, 28 28, 28 42" stroke="#f0ecf5" stroke-width="2" stroke-linecap="round"/>
-        <path d="M32 8 C32 8, 36 28, 36 42" stroke="#f0ecf5" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="32" cy="44" r="4" fill="#d4c4e0" stroke="#5a3e8c" stroke-width="1"/>
-        <path d="M24 32 C22 26, 18 22, 14 22" stroke="#5a3e8c" stroke-width="2" stroke-linecap="round"/>
-        <path d="M40 32 C42 26, 46 22, 50 22" stroke="#5a3e8c" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      <span>鸾尾花论坛</span>
+  <div id="announcement-bar">
+    <div class="announce-text" id="announce-text">
+      <span>📢</span>
+      <span class="announce-empty" id="announce-empty">暂无公告</span>
     </div>
-    <div class="search-wrap" id="search-wrap">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="search-input" placeholder="搜索作品…" autocomplete="off" />
-      <div id="suggestions"></div>
-    </div>
-    <div class="header-right">
-      <span class="admin-badge" id="admin-badge" style="display:none">管理</span>
-      <button class="btn btn-ghost" id="admin-btn">管理</button>
-      <button class="btn btn-primary" id="upload-btn" style="display:none">＋ 上传</button>
-    </div>
-  </header>
-
-  <!-- TAGS -->
-  <div class="tags-bar" id="tags-bar">
-    <button class="tag-pill active" data-tag="all">全部</button>
-    <button class="tag-pill" data-tag="油画">油画</button>
-    <button class="tag-pill" data-tag="水彩">水彩</button>
-    <button class="tag-pill" data-tag="素描">素描</button>
-    <button class="tag-pill" data-tag="国画">国画</button>
-    <button class="tag-pill" data-tag="插画">插画</button>
-    <button class="tag-pill" data-tag="数字艺术">数字艺术</button>
-    <button class="tag-pill" data-tag="摄影">摄影</button>
-    <button class="tag-pill" data-tag="其他">其他</button>
-    <select class="sort-select" id="sort-select"><option value="newest">最新</option><option value="oldest">最早</option><option value="title">名称</option></select>
-  </div>
-
-  <!-- GALLERY -->
-  <div id="gallery-wrap">
-    <div id="gallery"></div>
-  </div>
-
-  <!-- BOTTOM STRIPS -->
-  <div class="bottom-strip" id="recent-strip">
-    <div class="strip-header">
-      <span class="strip-title">⏱️ 最近浏览</span>
-    </div>
-    <div class="strip-list" id="recent-list"></div>
-  </div>
-
-  <div class="bottom-strip" id="liked-strip">
-    <div class="strip-header">
-      <span class="strip-title">❤️ 我喜欢</span>
-      <span class="strip-more" id="liked-more">查看全部 →</span>
-    </div>
-    <div class="strip-list" id="liked-list"></div>
-  </div>
-
-</div><!-- end main-view -->
-
-<!-- ============================================================
-   DETAIL VIEW (帖子详情页)
-   ============================================================ -->
-<div id="detail-view">
-  <div class="detail-header">
-    <span class="detail-back" id="detail-back">← 返回</span>
-    <span class="detail-title" id="detail-title">作品标题</span>
-  </div>
-  <div class="detail-body">
-    <div class="detail-image-wrap" id="detail-image-wrap">
-      <img id="detail-image" src="" alt="" />
-    </div>
-    <div class="detail-info">
-      <span class="detail-tag" id="detail-tag">分类</span>
-      <h1 class="detail-title-text" id="detail-title-text">标题</h1>
-      <p class="detail-date" id="detail-date">发布时间</p>
-      <p class="detail-desc" id="detail-desc">描述</p>
-    </div>
-    <div class="detail-actions">
-      <button class="detail-heart-btn" id="detail-heart">🤍 <span class="detail-heart-count" id="detail-heart-count">0</span></button>
-      <button class="detail-delete" id="detail-delete">删除</button>
-    </div>
-    <div class="comment-section">
-      <div class="cs-title">💬 评论</div>
-      <div class="giscus" id="giscus-container"></div>
+    <div class="announce-actions" id="announce-actions" style="display:none;">
+      <input type="text" id="announce-input" placeholder="新公告内容…" maxlength="200" />
+      <button class="btn-sm" id="announce-post">发布</button>
     </div>
   </div>
-</div>
 
-<!-- UPLOAD MODAL -->
-<div class="modal-backdrop" id="upload-modal">
-  <div class="modal">
-    <div class="modal-header"><span class="modal-title">上传作品</span><button class="modal-x" id="upload-close">✕</button></div>
-    <div class="form-row">
-      <label>图片 *</label>
-      <div class="drop-zone" id="drop-zone">
-        <div class="dz-icon">🖼️</div>
-        <div class="dz-text">点击选择或拖拽</div>
-        <div class="dz-sub">JPG · PNG · WEBP · 最大 20MB</div>
-        <input type="file" id="file-input" accept="image/*" />
+  <div class="view-back-bar" id="view-back-bar">
+    <span class="back-btn" id="view-back-btn">← 返回全部</span>
+    <span class="view-title" id="view-title">❤️ 我喜欢</span>
+  </div>
+
+  <div id="main-view">
+
+    <header id="main-header">
+      <div class="logo" id="logo">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 8 C24 16, 12 22, 16 36 C18 44, 28 48, 32 42 C36 48, 46 44, 48 36 C52 22, 40 16, 32 8Z" fill="#6a4e9c" stroke="#5a3e8c" stroke-width="1.5" />
+          <path d="M32 8 C32 8, 28 28, 28 42" stroke="#f0ecf5" stroke-width="2" stroke-linecap="round" />
+          <path d="M32 8 C32 8, 36 28, 36 42" stroke="#f0ecf5" stroke-width="2" stroke-linecap="round" />
+          <circle cx="32" cy="44" r="4" fill="#d4c4e0" stroke="#5a3e8c" stroke-width="1" />
+          <path d="M24 32 C22 26, 18 22, 14 22" stroke="#5a3e8c" stroke-width="2" stroke-linecap="round" />
+          <path d="M40 32 C42 26, 46 22, 50 22" stroke="#5a3e8c" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <span>鸾尾花论坛</span>
       </div>
-      <div id="preview-wrap"><img id="preview-img" alt="预览" /><button class="preview-remove" id="preview-remove">✕</button></div>
+      <div class="search-wrap" id="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="搜索作品…" autocomplete="off" />
+        <div id="suggestions"></div>
+      </div>
+      <div class="header-right">
+        <span class="admin-badge" id="admin-badge" style="display:none">管理</span>
+        <span id="auth-section">
+          <button class="btn btn-ghost" onclick="showLoginModal()">登录</button>
+          <button class="btn btn-primary" onclick="showSignupModal()">注册</button>
+        </span>
+        <button class="btn btn-ghost" id="admin-btn">管理</button>
+        <button class="btn btn-primary" id="upload-btn" style="display:none">＋ 上传</button>
+      </div>
+    </header>
+
+    <div class="tags-bar" id="tags-bar">
+      <button class="tag-pill active" data-tag="all">全部</button>
+      <button class="tag-pill" data-tag="油画">油画</button>
+      <button class="tag-pill" data-tag="水彩">水彩</button>
+      <button class="tag-pill" data-tag="素描">素描</button>
+      <button class="tag-pill" data-tag="国画">国画</button>
+      <button class="tag-pill" data-tag="插画">插画</button>
+      <button class="tag-pill" data-tag="数字艺术">数字艺术</button>
+      <button class="tag-pill" data-tag="摄影">摄影</button>
+      <button class="tag-pill" data-tag="其他">其他</button>
+      <select class="sort-select" id="sort-select"><option value="newest">最新</option><option value="oldest">最早</option><option value="title">名称</option></select>
     </div>
-    <div class="form-row"><label>标题 *</label><input type="text" id="art-title" placeholder="作品名称" maxlength="80" /></div>
-    <div class="form-row"><label>分类</label><select id="art-tag"><option value="油画">油画</option><option value="水彩">水彩</option><option value="素描">素描</option><option value="国画">国画</option><option value="插画">插画</option><option value="数字艺术">数字艺术</option><option value="摄影">摄影</option><option value="其他">其他</option></select></div>
-    <div class="form-row"><label>描述</label><textarea id="art-desc" placeholder="创作背景…" maxlength="600"></textarea></div>
-    <div class="upload-progress" id="upload-progress"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div><div class="progress-text" id="progress-text">上传中…</div></div>
-    <div class="modal-footer"><button class="btn btn-ghost" id="upload-cancel">取消</button><button class="btn btn-primary" id="upload-submit">发布</button></div>
+
+    <div id="gallery-wrap">
+      <div id="gallery"></div>
+    </div>
+
+    <div class="bottom-strip" id="recent-strip">
+      <div class="strip-header">
+        <span class="strip-title">⏱️ 最近浏览</span>
+      </div>
+      <div class="strip-list" id="recent-list"></div>
+    </div>
+
+    <div class="bottom-strip" id="liked-strip">
+      <div class="strip-header">
+        <span class="strip-title">❤️ 我喜欢</span>
+        <span class="strip-more" id="liked-more">查看全部 →</span>
+      </div>
+      <div class="strip-list" id="liked-list"></div>
+    </div>
+
   </div>
-</div>
 
-<!-- AUTH MODAL -->
-<div class="modal-backdrop" id="auth-modal">
-  <div class="modal">
-    <div class="modal-header"><span class="modal-title">🔐 管理员</span><button class="modal-x" id="auth-close">✕</button></div>
-    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:16px;">输入 GitHub Token</p>
-    <div class="form-row"><label>Token</label><input type="password" id="admin-token" placeholder="ghp_xxxxxxxx" autocomplete="off" /></div>
-    <div class="modal-footer"><button class="btn btn-ghost" id="auth-cancel">取消</button><button class="btn btn-primary" id="auth-submit">登录</button></div>
+  <div id="detail-view">
+    <div class="detail-header">
+      <span class="detail-back" id="detail-back">← 返回</span>
+      <span class="detail-title" id="detail-title">作品标题</span>
+    </div>
+    <div class="detail-body">
+      <div class="detail-image-wrap" id="detail-image-wrap">
+        <img id="detail-image" src="" alt="" />
+      </div>
+      <div class="detail-info">
+        <span class="detail-tag" id="detail-tag">分类</span>
+        <h1 class="detail-title-text" id="detail-title-text">标题</h1>
+        <p class="detail-date" id="detail-date">发布时间</p>
+        <p class="detail-desc" id="detail-desc">描述</p>
+        <p class="detail-uploader">上传者：<span id="detail-uploader"></span></p>
+      </div>
+      <div class="detail-actions">
+        <button class="detail-heart-btn" id="detail-heart">🤍 <span class="detail-heart-count" id="detail-heart-count">0</span></button>
+        <button class="detail-delete" id="detail-delete">删除</button>
+      </div>
+      <div class="comment-section">
+        <div class="cs-title">💬 评论</div>
+        <div class="giscus" id="giscus-container"></div>
+      </div>
+    </div>
   </div>
-</div>
 
-<div class="toast" id="toast"></div>
+  <!-- 上传模态框 -->
+  <div class="modal-backdrop" id="upload-modal">
+    <div class="modal">
+      <div class="modal-header"><span class="modal-title">上传作品</span><button class="modal-x" id="upload-close">✕</button></div>
+      <div class="form-row">
+        <label>图片 *</label>
+        <div class="drop-zone" id="drop-zone">
+          <div class="dz-icon">🖼️</div>
+          <div class="dz-text">点击选择或拖拽</div>
+          <div class="dz-sub">JPG · PNG · WEBP · 最大 20MB</div>
+          <input type="file" id="file-input" accept="image/*" />
+        </div>
+        <div id="preview-wrap"><img id="preview-img" alt="预览" /><button class="preview-remove" id="preview-remove">✕</button></div>
+      </div>
+      <div class="form-row"><label>标题 *</label><input type="text" id="art-title" placeholder="作品名称" maxlength="80" /></div>
+      <div class="form-row"><label>分类</label><select id="art-tag"><option value="油画">油画</option><option value="水彩">水彩</option><option value="素描">素描</option><option value="国画">国画</option><option value="插画">插画</option><option value="数字艺术">数字艺术</option><option value="摄影">摄影</option><option value="其他">其他</option></select></div>
+      <div class="form-row"><label>描述</label><textarea id="art-desc" placeholder="创作背景…" maxlength="600"></textarea></div>
+      <div class="upload-progress" id="upload-progress"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div><div class="progress-text" id="progress-text">上传中…</div></div>
+      <div class="modal-footer"><button class="btn btn-ghost" id="upload-cancel">取消</button><button class="btn btn-primary" id="upload-submit">发布</button></div>
+    </div>
+  </div>
 
-<script>
-'use strict';
+  <!-- 管理员认证模态框（GitHub Token） -->
+  <div class="modal-backdrop" id="auth-modal">
+    <div class="modal" style="max-width:360px;">
+      <div class="modal-header"><span class="modal-title">🔐 管理员</span><button class="modal-x" id="auth-close">✕</button></div>
+      <p style="font-size:0.85rem;color:var(--text2);margin-bottom:16px;">输入 GitHub Token 进入管理</p>
+      <div class="form-row"><label>GitHub Token</label><input type="password" id="admin-token" placeholder="ghp_xxxxxxxx" autocomplete="off" /></div>
+      <div class="modal-footer"><button class="btn btn-ghost" id="auth-cancel">取消</button><button class="btn btn-primary" id="auth-submit">登录</button></div>
+    </div>
+  </div>
 
-// ================================================================
-// CONFIG
-// ================================================================
-const CFG = { owner: 'ljhLJH0102-0721', repo: 'Public', branch: 'main' };
-const GH = 'https://api.github.com';
+  <!-- 用户登录模态框 -->
+  <div class="modal-backdrop" id="login-modal">
+    <div class="modal" style="max-width:360px;">
+      <div class="modal-header"><span class="modal-title">登录</span><button class="modal-x" onclick="closeModal('login-modal')">✕</button></div>
+      <div class="form-row"><label>邮箱</label><input type="email" id="login-email" placeholder="你的邮箱" /></div>
+      <div class="form-row"><label>密码</label><input type="password" id="login-password" placeholder="密码" /></div>
+      <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('login-modal')">取消</button><button class="btn btn-primary" id="login-submit">登录</button></div>
+    </div>
+  </div>
 
-// ================================================================
-// GISCUS 配置
-// ================================================================
-const GISCUS_CONFIG = {
-  repo: 'ljhLJH0102-0721/Public',
-  repoId: 'R_kgDOUEWNDg',
-  category: 'Announcements',
-  categoryId: 'DIC_kwDOUEWNDs4DENWa',
-  strict: '0',
-  reactionsEnabled: '1',
-  emitMetadata: '0',
-  inputPosition: 'top',
-  theme: 'light',
-  lang: 'zh-CN',
-  loading: 'lazy'
-};
+  <!-- 用户注册模态框 -->
+  <div class="modal-backdrop" id="signup-modal">
+    <div class="modal" style="max-width:360px;">
+      <div class="modal-header"><span class="modal-title">注册</span><button class="modal-x" onclick="closeModal('signup-modal')">✕</button></div>
+      <div class="form-row"><label>邮箱</label><input type="email" id="signup-email" placeholder="你的邮箱" /></div>
+      <div class="form-row"><label>密码</label><input type="password" id="signup-password" placeholder="至少6位" /></div>
+      <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('signup-modal')">取消</button><button class="btn btn-primary" id="signup-submit">注册</button></div>
+    </div>
+  </div>
 
-// ================================================================
-// 本地存储
-// ================================================================
-const LIKES_KEY = 'ag_likes';
-const RECENT_KEY = 'ag_recent';
+  <div class="toast" id="toast"></div>
 
-function getLikes() {
-  try { return JSON.parse(localStorage.getItem(LIKES_KEY)) || {}; } catch { return {}; }
-}
-function saveLikes(likes) { localStorage.setItem(LIKES_KEY, JSON.stringify(likes)); }
-function getRecent() {
-  try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch { return []; }
-}
-function saveRecent(recent) { localStorage.setItem(RECENT_KEY, JSON.stringify(recent)); }
+  <!-- 引入 Supabase JS 库 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-function toggleLike(id) {
-  const likes = getLikes();
-  likes[id] = !likes[id];
-  saveLikes(likes);
-  return likes[id];
-}
-function isLiked(id) {
-  const likes = getLikes();
-  return !!likes[id];
-}
+  <script>
+    'use strict';
 
-function addRecent(art) {
-  let recent = getRecent();
-  recent = recent.filter(item => item.id !== art.id);
-  recent.unshift({ id: art.id, title: art.title, imagePath: art.imagePath });
-  if (recent.length > 20) recent = recent.slice(0, 20);
-  saveRecent(recent);
-  renderRecentStrip();
-}
+    // ================================================================
+    // 配置
+    // ================================================================
+    const CFG = { owner: 'ljhLJH0102-0721', repo: 'Public', branch: 'main' };
+    const GH = 'https://api.github.com';
+    const IMGBB_API_KEY = '36bdc3532d8eb5a1eaa72d6f022fd087';
 
-// ================================================================
-// 公告数据（修复乱码）
-// ================================================================
-let announcements = [];
-let annSha = null;
-const ANN_FILE = 'announcements.json';
+    // Supabase 配置（已填入你的信息）
+    const SUPABASE_URL = 'https://pqzvjeuoyqzoqptulsde.supabase.co/rest/v1/';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxenZqZXVveXF6b3FwdHVsc2RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3ODczODAsImV4cCI6MjEwMzM2MzM4MH0.C8ihm_67nDph7aXvmJX8KmwXlp6mLnGl5gfevEepo4M';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-async function fetchAnnouncements() {
-  try {
-    const file = await ghGetFile(ANN_FILE, null);
-    if (file) {
-      annSha = file.sha;
-      // 正确解码 UTF-8
-      const binary = atob(file.content.replace(/\s/g, ''));
-      const utf8Text = decodeURIComponent(escape(binary));
-      announcements = JSON.parse(utf8Text);
-    } else {
-      announcements = [];
+    // ================================================================
+    // 本地存储（点赞 + 最近浏览）
+    // ================================================================
+    const LIKES_KEY = 'ag_likes';
+    const RECENT_KEY = 'ag_recent';
+
+    function getLikes() {
+      try { return JSON.parse(localStorage.getItem(LIKES_KEY)) || {}; } catch { return {}; }
     }
-  } catch (e) {
-    console.error('公告加载失败', e);
-    announcements = [];
-  }
-  renderAnnouncements();
-}
 
-async function saveAnnouncements(token) {
-  const json = JSON.stringify(announcements, null, 2);
-  // 正确编码 UTF-8
-  const utf8Bytes = unescape(encodeURIComponent(json));
-  const base64 = btoa(utf8Bytes);
-  const result = await ghPutFile(ANN_FILE, base64, 'update announcements', annSha, token);
-  annSha = result.content.sha;
-}
+    function saveLikes(likes) { localStorage.setItem(LIKES_KEY, JSON.stringify(likes)); }
 
-function renderAnnouncements() {
-  const container = document.getElementById('announce-text');
-  const empty = document.getElementById('announce-empty');
-  // 移除之前动态添加的项（保留第一个和第二个）
-  while (container.children.length > 2) {
-    container.removeChild(container.lastChild);
-  }
-  if (!announcements.length) {
-    empty.style.display = 'inline';
-    return;
-  }
-  empty.style.display = 'none';
-  announcements.forEach((ann, index) => {
-    const wrapper = document.createElement('span');
-    wrapper.className = 'ann-item';
-    wrapper.innerHTML = `
-      <span>${escHtml(ann.text)}</span>
-      <span class="del-ann" data-id="${ann.id}" data-index="${index}">✕</span>
-    `;
-    container.appendChild(wrapper);
-  });
-  // 绑定删除事件
-  document.querySelectorAll('.del-ann').forEach(el => {
-    el.addEventListener('click', async function(e) {
-      e.stopPropagation();
-      if (!isAdmin) { toast('请先登录管理员'); return; }
-      const id = this.dataset.id;
-      if (!confirm('删除此公告？')) return;
-      announcements = announcements.filter(a => a.id !== id);
-      await saveAnnouncements(adminToken);
-      renderAnnouncements();
-      toast('公告已删除');
-    });
-  });
-  // 根据管理员状态显示删除按钮和发布栏
-  if (isAdmin) {
-    document.getElementById('announcement-bar').classList.add('admin-mode');
-    document.getElementById('announce-actions').style.display = 'flex';
-  } else {
-    document.getElementById('announcement-bar').classList.remove('admin-mode');
-    document.getElementById('announce-actions').style.display = 'none';
-  }
-}
+    function getRecent() {
+      try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch { return []; }
+    }
 
-// 发布公告
-document.getElementById('announce-post').addEventListener('click', async function() {
-  if (!isAdmin) { toast('请先登录管理员'); return; }
-  const input = document.getElementById('announce-input');
-  const text = input.value.trim();
-  if (!text) { toast('请输入公告内容'); return; }
-  const newAnn = {
-    id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6),
-    text: text,
-    date: Date.now()
-  };
-  announcements.push(newAnn);
-  await saveAnnouncements(adminToken);
-  renderAnnouncements();
-  input.value = '';
-  toast('公告发布成功');
-});
+    function saveRecent(recent) { localStorage.setItem(RECENT_KEY, JSON.stringify(recent)); }
 
-document.getElementById('announce-input').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') {
-    document.getElementById('announce-post').click();
-  }
-});
+    function toggleLike(id) {
+      const likes = getLikes();
+      likes[id] = !likes[id];
+      saveLikes(likes);
+      return likes[id];
+    }
 
-// ================================================================
-// 渲染底部横条
-// ================================================================
-function renderRecentStrip() {
-  const container = document.getElementById('recent-list');
-  const recent = getRecent();
-  if (!recent.length) {
-    container.innerHTML = '<span class="strip-empty">还没有浏览记录</span>';
-    return;
-  }
-  container.innerHTML = recent.map(item => `
-    <div class="strip-item" data-id="${item.id}">
-      <img src="${cdnUrl(item.imagePath)}" alt="${item.title}" loading="lazy" />
-      <div class="si-title">${escHtml(item.title)}</div>
-    </div>
-  `).join('');
-  container.querySelectorAll('.strip-item').forEach(el => {
-    const id = el.dataset.id;
-    const art = artworks.find(a => a.id === id);
-    if (art) el.addEventListener('click', () => openDetail(artworks.indexOf(art)));
-  });
-}
+    function isLiked(id) {
+      const likes = getLikes();
+      return !!likes[id];
+    }
 
-function renderLikedStrip() {
-  const container = document.getElementById('liked-list');
-  const likes = getLikes();
-  const likedIds = Object.keys(likes).filter(id => likes[id] === true);
-  if (!likedIds.length) {
-    container.innerHTML = '<span class="strip-empty">还没有喜欢的作品</span>';
-    return;
-  }
-  const likedArts = artworks.filter(a => likedIds.includes(a.id));
-  if (!likedArts.length) {
-    container.innerHTML = '<span class="strip-empty">还没有喜欢的作品</span>';
-    return;
-  }
-  container.innerHTML = likedArts.map(art => `
-    <div class="strip-item" data-id="${art.id}">
-      <img src="${cdnUrl(art.imagePath)}" alt="${art.title}" loading="lazy" />
-      <div class="si-title">${escHtml(art.title)}</div>
-    </div>
-  `).join('');
-  container.querySelectorAll('.strip-item').forEach(el => {
-    const id = el.dataset.id;
-    const art = artworks.find(a => a.id === id);
-    if (art) el.addEventListener('click', () => openDetail(artworks.indexOf(art)));
-  });
-}
+    function getLikeCount(id) {
+      const likes = getLikes();
+      return likes[id] ? 1 : 0;
+    }
 
-// ================================================================
-// 搜索建议
-// ================================================================
-function setupSearchSuggestions() {
-  const input = document.getElementById('search-input');
-  const sugg = document.getElementById('suggestions');
-  input.addEventListener('input', function() {
-    const val = this.value.trim().toLowerCase();
-    if (!val) { sugg.style.display = 'none'; return; }
-    const matches = artworks.filter(a => a.title.toLowerCase().includes(val)).slice(0, 8);
-    if (!matches.length) { sugg.style.display = 'none'; return; }
-    sugg.innerHTML = matches.map(a => `<div class="sug-item" data-title="${escHtml(a.title)}">${escHtml(a.title)}</div>`).join('');
-    sugg.style.display = 'block';
-    sugg.querySelectorAll('.sug-item').forEach(el => {
-      el.addEventListener('click', function() {
-        input.value = this.dataset.title;
-        sugg.style.display = 'none';
-        searchQuery = input.value.trim().toLowerCase();
-        applyFilters();
+    function addRecent(art) {
+      let recent = getRecent();
+      recent = recent.filter(item => item.id !== art.id);
+      recent.unshift({ id: art.id, title: art.title, imagePath: art.imageUrl });
+      if (recent.length > 20) recent = recent.slice(0, 20);
+      saveRecent(recent);
+      renderRecentStrip();
+    }
+
+    // ================================================================
+    // GitHub API 辅助
+    // ================================================================
+    function ghHeaders(token) {
+      const h = { 'Accept': 'application/vnd.github+json' };
+      if (token) h['Authorization'] = `Bearer ${token}`;
+      return h;
+    }
+
+    async function ghGetFile(path, token) {
+      const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}?ref=${CFG.branch}`, { headers: ghHeaders(
+          token) });
+      if (r.status === 404) return null;
+      if (!r.ok) throw new Error(`GitHub ${r.status}`);
+      return r.json();
+    }
+
+    async function ghPutFile(path, base64Content, message, sha, token) {
+      const body = { message, content: base64Content, branch: CFG.branch };
+      if (sha) body.sha = sha;
+      const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {
+        method: 'PUT',
+        headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
       });
-    });
-  });
-  document.addEventListener('click', function(e) {
-    if (!document.getElementById('search-wrap').contains(e.target)) sugg.style.display = 'none';
-  });
-  input.addEventListener('input', function() {
-    searchQuery = this.value.trim().toLowerCase();
-    applyFilters();
-  });
-}
+      if (!r.ok) throw new Error(`GitHub ${r.status}`);
+      return r.json();
+    }
 
-// ================================================================
-// GitHub Helpers
-// ================================================================
-function ghHeaders(token) {
-  const h = { 'Accept': 'application/vnd.github+json' };
-  if (token) h['Authorization'] = `Bearer ${token}`;
-  return h;
-}
-async function ghGetFile(path, token) {
-  const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}?ref=${CFG.branch}`, { headers: ghHeaders(token) });
-  if (r.status === 404) return null;
-  if (!r.ok) throw new Error(`GitHub ${r.status}`);
-  return r.json();
-}
-async function ghPutFile(path, base64Content, message, sha, token) {
-  const body = { message, content: base64Content, branch: CFG.branch };
-  if (sha) body.sha = sha;
-  const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {
-    method: 'PUT', headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!r.ok) throw new Error(`GitHub ${r.status}`);
-  return r.json();
-}
-async function ghDeleteFile(path, message, sha, token) {
-  const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {
-    method: 'DELETE', headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, sha, branch: CFG.branch }),
-  });
-  if (!r.ok) throw new Error(`GitHub ${r.status}`);
-}
-async function ghVerifyToken(token) {
-  const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}`, { headers: ghHeaders(token) });
-  if (!r.ok) throw new Error('Token 无效');
-  return r.json();
-}
-function cdnUrl(path) { return `https://cdn.jsdelivr.net/gh/${CFG.owner}/${CFG.repo}@${CFG.branch}/${path}`; }
+    async function ghDeleteFile(path, message, sha, token) {
+      const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {
+        method: 'DELETE',
+        headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, sha, branch: CFG.branch }),
+      });
+      if (!r.ok) throw new Error(`GitHub ${r.status}`);
+    }
 
-// ================================================================
-// 数据
-// ================================================================
-let artworks = [];
-let artworksSha = null;
-let filtered = [];
-let currentTag = 'all';
-let currentSort = 'newest';
-let searchQuery = '';
-let isAdmin = false;
-let adminToken = '';
+    async function ghVerifyToken(token) {
+      const r = await fetch(`${GH}/repos/${CFG.owner}/${CFG.repo}`, { headers: ghHeaders(token) });
+      if (!r.ok) throw new Error('Token 无效或无仓库访问权限');
+      return r.json();
+    }
 
-let currentDetailArt = null;
-let isLikedView = false;
+    // ================================================================
+    // 数据加载与保存
+    // ================================================================
+    let artworks = [];
+    let artworksSha = null;
+    let announcements = [];
+    let annSha = null;
+    let filtered = [];
+    let currentTag = 'all';
+    let currentSort = 'newest';
+    let searchQuery = '';
+    let isAdmin = false;
+    let adminToken = '';
+    let currentDetailArt = null;
+    let isLikedView = false;
 
-async function fetchArtworks() {
-  showSkeletons();
+    // 用户状态（Supabase）
+    let currentUser = null;
 
-  const cached = localStorage.getItem('artworks_cache');
-  if (cached) {
-    try {
-      const { data, timestamp } = JSON.parse(cached);
-      if (Date.now() - timestamp < 5 * 60 * 1000) {
-        artworks = data;
+    async function fetchData() {
+      showSkeletons();
+      try {
+        const artFile = await ghGetFile('artworks.json', null);
+        if (artFile) {
+          artworksSha = artFile.sha;
+          const decoded = atob(artFile.content.replace(/\s/g, ''));
+          artworks = JSON.parse(decodeURIComponent(escape(decoded)));
+        } else {
+          artworks = [];
+        }
+
+        const annFile = await ghGetFile('announcements.json', null);
+        if (annFile) {
+          annSha = annFile.sha;
+          const decoded = atob(annFile.content.replace(/\s/g, ''));
+          announcements = JSON.parse(decodeURIComponent(escape(decoded)));
+        } else {
+          announcements = [];
+        }
+
+        artworks.sort((a, b) => b.date - a.date);
+        announcements.sort((a, b) => b.date - a.date);
+
         applyFilters();
         renderRecentStrip();
         renderLikedStrip();
+        renderAnnouncements();
+      } catch (e) {
+        console.error('加载数据失败:', e);
+        toast('加载数据失败，请刷新重试', 'error');
       }
-    } catch(e) {}
-  }
-
-  try {
-    const rawUrl = `https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/artworks.json`;
-    const res = await fetch(rawUrl, { cache: 'no-store' });
-    let data;
-    if (res.ok) {
-      data = await res.json();
-    } else {
-      const cdnFallback = `https://cdn.jsdelivr.net/gh/${CFG.owner}/${CFG.repo}@${CFG.branch}/artworks.json?t=${Date.now()}`;
-      const res2 = await fetch(cdnFallback);
-      data = res2.ok ? await res2.json() : [];
     }
-    artworks = data;
-    localStorage.setItem('artworks_cache', JSON.stringify({ data, timestamp: Date.now() }));
-    applyFilters();
-    renderRecentStrip();
-    renderLikedStrip();
-  } catch {
-    if (!artworks.length) { artworks = []; applyFilters(); }
-  }
-}
 
-async function persistArtworks(token) {
-  const file = await ghGetFile('artworks.json', token);
-  const sha = file ? file.sha : null;
-  const json = JSON.stringify(artworks, null, 2);
-  const base64 = btoa(unescape(encodeURIComponent(json)));
-  const result = await ghPutFile('artworks.json', base64, 'update artworks', sha, token);
-  artworksSha = result.content.sha;
-}
+    async function saveArtworks(token) {
+      const json = JSON.stringify(artworks, null, 2);
+      const base64 = btoa(unescape(encodeURIComponent(json)));
+      const result = await ghPutFile('artworks.json', base64, 'update artworks', artworksSha, token);
+      artworksSha = result.content.sha;
+    }
 
-function applyFilters() {
-  let arr = [...artworks];
-  if (currentTag !== 'all') arr = arr.filter(a => a.tag === currentTag);
-  if (searchQuery) arr = arr.filter(a => a.title.toLowerCase().includes(searchQuery) || (a.desc||'').toLowerCase().includes(searchQuery));
-  if (currentSort === 'newest') arr.sort((a,b) => b.date - a.date);
-  if (currentSort === 'oldest') arr.sort((a,b) => a.date - b.date);
-  if (currentSort === 'title') arr.sort((a,b) => a.title.localeCompare(b.title, 'zh'));
-  filtered = arr;
-  renderGallery();
-  renderLikedStrip();
-}
+    async function saveAnnouncements(token) {
+      const json = JSON.stringify(announcements, null, 2);
+      const base64 = btoa(unescape(encodeURIComponent(json)));
+      const result = await ghPutFile('announcements.json', base64, 'update announcements', annSha, token);
+      annSha = result.content.sha;
+    }
 
-function showSkeletons(n = 8) {
-  document.getElementById('gallery').innerHTML = Array.from({length:n}, () =>
-    `<div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>`
-  ).join('');
-}
+    // ================================================================
+    // 公告
+    // ================================================================
+    function renderAnnouncements() {
+      const container = document.getElementById('announce-text');
+      const empty = document.getElementById('announce-empty');
+      while (container.children.length > 2) {
+        container.removeChild(container.lastChild);
+      }
+      if (!announcements.length) {
+        empty.style.display = 'inline';
+        return;
+      }
+      empty.style.display = 'none';
+      announcements.forEach((ann, index) => {
+        const wrapper = document.createElement('span');
+        wrapper.className = 'ann-item';
+        wrapper.innerHTML = `
+          <span>${escHtml(ann.text)}</span>
+          ${isAdmin ? `<span class="del-ann" data-id="${ann.id}" data-index="${index}">✕</span>` : ''}
+        `;
+        container.appendChild(wrapper);
+      });
+      document.querySelectorAll('.del-ann').forEach(el => {
+        el.addEventListener('click', async function(e) {
+          e.stopPropagation();
+          if (!isAdmin) { toast('请先登录管理员'); return; }
+          const id = this.dataset.id;
+          if (!confirm('删除此公告？')) return;
+          try {
+            announcements = announcements.filter(a => a.id !== id);
+            await saveAnnouncements(adminToken);
+            renderAnnouncements();
+            toast('公告已删除');
+          } catch (err) {
+            toast('删除失败：' + err.message, 'error');
+          }
+        });
+      });
+    }
 
-function renderGallery() {
-  const g = document.getElementById('gallery');
-  if (!filtered.length) {
-    g.innerHTML = `<div class="empty"><div class="empty-icon">🖼️</div><p>${artworks.length===0?'还没有作品':'没有匹配的作品'}</p></div>`;
-    return;
-  }
-  g.innerHTML = '';
-  filtered.forEach((art, idx) => {
-    const liked = isLiked(art.id);
-    const card = document.createElement('div');
-    card.className = 'artwork-card';
-    card.innerHTML = `
-      <div class="card-img-wrap">
-        <img src="${cdnUrl(art.imagePath)}" alt="${art.title}" loading="lazy" />
-        <span class="card-tag">${escHtml(art.tag)}</span>
-      </div>
-      <div class="card-info">
-        <div class="card-left">
-          <div class="card-title">${escHtml(art.title)}</div>
-          <div class="card-meta">${fmtDate(art.date)}</div>
-        </div>
-        <button class="heart-btn ${liked?'liked':''}" data-id="${art.id}">
-          ${liked ? '❤️' : '🤍'}
-          <span class="heart-count">${liked ? 1 : 0}</span>
-        </button>
-      </div>
-    `;
-    card.querySelector('.heart-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      const id = e.currentTarget.dataset.id;
-      const nowLiked = toggleLike(id);
-      const btn = e.currentTarget;
-      btn.innerHTML = `${nowLiked ? '❤️' : '🤍'} <span class="heart-count">${nowLiked ? 1 : 0}</span>`;
-      btn.classList.toggle('liked', nowLiked);
+    document.getElementById('announce-post').addEventListener('click', async function() {
+      if (!isAdmin) { toast('请先登录管理员'); return; }
+      const input = document.getElementById('announce-input');
+      const text = input.value.trim();
+      if (!text) { toast('请输入公告内容'); return; }
+      try {
+        const newAnn = {
+          id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6),
+          text: text,
+          date: Date.now()
+        };
+        announcements.push(newAnn);
+        await saveAnnouncements(adminToken);
+        renderAnnouncements();
+        input.value = '';
+        toast('公告发布成功');
+      } catch (err) {
+        toast('发布失败：' + err.message, 'error');
+      }
+    });
+
+    document.getElementById('announce-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('announce-post').click();
+      }
+    });
+
+    // ================================================================
+    // 画廊
+    // ================================================================
+    function applyFilters() {
+      let arr = [...artworks];
+      if (currentTag !== 'all') arr = arr.filter(a => a.tag === currentTag);
+      if (searchQuery) arr = arr.filter(a => a.title.toLowerCase().includes(searchQuery) || (a.desc || '').toLowerCase()
+        .includes(searchQuery));
+      if (currentSort === 'newest') arr.sort((a, b) => b.date - a.date);
+      if (currentSort === 'oldest') arr.sort((a, b) => a.date - b.date);
+      if (currentSort === 'title') arr.sort((a, b) => a.title.localeCompare(b.title, 'zh'));
+      if (isLikedView) {
+        const likes = getLikes();
+        arr = arr.filter(a => likes[a.id] === true);
+      }
+      filtered = arr;
+      renderGallery();
       renderLikedStrip();
+    }
+
+    function showSkeletons(n = 8) {
+      document.getElementById('gallery').innerHTML = Array.from({ length: n }, () =>
+        `<div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>`
+      ).join('');
+    }
+
+    function renderGallery() {
+      const g = document.getElementById('gallery');
+      if (!filtered.length) {
+        g.innerHTML =
+        `<div class="empty"><div class="empty-icon">🖼️</div><p>${artworks.length===0?'还没有作品':'没有匹配的作品'}</p></div>`;
+        return;
+      }
+      g.innerHTML = '';
+      filtered.forEach((art, idx) => {
+        const liked = isLiked(art.id);
+        const likeCount = getLikeCount(art.id);
+        const card = document.createElement('div');
+        card.className = 'artwork-card';
+        card.innerHTML = `
+          <div class="card-img-wrap">
+            <img src="${escHtml(art.imageUrl)}" alt="${escHtml(art.title)}" loading="lazy" />
+            <span class="card-tag">${escHtml(art.tag)}</span>
+          </div>
+          <div class="card-info">
+            <div class="card-left">
+              <div class="card-title">${escHtml(art.title)}</div>
+              <div class="card-meta">${fmtDate(art.date)}</div>
+            </div>
+            <button class="heart-btn ${liked?'liked':''}" data-id="${art.id}">
+              ${liked ? '❤️' : '🤍'}
+              <span class="heart-count">${likeCount}</span>
+            </button>
+          </div>
+        `;
+        card.querySelector('.heart-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = e.currentTarget.dataset.id;
+          toggleLike(id);
+          applyFilters();
+          renderLikedStrip();
+        });
+        card.addEventListener('click', () => {
+          openDetail(idx);
+          addRecent(art);
+        });
+        g.appendChild(card);
+      });
+    }
+
+    function renderRecentStrip() {
+      const container = document.getElementById('recent-list');
+      const recent = getRecent();
+      if (!recent.length) {
+        container.innerHTML = '<span class="strip-empty">还没有浏览记录</span>';
+        return;
+      }
+      container.innerHTML = recent.map(item => `
+        <div class="strip-item" data-id="${item.id}">
+          <img src="${escHtml(item.imagePath)}" alt="${escHtml(item.title)}" loading="lazy" />
+          <div class="si-title">${escHtml(item.title)}</div>
+        </div>
+      `).join('');
+      container.querySelectorAll('.strip-item').forEach(el => {
+        const id = el.dataset.id;
+        const art = artworks.find(a => a.id === id);
+        if (art) el.addEventListener('click', () => openDetail(artworks.indexOf(art)));
+      });
+    }
+
+    function renderLikedStrip() {
+      const container = document.getElementById('liked-list');
+      const likes = getLikes();
+      const likedIds = Object.keys(likes).filter(id => likes[id] === true);
+      if (!likedIds.length) {
+        container.innerHTML = '<span class="strip-empty">还没有喜欢的作品</span>';
+        return;
+      }
+      const likedArts = artworks.filter(a => likedIds.includes(a.id));
+      if (!likedArts.length) {
+        container.innerHTML = '<span class="strip-empty">还没有喜欢的作品</span>';
+        return;
+      }
+      container.innerHTML = likedArts.map(art => `
+        <div class="strip-item" data-id="${art.id}">
+          <img src="${escHtml(art.imageUrl)}" alt="${escHtml(art.title)}" loading="lazy" />
+          <div class="si-title">${escHtml(art.title)}</div>
+        </div>
+      `).join('');
+      container.querySelectorAll('.strip-item').forEach(el => {
+        const id = el.dataset.id;
+        const art = artworks.find(a => a.id === id);
+        if (art) el.addEventListener('click', () => openDetail(artworks.indexOf(art)));
+      });
+    }
+
+    function showLikedView() {
+      isLikedView = true;
+      applyFilters();
+      document.getElementById('main-header').classList.add('hidden');
+      document.getElementById('tags-bar').classList.add('hidden');
+      document.getElementById('recent-strip').classList.add('hidden');
+      document.getElementById('liked-strip').classList.add('hidden');
+      document.getElementById('view-back-bar').classList.add('show');
+      document.getElementById('view-title').textContent = '❤️ 我喜欢';
+      document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+    }
+
+    function exitLikedView() {
+      isLikedView = false;
+      document.getElementById('main-header').classList.remove('hidden');
+      document.getElementById('tags-bar').classList.remove('hidden');
+      document.getElementById('recent-strip').classList.remove('hidden');
+      document.getElementById('liked-strip').classList.remove('hidden');
+      document.getElementById('view-back-bar').classList.remove('show');
+      document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+      document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');
+      currentTag = 'all';
+      applyFilters();
+    }
+
+    // ================================================================
+    // 详情页
+    // ================================================================
+    function openDetail(idx) {
+      const art = filtered[idx];
+      if (!art) return;
+      currentDetailArt = art;
+
+      document.getElementById('main-view').classList.add('hidden');
+      document.getElementById('detail-view').classList.add('open');
+      document.body.style.overflow = 'auto';
+
+      document.getElementById('detail-title').textContent = art.title;
+      document.getElementById('detail-image').src = art.imageUrl;
+      document.getElementById('detail-tag').textContent = art.tag;
+      document.getElementById('detail-title-text').textContent = art.title;
+      document.getElementById('detail-date').textContent = '发布于 ' + fmtDate(art.date);
+      document.getElementById('detail-desc').textContent = art.desc || '暂无描述';
+      document.getElementById('detail-uploader').textContent = art.uploader || '未知';
+
+      const liked = isLiked(art.id);
+      const heartBtn = document.getElementById('detail-heart');
+      heartBtn.innerHTML = `${liked ? '❤️' : '🤍'} <span class="detail-heart-count">${getLikeCount(art.id)}</span>`;
+      heartBtn.classList.toggle('liked', liked);
+
+      const delBtn = document.getElementById('detail-delete');
+      delBtn.style.display = isAdmin ? 'block' : 'none';
+      delBtn.dataset.id = art.id;
+
+      loadGiscus(art.id);
+
+      document.getElementById('detail-view').scrollTop = 0;
+      window.scrollTo(0, 0);
+
+      const wrap = document.getElementById('detail-image-wrap');
+      const img = document.getElementById('detail-image');
+      wrap.classList.remove('zoomed');
+      img.style.transform = 'scale(1)';
+      wrap.onclick = function(e) {
+        e.stopPropagation();
+        this.classList.toggle('zoomed');
+        if (this.classList.contains('zoomed')) {
+          img.style.transform = 'scale(1.8)';
+        } else {
+          img.style.transform = 'scale(1)';
+        }
+      };
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-view').classList.remove('open');
+      document.getElementById('main-view').classList.remove('hidden');
+      document.body.style.overflow = 'auto';
+      document.getElementById('giscus-container').innerHTML = '';
+      currentDetailArt = null;
       if (isLikedView) {
         showLikedView();
       }
+    }
+
+    document.getElementById('detail-heart').addEventListener('click', function() {
+      const art = currentDetailArt;
+      if (!art) return;
+      toggleLike(art.id);
+      applyFilters();
+      renderLikedStrip();
+      const idx = filtered.indexOf(art);
+      if (idx > -1) openDetail(idx);
     });
-    card.addEventListener('click', () => {
-      openDetail(idx);
-      addRecent(art);
+
+    document.getElementById('detail-delete').addEventListener('click', async function() {
+      if (!isAdmin) return;
+      const id = this.dataset.id;
+      if (!confirm('删除此作品？')) return;
+      try {
+        artworks = artworks.filter(a => a.id !== id);
+        await saveArtworks(adminToken);
+        closeDetail();
+        applyFilters();
+        renderLikedStrip();
+        toast('已删除');
+      } catch (e) {
+        toast('删除失败：' + e.message, 'error');
+      }
     });
-    g.appendChild(card);
-  });
-}
 
-function showLikedView() {
-  const likes = getLikes();
-  const likedIds = Object.keys(likes).filter(id => likes[id] === true);
-  const likedArts = artworks.filter(a => likedIds.includes(a.id));
-  if (!likedArts.length) {
-    toast('还没有喜欢的作品');
-    if (isLikedView) {
-      exitLikedView();
+    // ================================================================
+    // Giscus 评论区
+    // ================================================================
+    function loadGiscus(artId) {
+      const container = document.getElementById('giscus-container');
+      container.innerHTML = '';
+      setTimeout(() => {
+        const term = `gallery-${artId}`;
+        const script = document.createElement('script');
+        script.src = 'https://giscus.app/client.js';
+        script.setAttribute('data-repo', 'ljhLJH0102-0721/Public');
+        script.setAttribute('data-repo-id', 'R_kgDOUEWNDg');
+        script.setAttribute('data-category', 'Announcements');
+        script.setAttribute('data-category-id', 'DIC_kwDOUEWNDs4DENWa');
+        script.setAttribute('data-mapping', 'term');
+        script.setAttribute('data-term', term);
+        script.setAttribute('data-strict', '0');
+        script.setAttribute('data-reactions-enabled', '1');
+        script.setAttribute('data-emit-metadata', '0');
+        script.setAttribute('data-input-position', 'top');
+        script.setAttribute('data-theme', 'light');
+        script.setAttribute('data-lang', 'zh-CN');
+        script.setAttribute('data-loading', 'lazy');
+        script.crossOrigin = 'anonymous';
+        script.async = true;
+        container.appendChild(script);
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://giscus.app/default.css';
+        container.appendChild(link);
+      }, 300);
     }
-    return;
-  }
-  isLikedView = true;
-  filtered = likedArts;
-  renderGallery();
-  document.getElementById('main-header').classList.add('hidden');
-  document.getElementById('tags-bar').classList.add('hidden');
-  document.getElementById('recent-strip').classList.add('hidden');
-  document.getElementById('liked-strip').classList.add('hidden');
-  document.getElementById('view-back-bar').classList.add('show');
-  document.getElementById('view-title').textContent = '❤️ 我喜欢';
-  document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
-}
 
-function exitLikedView() {
-  isLikedView = false;
-  document.getElementById('main-header').classList.remove('hidden');
-  document.getElementById('tags-bar').classList.remove('hidden');
-  document.getElementById('recent-strip').classList.remove('hidden');
-  document.getElementById('liked-strip').classList.remove('hidden');
-  document.getElementById('view-back-bar').classList.remove('show');
-  document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
-  document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');
-  currentTag = 'all';
-  applyFilters();
-}
+    // ================================================================
+    // 上传
+    // ================================================================
+    let pickedFile = null,
+      pickedDataUrl = null;
+    const fileInput = document.getElementById('file-input');
+    const dropZone = document.getElementById('drop-zone');
+    const previewImg = document.getElementById('preview-img');
+    const previewWrap = document.getElementById('preview-wrap');
 
-function openDetail(idx) {
-  const art = filtered[idx];
-  if (!art) return;
-  currentDetailArt = art;
-
-  document.getElementById('main-view').classList.add('hidden');
-  document.getElementById('detail-view').classList.add('open');
-  document.body.style.overflow = 'auto';
-
-  document.getElementById('detail-title').textContent = art.title;
-  document.getElementById('detail-image').src = cdnUrl(art.imagePath);
-  document.getElementById('detail-tag').textContent = art.tag;
-  document.getElementById('detail-title-text').textContent = art.title;
-  document.getElementById('detail-date').textContent = '发布于 ' + fmtDate(art.date);
-  document.getElementById('detail-desc').textContent = art.desc || '暂无描述';
-
-  const liked = isLiked(art.id);
-  const heartBtn = document.getElementById('detail-heart');
-  heartBtn.innerHTML = `${liked ? '❤️' : '🤍'} <span class="detail-heart-count">${liked ? 1 : 0}</span>`;
-  heartBtn.classList.toggle('liked', liked);
-
-  const delBtn = document.getElementById('detail-delete');
-  delBtn.style.display = isAdmin ? 'block' : 'none';
-  delBtn.dataset.id = art.id;
-  delBtn.dataset.imgpath = art.imagePath;
-
-  loadGiscus(art.id);
-
-  document.getElementById('detail-view').scrollTop = 0;
-  window.scrollTo(0, 0);
-
-  const wrap = document.getElementById('detail-image-wrap');
-  const img = document.getElementById('detail-image');
-  wrap.classList.remove('zoomed');
-  img.style.transform = 'scale(1)';
-  wrap.onclick = function(e) {
-    e.stopPropagation();
-    this.classList.toggle('zoomed');
-    if (this.classList.contains('zoomed')) {
-      img.style.transform = 'scale(1.8)';
-    } else {
-      img.style.transform = 'scale(1)';
+    function handlePick(file) {
+      if (!file || !file.type.startsWith('image/')) return toast('请选择图片文件', 'error');
+      if (file.size > 20 * 1024 * 1024) return toast('图片最大20MB', 'error');
+      pickedFile = file;
+      const reader = new FileReader();
+      reader.onload = e => {
+        pickedDataUrl = e.target.result;
+        previewImg.src = pickedDataUrl;
+        previewWrap.style.display = 'block';
+        dropZone.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
     }
-  };
-}
 
-function closeDetail() {
-  document.getElementById('detail-view').classList.remove('open');
-  document.getElementById('main-view').classList.remove('hidden');
-  document.body.style.overflow = 'auto';
-  document.getElementById('giscus-container').innerHTML = '';
-  currentDetailArt = null;
-  if (isLikedView) {
-    showLikedView();
-  }
-}
+    fileInput.addEventListener('change', e => handlePick(e.target.files[0]));
+    dropZone.addEventListener('dragover', e => { e.preventDefault();
+      dropZone.classList.add('drag'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+    dropZone.addEventListener('drop', e => { e.preventDefault();
+      dropZone.classList.remove('drag');
+      handlePick(e.dataTransfer.files[0]); });
+    document.getElementById('preview-remove').addEventListener('click', () => {
+      pickedFile = null;
+      pickedDataUrl = null;
+      previewImg.src = '';
+      previewWrap.style.display = 'none';
+      dropZone.style.display = '';
+      fileInput.value = '';
+    });
 
-function loadGiscus(artId) {
-  const container = document.getElementById('giscus-container');
-  container.innerHTML = '';
+    document.getElementById('upload-btn').addEventListener('click', () => {
+      if (!isAdmin) { toast('请先登录管理员'); return; }
+      openModal('upload-modal');
+    });
+    document.getElementById('upload-cancel').addEventListener('click', () => closeModal('upload-modal'));
+    document.getElementById('upload-close').addEventListener('click', () => closeModal('upload-modal'));
 
-  setTimeout(() => {
-    const term = `gallery-${artId}`;
-    const script = document.createElement('script');
-    script.src = 'https://giscus.app/client.js';
-    script.setAttribute('data-repo', GISCUS_CONFIG.repo);
-    script.setAttribute('data-repo-id', GISCUS_CONFIG.repoId);
-    script.setAttribute('data-category', GISCUS_CONFIG.category);
-    script.setAttribute('data-category-id', GISCUS_CONFIG.categoryId);
-    script.setAttribute('data-mapping', 'term');
-    script.setAttribute('data-term', term);
-    script.setAttribute('data-strict', GISCUS_CONFIG.strict);
-    script.setAttribute('data-reactions-enabled', GISCUS_CONFIG.reactionsEnabled);
-    script.setAttribute('data-emit-metadata', GISCUS_CONFIG.emitMetadata);
-    script.setAttribute('data-input-position', GISCUS_CONFIG.inputPosition);
-    script.setAttribute('data-theme', GISCUS_CONFIG.theme);
-    script.setAttribute('data-lang', GISCUS_CONFIG.lang);
-    script.setAttribute('data-loading', GISCUS_CONFIG.loading);
-    script.crossOrigin = 'anonymous';
-    script.async = true;
-    container.appendChild(script);
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://giscus.app/default.css';
-    container.appendChild(link);
-  }, 300);
-}
-
-// ================================================================
-// 双击 Logo 返回首页
-// ================================================================
-document.querySelector('.logo').addEventListener('dblclick', function() {
-  document.getElementById('search-input').value = '';
-  searchQuery = '';
-  document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
-  document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');
-  currentTag = 'all';
-  if (document.getElementById('detail-view').classList.contains('open')) {
-    closeDetail();
-  }
-  if (isLikedView) {
-    exitLikedView();
-  }
-  fetchArtworks();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  toast('已返回首页');
-});
-
-// ================================================================
-// 事件绑定
-// ================================================================
-document.getElementById('view-back-btn').addEventListener('click', exitLikedView);
-document.getElementById('liked-more').addEventListener('click', showLikedView);
-document.getElementById('detail-back').addEventListener('click', closeDetail);
-
-document.getElementById('detail-heart').addEventListener('click', function() {
-  const art = currentDetailArt;
-  if (!art) return;
-  const liked = toggleLike(art.id);
-  this.innerHTML = `${liked ? '❤️' : '🤍'} <span class="detail-heart-count">${liked ? 1 : 0}</span>`;
-  this.classList.toggle('liked', liked);
-  renderGallery();
-  renderLikedStrip();
-  if (isLikedView) {
-    showLikedView();
-  }
-});
-
-document.getElementById('detail-delete').addEventListener('click', async function() {
-  if (!isAdmin) return;
-  const id = this.dataset.id;
-  const imgPath = this.dataset.imgpath;
-  if (!confirm('删除此作品？')) return;
-  try {
-    if (imgPath) {
-      const file = await ghGetFile(imgPath, adminToken);
-      if (file) await ghDeleteFile(imgPath, `delete ${imgPath}`, file.sha, adminToken);
+    function resetUploadForm() {
+      pickedFile = null;
+      pickedDataUrl = null;
+      fileInput.value = '';
+      previewImg.src = '';
+      previewWrap.style.display = 'none';
+      dropZone.style.display = '';
+      document.getElementById('art-title').value = '';
+      document.getElementById('art-desc').value = '';
+      document.getElementById('art-tag').value = '油画';
+      document.getElementById('upload-progress').style.display = 'none';
+      document.getElementById('progress-fill').style.width = '0%';
     }
-    artworks = artworks.filter(a => a.id !== id);
-    await persistArtworks(adminToken);
-    closeDetail();
-    applyFilters();
-    renderLikedStrip();
-    toast('已删除');
-  } catch(e) { toast('删除失败'); }
-});
 
-// ================================================================
-// 上传
-// ================================================================
-let pickedFile = null, pickedDataUrl = null;
-const fileInput = document.getElementById('file-input');
-const dropZone = document.getElementById('drop-zone');
-const previewImg = document.getElementById('preview-img');
-const previewWrap = document.getElementById('preview-wrap');
-
-function handlePick(file) {
-  if (!file || !file.type.startsWith('image/')) return toast('请选图片');
-  if (file.size > 20*1024*1024) return toast('图片最大20MB');
-  pickedFile = file;
-  const reader = new FileReader();
-  reader.onload = e => { pickedDataUrl = e.target.result; previewImg.src = pickedDataUrl; previewWrap.style.display = 'block'; dropZone.style.display = 'none'; };
-  reader.readAsDataURL(file);
-}
-fileInput.addEventListener('change', e => handlePick(e.target.files[0]));
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
-dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag'); handlePick(e.dataTransfer.files[0]); });
-document.getElementById('preview-remove').addEventListener('click', () => { pickedFile = null; pickedDataUrl = null; previewImg.src = ''; previewWrap.style.display = 'none'; dropZone.style.display = ''; fileInput.value = ''; });
-document.getElementById('upload-btn').addEventListener('click', () => openModal('upload-modal'));
-document.getElementById('upload-cancel').addEventListener('click', () => closeModal('upload-modal'));
-document.getElementById('upload-close').addEventListener('click', () => closeModal('upload-modal'));
-
-function resetUploadForm() {
-  pickedFile = null; pickedDataUrl = null; fileInput.value = ''; previewImg.src = ''; previewWrap.style.display = 'none'; dropZone.style.display = '';
-  document.getElementById('art-title').value = ''; document.getElementById('art-desc').value = '';
-  document.getElementById('art-tag').value = '油画';
-  document.getElementById('upload-progress').style.display = 'none';
-  document.getElementById('progress-fill').style.width = '0%';
-}
-function setProgress(pct, label) {
-  document.getElementById('upload-progress').style.display = 'block';
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-text').textContent = label;
-}
-document.getElementById('upload-submit').addEventListener('click', async () => {
-  const title = document.getElementById('art-title').value.trim();
-  const tag = document.getElementById('art-tag').value;
-  const desc = document.getElementById('art-desc').value.trim();
-  if (!pickedFile) return toast('请选图');
-  if (!title) return toast('请填标题');
-  const btn = document.getElementById('upload-submit');
-  btn.disabled = true; btn.textContent = '上传中…';
-  try {
-    setProgress(20, '读取…');
-    const base64 = pickedDataUrl.split(',')[1];
-    const ext = (pickedFile.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`;
-    const imgPath = `images/${filename}`;
-    setProgress(50, '上传…');
-    await ghPutFile(imgPath, base64, `add ${title}`, null, adminToken);
-    setProgress(80, '更新列表…');
-    const artwork = { id: Date.now().toString(36)+'-'+Math.random().toString(36).slice(2), title, tag, desc, date: Date.now(), imagePath: imgPath };
-    artworks.unshift(artwork);
-    await persistArtworks(adminToken);
-    setProgress(100, '完成！');
-    setTimeout(() => { closeModal('upload-modal'); resetUploadForm(); applyFilters(); toast('发布成功'); }, 500);
-  } catch(e) { toast('上传失败'); } finally { btn.disabled = false; btn.textContent = '发布'; }
-});
-
-// ================================================================
-// Auth
-// ================================================================
-document.getElementById('admin-btn').addEventListener('click', () => {
-  if (isAdmin) {
-    isAdmin = false; adminToken = ''; sessionStorage.removeItem('ag_token');
-    document.getElementById('upload-btn').style.display = 'none';
-    document.getElementById('admin-badge').style.display = 'none';
-    document.getElementById('admin-btn').textContent = '管理';
-    // 隐藏公告发布栏
-    document.getElementById('announce-actions').style.display = 'none';
-    document.getElementById('announcement-bar').classList.remove('admin-mode');
-    renderAnnouncements();
-    toast('已退出');
-  } else openModal('auth-modal');
-});
-document.getElementById('auth-submit').addEventListener('click', doLogin);
-document.getElementById('auth-cancel').addEventListener('click', () => closeModal('auth-modal'));
-document.getElementById('auth-close').addEventListener('click', () => closeModal('auth-modal'));
-document.getElementById('admin-token').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-async function doLogin() {
-  const token = document.getElementById('admin-token').value.trim();
-  if (!token) return toast('输入Token');
-  try {
-    await ghVerifyToken(token);
-    isAdmin = true; adminToken = token;
-    sessionStorage.setItem('ag_token', token);
-    document.getElementById('upload-btn').style.display = '';
-    document.getElementById('admin-badge').style.display = '';
-    document.getElementById('admin-btn').textContent = '退出';
-    // 显示公告发布栏
-    document.getElementById('announce-actions').style.display = 'flex';
-    document.getElementById('announcement-bar').classList.add('admin-mode');
-    renderAnnouncements();
-    closeModal('auth-modal');
-    toast('登录成功');
-  } catch(e) { toast('Token无效'); }
-}
-
-document.querySelectorAll('.tag-pill').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (isLikedView) {
-      exitLikedView();
+    function setProgress(pct, label) {
+      document.getElementById('upload-progress').style.display = 'block';
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-text').textContent = label;
     }
-    document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentTag = btn.dataset.tag;
-    applyFilters();
-  });
-});
-document.getElementById('sort-select').addEventListener('change', e => { currentSort = e.target.value; applyFilters(); });
 
-function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
-['upload-modal','auth-modal'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => { if (e.target === document.getElementById(id)) closeModal(id); });
-});
+    async function uploadToImgBB(file) {
+      const formData = new FormData();
+      formData.append('key', IMGBB_API_KEY);
+      formData.append('image', file);
+      const response = await fetch('https://api.imgbb.com/1/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (data.success) {
+        return data.data.url;
+      } else {
+        throw new Error(data.error?.message || 'ImgBB 上传失败');
+      }
+    }
 
-let toastTimer;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
-}
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function fmtDate(ts) { return new Date(ts).toLocaleDateString('zh-CN', { year:'numeric', month:'short', day:'numeric' }); }
+    document.getElementById('upload-submit').addEventListener('click', async function() {
+      if (!isAdmin) { toast('请先登录管理员'); return; }
+      const title = document.getElementById('art-title').value.trim();
+      const tag = document.getElementById('art-tag').value;
+      const desc = document.getElementById('art-desc').value.trim();
+      if (!pickedFile) { toast('请选择图片', 'error'); return; }
+      if (!title) { toast('请输入标题', 'error'); return; }
 
-// ================================================================
-// Init
-// ================================================================
-const savedToken = sessionStorage.getItem('ag_token');
-if (savedToken) {
-  adminToken = savedToken; isAdmin = true;
-  document.getElementById('upload-btn').style.display = '';
-  document.getElementById('admin-badge').style.display = '';
-  document.getElementById('admin-btn').textContent = '退出';
-  document.getElementById('announce-actions').style.display = 'flex';
-  document.getElementById('announcement-bar').classList.add('admin-mode');
-}
+      const btn = this;
+      btn.disabled = true;
+      btn.textContent = '上传中…';
 
-setupSearchSuggestions();
-fetchArtworks();
-fetchAnnouncements();
-</script>
+      try {
+        setProgress(20, '读取图片…');
+        setProgress(40, '上传到图床…');
+        const imageUrl = await uploadToImgBB(pickedFile);
+
+        setProgress(70, '更新数据…');
+        const artwork = {
+          id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6),
+          title,
+          tag,
+          desc,
+          date: Date.now(),
+          imageUrl: imageUrl,
+          uploader: '管理员'
+        };
+        artworks.unshift(artwork);
+        await saveArtworks(adminToken);
+        setProgress(100, '完成！');
+        setTimeout(() => {
+          closeModal('upload-modal');
+          resetUploadForm();
+          applyFilters();
+          toast('作品发布成功！', 'success');
+        }, 500);
+      } catch (e) {
+        toast('上传失败：' + e.message, 'error');
+        console.error(e);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '发布';
+      }
+    });
+
+    // ================================================================
+    // 搜索
+    // ================================================================
+    function setupSearchSuggestions() {
+      const input = document.getElementById('search-input');
+      const sugg = document.getElementById('suggestions');
+      input.addEventListener('input', function() {
+        const val = this.value.trim().toLowerCase();
+        if (!val) { sugg.style.display = 'none'; return; }
+        const matches = artworks.filter(a => a.title.toLowerCase().includes(val)).slice(0, 8);
+        if (!matches.length) { sugg.style.display = 'none'; return; }
+        sugg.innerHTML = matches.map(a => `<div class="sug-item" data-title="${escHtml(a.title)}">${escHtml(a.title)}</div>`)
+          .join('');
+        sugg.style.display = 'block';
+        sugg.querySelectorAll('.sug-item').forEach(el => {
+          el.addEventListener('click', function() {
+            input.value = this.dataset.title;
+            sugg.style.display = 'none';
+            searchQuery = input.value.trim().toLowerCase();
+            applyFilters();
+          });
+        });
+      });
+      document.addEventListener('click', function(e) {
+        if (!document.getElementById('search-wrap').contains(e.target)) sugg.style.display = 'none';
+      });
+      input.addEventListener('input', function() {
+        searchQuery = this.value.trim().toLowerCase();
+        applyFilters();
+      });
+    }
+
+    // ================================================================
+    // Supabase 用户认证
+    // ================================================================
+    async function signUp(email, password) {
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+      });
+      if (error) {
+        toast('注册失败：' + error.message, 'error');
+        return false;
+      }
+      toast('注册成功！请登录', 'success');
+      return true;
+    }
+
+    async function signIn(email, password) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+      if (error) {
+        toast('登录失败：' + error.message, 'error');
+        return false;
+      }
+      currentUser = data.user;
+      updateUIAuth();
+      toast('登录成功！', 'success');
+      return true;
+    }
+
+    async function signOut() {
+      await supabase.auth.signOut();
+      currentUser = null;
+      updateUIAuth();
+      toast('已退出');
+    }
+
+    function updateUIAuth() {
+      const container = document.getElementById('auth-section');
+      if (currentUser) {
+        container.innerHTML = `
+          <span style="color:var(--text2);font-size:0.8rem;margin-right:6px;">👤 ${currentUser.email}</span>
+          <button class="btn btn-ghost" onclick="signOut()">退出</button>
+        `;
+      } else {
+        container.innerHTML = `
+          <button class="btn btn-ghost" onclick="showLoginModal()">登录</button>
+          <button class="btn btn-primary" onclick="showSignupModal()">注册</button>
+        `;
+      }
+    }
+
+    // 初始化 Supabase 会话检查
+    async function checkAuth() {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        currentUser = data.session.user;
+        updateUIAuth();
+      } else {
+        updateUIAuth();
+      }
+    }
+
+    // 登录/注册模态框控制
+    function showLoginModal() { openModal('login-modal'); }
+
+    function showSignupModal() { openModal('signup-modal'); }
+
+    document.getElementById('login-submit').addEventListener('click', async function() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+      if (!email || !password) { toast('请填写完整', 'error'); return; }
+      const success = await signIn(email, password);
+      if (success) closeModal('login-modal');
+    });
+
+    document.getElementById('signup-submit').addEventListener('click', async function() {
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value.trim();
+      if (!email || !password) { toast('请填写完整', 'error'); return; }
+      if (password.length < 6) { toast('密码至少6位', 'error'); return; }
+      const success = await signUp(email, password);
+      if (success) {
+        closeModal('signup-modal');
+        document.getElementById('login-email').value = email;
+        document.getElementById('login-password').value = password;
+        showLoginModal();
+      }
+    });
+
+    document.getElementById('login-password').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('login-submit').click();
+    });
+    document.getElementById('signup-password').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('signup-submit').click();
+    });
+
+    // ================================================================
+    // 管理员认证（GitHub Token）
+    // ================================================================
+    document.getElementById('admin-btn').addEventListener('click', () => {
+      if (isAdmin) {
+        isAdmin = false;
+        adminToken = '';
+        sessionStorage.removeItem('admin_token');
+        document.getElementById('upload-btn').style.display = 'none';
+        document.getElementById('admin-badge').style.display = 'none';
+        document.getElementById('admin-btn').textContent = '管理';
+        document.getElementById('announce-actions').style.display = 'none';
+        document.getElementById('announcement-bar').classList.remove('admin-mode');
+        renderAnnouncements();
+        toast('已退出管理员');
+      } else {
+        openModal('auth-modal');
+        setTimeout(() => document.getElementById('admin-token').focus(), 100);
+      }
+    });
+
+    document.getElementById('auth-submit').addEventListener('click', doAdminLogin);
+    document.getElementById('auth-cancel').addEventListener('click', () => closeModal('auth-modal'));
+    document.getElementById('auth-close').addEventListener('click', () => closeModal('auth-modal'));
+    document.getElementById('admin-token').addEventListener('keydown', e => { if (e.key === 'Enter') doAdminLogin(); });
+
+    async function doAdminLogin() {
+      const token = document.getElementById('admin-token').value.trim();
+      if (!token) { toast('请输入Token', 'error'); return; }
+      try {
+        await ghVerifyToken(token);
+        isAdmin = true;
+        adminToken = token;
+        sessionStorage.setItem('admin_token', token);
+        document.getElementById('admin-token').value = '';
+        document.getElementById('upload-btn').style.display = '';
+        document.getElementById('admin-badge').style.display = '';
+        document.getElementById('admin-btn').textContent = '退出管理';
+        document.getElementById('announce-actions').style.display = 'flex';
+        document.getElementById('announcement-bar').classList.add('admin-mode');
+        renderAnnouncements();
+        closeModal('auth-modal');
+        toast('管理员登录成功');
+      } catch (e) {
+        toast('Token无效：' + e.message, 'error');
+      }
+    }
+
+    // ================================================================
+    // 事件绑定
+    // ================================================================
+    document.getElementById('view-back-btn').addEventListener('click', exitLikedView);
+    document.getElementById('liked-more').addEventListener('click', showLikedView);
+    document.getElementById('detail-back').addEventListener('click', closeDetail);
+    document.querySelector('.logo').addEventListener('dblclick', function() {
+      document.getElementById('search-input').value = '';
+      searchQuery = '';
+      document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+      document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');
+      currentTag = 'all';
+      if (document.getElementById('detail-view').classList.contains('open')) {
+        closeDetail();
+      }
+      if (isLikedView) {
+        exitLikedView();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      toast('已返回首页');
+    });
+
+    document.querySelectorAll('.tag-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (isLikedView) {
+          exitLikedView();
+        }
+        document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTag = btn.dataset.tag;
+        applyFilters();
+      });
+    });
+    document.getElementById('sort-select').addEventListener('change', e => { currentSort = e.target.value;
+      applyFilters(); });
+
+    // ================================================================
+    // Modal Helpers
+    // ================================================================
+    function openModal(id) { document.getElementById(id).classList.add('open');
+      document.body.style.overflow = 'hidden'; }
+
+    function closeModal(id) { document.getElementById(id).classList.remove('open');
+      document.body.style.overflow = ''; }
+    ['upload-modal', 'auth-modal', 'login-modal', 'signup-modal'].forEach(id => {
+      document.getElementById(id).addEventListener('click', e => {
+        if (e.target === document.getElementById(id)) closeModal(id);
+      });
+    });
+
+    // ================================================================
+    // Toast
+    // ================================================================
+    let toastTimer;
+
+    function toast(msg, type = '') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = 'show' + (type ? ' ' + type : '');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.className = '', 2500);
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function fmtDate(ts) {
+      return new Date(ts).toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    // ================================================================
+    // 初始化
+    // ================================================================
+    // 恢复管理员会话
+    const savedToken = sessionStorage.getItem('admin_token');
+    if (savedToken) {
+      adminToken = savedToken;
+      isAdmin = true;
+      document.getElementById('upload-btn').style.display = '';
+      document.getElementById('admin-badge').style.display = '';
+      document.getElementById('admin-btn').textContent = '退出管理';
+      document.getElementById('announce-actions').style.display = 'flex';
+      document.getElementById('announcement-bar').classList.add('admin-mode');
+    }
+
+    setupSearchSuggestions();
+    fetchData();
+    checkAuth(); // 检查用户登录状态
+  </script>
 </body>
 </html>
