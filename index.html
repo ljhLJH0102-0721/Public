@@ -458,8 +458,34 @@
     function renderCommentSection(artworkId){const inputArea=document.getElementById('comment-input-area');const listEl=document.getElementById('comment-list');const loadingEl=document.getElementById('comment-loading');if(supa.user){inputArea.innerHTML='<div class="comment-input-wrap"><textarea id="new-comment-text" placeholder="写下你的想法…" rows="2" maxlength="1000"></textarea><button class="btn btn-primary submit-comment" id="submit-comment-btn">发送</button></div>';document.getElementById('submit-comment-btn').addEventListener('click',async()=>{const ta=document.getElementById('new-comment-text');const content=ta.value.trim();if(!content){toast('请输入评论内容');return}const btn=document.getElementById('submit-comment-btn');btn.disabled=true;btn.textContent='发送中…';try{await supa.addComment(supa.user.id,artworkId,content);ta.value='';toast('评论成功','success');await loadComments(artworkId)}catch(e){if(e.message==='SESSION_EXPIRED'){toast('登录已过期，请重新登录','error');supa.saveSession(null);updateUserUI();renderCommentSection(artworkId)}else{toast('评论失败：'+e.message,'error')}}finally{btn.disabled=false;btn.textContent='发送'}})}else{inputArea.innerHTML='<p class="comment-login-tip"><a id="comment-login-link">登录</a> 后参与评论</p>';document.getElementById('comment-login-link').addEventListener('click',openUserAuthModal)}loadComments(artworkId)}
     async function loadComments(artworkId){const listEl=document.getElementById('comment-list');const loadingEl=document.getElementById('comment-loading');loadingEl.style.display='block';listEl.innerHTML='';try{const comments=await supa.getComments(artworkId);loadingEl.style.display='none';if(!comments.length){listEl.innerHTML='<div class="comment-empty">还没有评论，快来第一个发言吧 😊</div>';return}listEl.innerHTML='';comments.forEach(c=>{const nickname=c.profiles?.nickname||'匿名用户';const initial=[...nickname][0]||'?';const canDel=isAdmin||(supa.user&&supa.user.id===c.user_id);const item=document.createElement('div');item.className='comment-item';item.innerHTML='<div class="comment-avatar" style="background:'+strColor(c.user_id)+'">'+escHtml(initial)+'</div><div class="comment-body"><div class="comment-header"><span class="comment-name">'+escHtml(nickname)+'</span><span class="comment-time">'+fmtDate(new Date(c.created_at).getTime())+'</span>'+(canDel?'<span class="comment-del" data-id="'+c.id+'">删除</span>':'')+'</div><div class="comment-text">'+escHtml(c.content)+'</div></div>';if(canDel){item.querySelector('.comment-del').addEventListener('click',async()=>{if(!confirm('删除此评论？'))return;try{await supa.deleteComment(c.id);toast('已删除');await loadComments(artworkId)}catch{toast('删除失败','error')}})}listEl.appendChild(item)})}catch(e){loadingEl.style.display='none';if(e.message==='SESSION_EXPIRED'){supa.saveSession(null);updateUserUI();listEl.innerHTML='<div class="comment-empty">登录已过期，请<a onclick="openUserAuthModal()" style="color:var(--accent);cursor:pointer;">重新登录</a></div>';renderCommentSection(artworkId)}else{listEl.innerHTML='<div class="comment-empty">评论加载失败：'+escHtml(e.message)+'</div>'}}}
     function strColor(str){const colors=['#6a4e9c','#e67e22','#27ae60','#e74c3c','#2980b9','#8e44ad','#16a085','#d35400'];let h=0;for(const c of(str||''))h=(h*31+c.charCodeAt(0))&0xffffffff;return colors[Math.abs(h)%colors.length]}
-    function renderHotList(){const container=document.getElementById('hot-list');if(!container)return;const sorted=artworks.slice().sort((a,b)=>(b.likes?.length||0)-(a.likes?.length||0)).slice(0,10);if(!sorted.length){container.innerHTML='<div class="hot-empty">暂无作品</div>';return}container.innerHTML='';sorted.forEach((art,index)=>{const rank=index+1;const likeCount=art.likes?.length||0;const rankClass=rank===1?'top1':rank===2?'top2':rank===3?'top3':'';const div=document.createElement('div');div.className='hot-item';div.innerHTML='<div class="rank '+rankClass+'">#'+rank+'</div><div class="info"><div class="title">'+escHtml(art.title)+'</div><div class="meta">'+escHtml(art.tag)+'</div></div><div class="likes">❤️ '+likeCount+'</div>';div.addEventListener('click',()=>{const idx=artworks.indexOf(art);if(idx!==-1){openDetail(idx);document.getElementById('hot-dropdown').classList.remove('open');}});container.appendChild(div)})}
-    const hotBtn=document.getElementById('hot-btn');if(hotBtn){hotBtn.addEventListener('click',function(e){e.stopPropagation();renderHotList();document.getElementById('hot-dropdown').classList.toggle('open')});}
+    function renderHotList(){
+      const container=document.getElementById('hot-list');
+      if(!container)return;
+      const sorted=artworks.slice().sort((a,b)=>(getLikeCount(b.id)-getLikeCount(a.id))).slice(0,10);
+      if(!sorted.length){
+        container.innerHTML='<div class="hot-empty">暂无作品</div>';
+        return;
+      }
+      container.innerHTML='';
+      sorted.forEach((art,index)=>{
+        const rank=index+1;
+        const likeCount=getLikeCount(art.id);
+        const rankClass=rank===1?'top1':rank===2?'top2':rank===3?'top3':'';
+        const div=document.createElement('div');
+        div.className='hot-item';
+        div.innerHTML='<div class="rank '+rankClass+'">#'+rank+'</div><div class="info"><div class="title">'+escHtml(art.title)+'</div><div class="meta">'+escHtml(art.tag)+'</div></div><div class="likes">❤️ '+likeCount+'</div>';
+        div.addEventListener('click',()=>{
+          const idx=artworks.indexOf(art);
+          if(idx!==-1){
+            openDetail(idx);
+            document.getElementById('hot-dropdown').classList.remove('open');
+          }
+        });
+        container.appendChild(div);
+      });
+    }
+    const hotBtn=document.getElementById('hot-btn');
+    if(hotBtn){hotBtn.addEventListener('click',function(e){e.stopPropagation();renderHotList();document.getElementById('hot-dropdown').classList.toggle('open')});}
     document.addEventListener('click',function(e){if(!e.target.closest('.hot-wrap')){const dd=document.getElementById('hot-dropdown');if(dd)dd.classList.remove('open')}});
     const BG_STORAGE_KEY='bg_color';
     function loadBg(){try{const color=localStorage.getItem(BG_STORAGE_KEY);if(color){document.body.style.background=color;const custom=document.getElementById('bg-custom-color');if(custom)custom.value=color;document.querySelectorAll('.bg-preset').forEach(el=>el.classList.toggle('active',el.dataset.color===color))}}catch{}}
