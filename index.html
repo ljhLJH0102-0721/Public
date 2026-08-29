@@ -407,14 +407,14 @@
   <div class="toast" id="toast"></div>
   <script>
     'use strict';
-    // ==================== 唯一需要你修改的地方 ====================
-    const CLOUDINARY_CLOUD_NAME = 'mxwtqy3s';     // 去 Cloudinary 控制台抄，形如 dx8xxxxxx
-    const CLOUDINARY_UPLOAD_PRESET = 'ml_default';   // 你创建的 unsigned preset
-    const OWNER_EMAIL = '551250969@qq.com';                 // 站长邮箱
-    const GITHUB_OWNER = 'ljhLJH0102-0721';                 // 你的GitHub用户名
-    const GITHUB_REPO = 'Public';                           // 仓库名
-    const GITHUB_BRANCH = 'main';                           // 分支
-    // ==========================================================
+    // ==================== 已为你填好 ====================
+    const CLOUDINARY_CLOUD_NAME = 'mxwtqy3s';              // 你的 Cloud Name
+    const CLOUDINARY_UPLOAD_PRESET = 'ml_default';         // 你的 Preset（但必须改为 Unsigned）
+    const OWNER_EMAIL = '551250969@qq.com';
+    const GITHUB_OWNER = 'ljhLJH0102-0721';
+    const GITHUB_REPO = 'Public';
+    const GITHUB_BRANCH = 'main';
+    // ===================================================
 
     const SUPA_URL = 'https://pqzvjeuoyqzoqptulsde.supabase.co';
     const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxenZqZXVveXF6b3FwdHVsc2RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3ODczODAsImV4cCI6MjEwMzM2MzM4MH0.C8ihm_67nDph7aXvmJX8KmwXlp6mLnGl5gfevEepo4M';
@@ -817,8 +817,9 @@
       btn.disabled=true;btn.textContent='上传中…';
 
       try{
-        let imageUrl;
+        let imageUrl = null;
         if(isR18){
+          // R18 上传到 GitHub
           const token = getGitHubToken();
           if(!token){
             openModal('token-modal');
@@ -836,13 +837,24 @@
           await ghPutFile(path, base64, 'add R18 '+title, null, token);
           imageUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_OWNER}/${GITHUB_REPO}@${GITHUB_BRANCH}/${path}`;
         }else{
+          // 普通上传到 Cloudinary
           const formData=new FormData();
           formData.append('file', pickedFile);
           formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
           const res=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {method:'POST', body:formData});
-          if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||'上传失败')}
+          if(!res.ok){
+            const err=await res.json().catch(()=>({}));
+            throw new Error(err.error?.message || '上传失败，请确认预设为 Unsigned 模式');
+          }
           const data=await res.json();
-          imageUrl=data.secure_url;
+          if(!data.secure_url){
+            throw new Error('Cloudinary 未返回图片链接，请确认预设为 Unsigned 模式');
+          }
+          imageUrl = data.secure_url;
+        }
+
+        if(!imageUrl){
+          throw new Error('未能获取图片链接');
         }
 
         const artwork = {
