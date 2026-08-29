@@ -405,87 +405,84 @@
     </div>
   </div>
   <div class="toast" id="toast"></div>
+
   <script>
     'use strict';
-    // ==================== 已为你填好 ====================
-    const CLOUDINARY_CLOUD_NAME = 'mxwtqy3s';              // 你的 Cloud Name
-    const CLOUDINARY_UPLOAD_PRESET = 'Mikufans';         // 你的 Preset（但必须改为 Unsigned）
+    // ==================== 所有配置已内嵌 ====================
+    const CLOUDINARY_CLOUD_NAME = 'mxwtqy3s';
+    const CLOUDINARY_UPLOAD_PRESET = 'Mikufans';
     const OWNER_EMAIL = '551250969@qq.com';
     const GITHUB_OWNER = 'ljhLJH0102-0721';
     const GITHUB_REPO = 'Public';
     const GITHUB_BRANCH = 'main';
-    // ===================================================
-
     const SUPA_URL = 'https://pqzvjeuoyqzoqptulsde.supabase.co';
     const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxenZqZXVveXF6b3FwdHVsc2RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3ODczODAsImV4cCI6MjEwMzM2MzM4MH0.C8ihm_67nDph7aXvmJX8KmwXlp6mLnGl5gfevEepo4M';
 
-    // ---------- Supabase 封装 ----------
-    const supa=(()=>{
-      let _session=null;
-      function saveSession(s){_session=s;if(s)localStorage.setItem('sb_session',JSON.stringify(s));else localStorage.removeItem('sb_session');}
-      function loadSession(){try{const raw=localStorage.getItem('sb_session');if(raw){const s=JSON.parse(raw);if(s.expires_at&&Date.now()/1000<s.expires_at){_session=s;return true}localStorage.removeItem('sb_session')}}catch{}return false}
-      function isTokenExpired(){if(!_session||!_session.expires_at)return true;return Date.now()/1000>=_session.expires_at-5}
-      async function refreshToken(){if(!_session||!_session.refresh_token)throw new Error('无 refresh token');const res=await fetch(SUPA_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:SUPA_ANON,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:_session.refresh_token})});if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.msg||err.message||'刷新令牌失败')}const data=await res.json();data.expires_at=Math.floor(Date.now()/1000)+data.expires_in;data.user=_session.user;saveSession(data);return data}
-      async function rest(method,table,{select,filters=[],body,returning=false}={}){
-        let accessToken=null;
-        if(_session){
-          if(isTokenExpired()){
-            try{await refreshToken();}catch(e){saveSession(null);_session=null;}
-          }
-          if(_session) accessToken=_session.access_token;
+    // ========== Supabase 客户端 ==========
+    const supa = (() => {
+      let _session = null;
+      const saveSession = s => { _session = s; if (s) localStorage.setItem('sb_session', JSON.stringify(s)); else localStorage.removeItem('sb_session'); };
+      const loadSession = () => { try { const raw = localStorage.getItem('sb_session'); if (raw) { const s = JSON.parse(raw); if (s.expires_at && Date.now() / 1000 < s.expires_at) { _session = s; return true; } localStorage.removeItem('sb_session'); } } catch { } return false; };
+      const isTokenExpired = () => { if (!_session || !_session.expires_at) return true; return Date.now() / 1000 >= _session.expires_at - 5; };
+      const refreshToken = async () => { if (!_session || !_session.refresh_token) throw new Error('无 refresh token'); const res = await fetch(SUPA_URL + '/auth/v1/token?grant_type=refresh_token', { method: 'POST', headers: { apikey: SUPA_ANON, 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh_token: _session.refresh_token }) }); if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.msg || err.message || '刷新令牌失败'); } const data = await res.json(); data.expires_at = Math.floor(Date.now() / 1000) + data.expires_in; data.user = _session.user; saveSession(data); return data; };
+      const rest = async (method, table, { select, filters = [], body, returning = false } = {}) => {
+        let accessToken = null;
+        if (_session) {
+          if (isTokenExpired()) { try { await refreshToken(); } catch (e) { saveSession(null); _session = null; } }
+          if (_session) accessToken = _session.access_token;
         }
-        let url=SUPA_URL+'/rest/v1/'+table;
-        const params=new URLSearchParams();
-        if(select)params.set('select',select);
-        filters.forEach(f=>params.set(f[0],f[1]));
-        const headers={apikey:SUPA_ANON,'Content-Type':'application/json'};
-        if(accessToken) headers['Authorization']='Bearer '+accessToken;
-        if(returning) headers['Prefer']='return=representation';
-        if([...params].length) url+='?'+params.toString();
-        const opts={method,headers};
-        if(body) opts.body=JSON.stringify(body);
-        const res=await fetch(url,opts);
-        if(!res.ok){
+        let url = SUPA_URL + '/rest/v1/' + table;
+        const params = new URLSearchParams();
+        if (select) params.set('select', select);
+        filters.forEach(f => params.set(f[0], f[1]));
+        const headers = { apikey: SUPA_ANON, 'Content-Type': 'application/json' };
+        if (accessToken) headers['Authorization'] = 'Bearer ' + accessToken;
+        if (returning) headers['Prefer'] = 'return=representation';
+        if ([...params].length) url += '?' + params.toString();
+        const opts = { method, headers };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(url, opts);
+        if (!res.ok) {
           let errMsg;
-          try{const err=await res.json();errMsg=err.message||err.hint||'REST '+res.status}catch{errMsg='REST '+res.status}
-          if(res.status===401&&(errMsg.includes('expired')||errMsg.includes('JWT'))){saveSession(null);_session=null;throw new Error('SESSION_EXPIRED')}
+          try { const err = await res.json(); errMsg = err.message || err.hint || 'REST ' + res.status; } catch { errMsg = 'REST ' + res.status; }
+          if (res.status === 401 && (errMsg.includes('expired') || errMsg.includes('JWT'))) { saveSession(null); _session = null; throw new Error('SESSION_EXPIRED'); }
           throw new Error(errMsg);
         }
-        const text=await res.text();
-        return text?JSON.parse(text):null;
-      }
-      async function authFetch(path,body){const res=await fetch(SUPA_URL+'/auth/v1'+path,{method:'POST',headers:{apikey:SUPA_ANON,'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(data.msg||data.message||data.error_description||'操作失败');return data}
-      return{
-        get session(){return _session},
-        get user(){return _session?.user??null},
+        const text = await res.text();
+        return text ? JSON.parse(text) : null;
+      };
+      const authFetch = async (path, body) => { const res = await fetch(SUPA_URL + '/auth/v1' + path, { method: 'POST', headers: { apikey: SUPA_ANON, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); const data = await res.json(); if (!res.ok) throw new Error(data.msg || data.message || data.error_description || '操作失败'); return data; };
+      return {
+        get session() { return _session; },
+        get user() { return _session?.user ?? null; },
         loadSession, saveSession,
-        signUp: async (email,password,nickname)=>{const data=await authFetch('/signup',{email,password,data:{nickname}});if(data.access_token){data.expires_at=Math.floor(Date.now()/1000)+data.expires_in;data.user=data.user||{email};saveSession(data)}return data},
-        signIn: async (email,password)=>{const data=await authFetch('/token?grant_type=password',{email,password});if(data.access_token){data.expires_at=Math.floor(Date.now()/1000)+data.expires_in;saveSession(data)}return data},
-        signOut: async ()=>{if(_session?.access_token){await fetch(SUPA_URL+'/auth/v1/logout',{method:'POST',headers:{apikey:SUPA_ANON,'Authorization':'Bearer '+_session.access_token}}).catch(()=>{})}saveSession(null)},
-        getProfile: async (userId)=>{const rows=await rest('GET','profiles',{select:'id,nickname,avatar_url',filters:[['id','eq.'+userId]]});return rows?.[0]??null},
-        updateNickname: async (userId,nickname)=>{await rest('PATCH','profiles',{filters:[['id','eq.'+userId]],body:{nickname}})},
-        upsertProfile: async (userId,nickname)=>{await rest('POST','profiles',{body:{id:userId,nickname},returning:true})},
-        getLikeCounts: async (artworkIds)=>{if(!artworkIds.length)return {};const rows=await rest('GET','likes',{select:'artwork_id',filters:[['artwork_id','in.('+artworkIds.join(',')+')']]});const counts={};(rows||[]).forEach(r=>{counts[r.artwork_id]=(counts[r.artwork_id]||0)+1});return counts},
-        getUserLikes: async (userId,artworkIds)=>{if(!userId||!artworkIds.length)return new Set();const rows=await rest('GET','likes',{select:'artwork_id',filters:[['user_id','eq.'+userId],['artwork_id','in.('+artworkIds.join(',')+')']]});return new Set((rows||[]).map(r=>r.artwork_id))},
-        addLike: async (userId,artworkId)=>{await rest('POST','likes',{body:{user_id:userId,artwork_id:artworkId}})},
-        removeLike: async (userId,artworkId)=>{await rest('DELETE','likes',{filters:[['user_id','eq.'+userId],['artwork_id','eq.'+artworkId]]})},
-        getComments: async (artworkId)=>{const rows=await rest('GET','comments',{select:'id,user_id,content,created_at',filters:[['artwork_id','eq.'+artworkId],['order','created_at.asc']]});if(!rows||rows.length===0)return rows;const userIds=[...new Set(rows.map(r=>r.user_id))];const profiles=await rest('GET','profiles',{select:'id,nickname',filters:[['id','in.('+userIds.join(',')+')']]});const profileMap={};(profiles||[]).forEach(p=>profileMap[p.id]=p.nickname);return rows.map(r=>({...r,profiles:{nickname:profileMap[r.user_id]||'匿名用户'}}))},
-        addComment: async (userId,artworkId,content)=>{const rows=await rest('POST','comments',{body:{user_id:userId,artwork_id:artworkId,content},returning:true});return rows?.[0]},
-        deleteComment: async (commentId)=>{await rest('DELETE','comments',{filters:[['id','eq.'+commentId]]})},
+        signUp: async (email, password, nickname) => { const data = await authFetch('/signup', { email, password, data: { nickname } }); if (data.access_token) { data.expires_at = Math.floor(Date.now() / 1000) + data.expires_in; data.user = data.user || { email }; saveSession(data); } return data; },
+        signIn: async (email, password) => { const data = await authFetch('/token?grant_type=password', { email, password }); if (data.access_token) { data.expires_at = Math.floor(Date.now() / 1000) + data.expires_in; saveSession(data); } return data; },
+        signOut: async () => { if (_session?.access_token) { await fetch(SUPA_URL + '/auth/v1/logout', { method: 'POST', headers: { apikey: SUPA_ANON, 'Authorization': 'Bearer ' + _session.access_token } }).catch(() => { }); } saveSession(null); },
+        getProfile: async (userId) => { const rows = await rest('GET', 'profiles', { select: 'id,nickname,avatar_url', filters: [['id', 'eq.' + userId]] }); return rows?.[0] ?? null; },
+        updateNickname: async (userId, nickname) => { await rest('PATCH', 'profiles', { filters: [['id', 'eq.' + userId]], body: { nickname } }); },
+        upsertProfile: async (userId, nickname) => { await rest('POST', 'profiles', { body: { id: userId, nickname }, returning: true }); },
+        getLikeCounts: async (artworkIds) => { if (!artworkIds.length) return {}; const rows = await rest('GET', 'likes', { select: 'artwork_id', filters: [['artwork_id', 'in.(' + artworkIds.join(',') + ')']] }); const counts = {}; (rows || []).forEach(r => { counts[r.artwork_id] = (counts[r.artwork_id] || 0) + 1; }); return counts; },
+        getUserLikes: async (userId, artworkIds) => { if (!userId || !artworkIds.length) return new Set(); const rows = await rest('GET', 'likes', { select: 'artwork_id', filters: [['user_id', 'eq.' + userId], ['artwork_id', 'in.(' + artworkIds.join(',') + ')']] }); return new Set((rows || []).map(r => r.artwork_id)); },
+        addLike: async (userId, artworkId) => { await rest('POST', 'likes', { body: { user_id: userId, artwork_id: artworkId } }); },
+        removeLike: async (userId, artworkId) => { await rest('DELETE', 'likes', { filters: [['user_id', 'eq.' + userId], ['artwork_id', 'eq.' + artworkId]] }); },
+        getComments: async (artworkId) => { const rows = await rest('GET', 'comments', { select: 'id,user_id,content,created_at', filters: [['artwork_id', 'eq.' + artworkId], ['order', 'created_at.asc']] }); if (!rows || rows.length === 0) return rows; const userIds = [...new Set(rows.map(r => r.user_id))]; const profiles = await rest('GET', 'profiles', { select: 'id,nickname', filters: [['id', 'in.(' + userIds.join(',') + ')']] }); const profileMap = {}; (profiles || []).forEach(p => profileMap[p.id] = p.nickname); return rows.map(r => ({ ...r, profiles: { nickname: profileMap[r.user_id] || '匿名用户' } })); },
+        addComment: async (userId, artworkId, content) => { const rows = await rest('POST', 'comments', { body: { user_id: userId, artwork_id: artworkId, content }, returning: true }); return rows?.[0]; },
+        deleteComment: async (commentId) => { await rest('DELETE', 'comments', { filters: [['id', 'eq.' + commentId]] }); },
         rest: rest
       };
     })();
 
-    // ---------- GitHub 交互 ----------
+    // ========== GitHub 交互 ==========
     const GITHUB_API = 'https://api.github.com';
-    function ghHeaders(token){return {'Accept':'application/vnd.github+json','Authorization':'Bearer '+token}}
-    async function ghGetFile(path,token){if(!token) return null;const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,{headers:ghHeaders(token)});if(r.status===404)return null;if(!r.ok)throw new Error('GitHub '+r.status);return r.json()}
-    async function ghPutFile(path,b64,message,sha,token){const body={message,content:b64,branch:GITHUB_BRANCH};if(sha)body.sha=sha;const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,{method:'PUT',headers:{...ghHeaders(token),'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error('GitHub '+r.status);return r.json()}
-    async function ghDeleteFile(path,message,sha,token){const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,{method:'DELETE',headers:{...ghHeaders(token),'Content-Type':'application/json'},body:JSON.stringify({message,sha,branch:GITHUB_BRANCH})});if(!r.ok)throw new Error('GitHub '+r.status)}
-    function getGitHubToken(){return localStorage.getItem('github_token') || ''}
-    function setGitHubToken(token){localStorage.setItem('github_token', token)}
+    const ghHeaders = token => ({ 'Accept': 'application/vnd.github+json', 'Authorization': 'Bearer ' + token });
+    const ghGetFile = async (path, token) => { if (!token) return null; const r = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`, { headers: ghHeaders(token) }); if (r.status === 404) return null; if (!r.ok) throw new Error('GitHub ' + r.status); return r.json(); };
+    const ghPutFile = async (path, b64, message, sha, token) => { const body = { message, content: b64, branch: GITHUB_BRANCH }; if (sha) body.sha = sha; const r = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`, { method: 'PUT', headers: { ...ghHeaders(token), 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); if (!r.ok) throw new Error('GitHub ' + r.status); return r.json(); };
+    const ghDeleteFile = async (path, message, sha, token) => { const r = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`, { method: 'DELETE', headers: { ...ghHeaders(token), 'Content-Type': 'application/json' }, body: JSON.stringify({ message, sha, branch: GITHUB_BRANCH }) }); if (!r.ok) throw new Error('GitHub ' + r.status); };
+    const getGitHubToken = () => localStorage.getItem('github_token') || '';
+    const setGitHubToken = token => localStorage.setItem('github_token', token);
 
-    // ---------- 全局变量 ----------
+    // ========== 全局变量 ==========
     let artworks = [];
     let filtered = [];
     let currentTag = 'all';
@@ -501,7 +498,7 @@
     let userLikedSet = new Set();
     const RECENT_KEY = 'ag_recent';
 
-    // ---------- 工具函数 ----------
+    // ========== 工具函数 ==========
     function getRecent(){try{return JSON.parse(localStorage.getItem(RECENT_KEY))||[]}catch{return[]}}
     function saveRecent(r){localStorage.setItem(RECENT_KEY,JSON.stringify(r))}
     function addRecent(art){let r=getRecent().filter(i=>i.id!==art.id);r.unshift({id:art.id,title:art.title,imagePath:art.imagePath});if(r.length>20)r=r.slice(0,20);saveRecent(r);}
@@ -514,7 +511,7 @@
     function openModal(id){const el=document.getElementById(id);if(el)el.classList.add('open');document.body.style.overflow='hidden'}
     function closeModal(id){const el=document.getElementById(id);if(el)el.classList.remove('open');document.body.style.overflow=''}
 
-    // ---------- 加载作品 ----------
+    // ========== 加载作品 ==========
     async function loadArtworks(){
       showSkeletons();
       try{
@@ -553,7 +550,7 @@
       }catch(e){console.warn('loadLikeData:',e)}
     }
 
-    // ---------- 过滤与渲染 ----------
+    // ========== 过滤与渲染 ==========
     function applyFilters(){
       let arr = [...artworks];
       if(!showR18) arr = arr.filter(a => !a.r18);
@@ -605,7 +602,7 @@
       });
     }
 
-    // ---------- 点赞 ----------
+    // ========== 点赞 ==========
     async function handleLike(artworkId,btn){
       if(!supa.user){openUserAuthModal();toast('请先登录才能点赞');return}
       const wasLiked=userLikedSet.has(artworkId);
@@ -633,7 +630,7 @@
       }
     }
 
-    // ---------- 详情 ----------
+    // ========== 详情 ==========
     function openDetail(idx){
       const art=filtered[idx];
       if(!art)return;
@@ -675,7 +672,7 @@
       if(isLikedView||isHistoryView) applyFilters();
     }
 
-    // ---------- 评论 ----------
+    // ========== 评论 ==========
     function renderCommentSection(artworkId){
       const inputArea=document.getElementById('comment-input-area');
       const listEl=document.getElementById('comment-list');
@@ -737,7 +734,7 @@
     }
     function strColor(str){const colors=['#6a4e9c','#e67e22','#27ae60','#e74c3c','#2980b9','#8e44ad','#16a085','#d35400'];let h=0;for(const c of(str||''))h=(h*31+c.charCodeAt(0))&0xffffffff;return colors[Math.abs(h)%colors.length]}
 
-    // ---------- 热度榜 ----------
+    // ========== 热度榜 ==========
     function renderHotList(){
       const container=document.getElementById('hot-list');
       if(!container)return;
@@ -761,7 +758,7 @@
       });
     }
 
-    // ---------- 删除 ----------
+    // ========== 删除 ==========
     document.getElementById('detail-delete').addEventListener('click', async function(){
       if(!isOwner) return;
       if(!confirm('删除此作品？'))return;
@@ -785,7 +782,7 @@
       }catch(e){toast('删除失败：'+e.message,'error')}
     });
 
-    // ---------- 上传 ----------
+    // ========== 上传 ==========
     let pickedFile=null,pickedDataUrl=null;
     const fileInput=document.getElementById('file-input');
     const dropZone=document.getElementById('drop-zone');
@@ -819,7 +816,6 @@
       try{
         let imageUrl = null;
         if(isR18){
-          // R18 上传到 GitHub
           const token = getGitHubToken();
           if(!token){
             openModal('token-modal');
@@ -837,25 +833,22 @@
           await ghPutFile(path, base64, 'add R18 '+title, null, token);
           imageUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_OWNER}/${GITHUB_REPO}@${GITHUB_BRANCH}/${path}`;
         }else{
-          // 普通上传到 Cloudinary
           const formData=new FormData();
           formData.append('file', pickedFile);
           formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
           const res=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {method:'POST', body:formData});
           if(!res.ok){
             const err=await res.json().catch(()=>({}));
-            throw new Error(err.error?.message || '上传失败，请确认预设为 Unsigned 模式');
+            throw new Error(err.error?.message || 'Cloudinary 上传失败，请检查预设是否为 Unsigned');
           }
           const data=await res.json();
           if(!data.secure_url){
-            throw new Error('Cloudinary 未返回图片链接，请确认预设为 Unsigned 模式');
+            throw new Error('Cloudinary 未返回图片链接，请确认预设为 Unsigned 且 Store 已开启');
           }
           imageUrl = data.secure_url;
         }
 
-        if(!imageUrl){
-          throw new Error('未能获取图片链接');
-        }
+        if(!imageUrl) throw new Error('未获取到图片链接');
 
         const artwork = {
           id: Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),
@@ -891,7 +884,7 @@
       pickedFile=null;pickedDataUrl=null;fileInput.value='';previewImg.src='';previewWrap.style.display='none';dropZone.style.display='';document.getElementById('art-title').value='';document.getElementById('art-desc').value='';document.getElementById('art-tag').value='油画';document.getElementById('art-r18').checked=false;
     }
 
-    // ---------- 用户 ----------
+    // ========== 用户 ==========
     async function onUserLoggedIn(){
       try{
         currentUserProfile=await supa.getProfile(supa.user.id);
@@ -962,7 +955,7 @@
     function showHistoryView(){isHistoryView=true;isLikedView=false;applyFilters();document.getElementById('main-header').classList.add('hidden');document.getElementById('tags-bar').classList.add('hidden');document.getElementById('view-back-bar').classList.add('show');document.getElementById('view-title').textContent='📜 历史浏览';document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('active'));}
     function exitSpecialView(){isLikedView=false;isHistoryView=false;document.getElementById('main-header').classList.remove('hidden');document.getElementById('tags-bar').classList.remove('hidden');document.getElementById('view-back-bar').classList.remove('show');document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('active'));document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');currentTag='all';applyFilters()}
 
-    // ---------- 背景 ----------
+    // ========== 背景 ==========
     const BG_STORAGE_KEY='bg_color';
     function loadBg(){try{const color=localStorage.getItem(BG_STORAGE_KEY);if(color){document.body.style.background=color;const custom=document.getElementById('bg-custom-color');if(custom)custom.value=color;document.querySelectorAll('.bg-preset').forEach(el=>el.classList.toggle('active',el.dataset.color===color))}}catch{}}
     function saveBg(color){localStorage.setItem(BG_STORAGE_KEY,color);document.body.style.background=color;const custom=document.getElementById('bg-custom-color');if(custom)custom.value=color;document.querySelectorAll('.bg-preset').forEach(el=>el.classList.toggle('active',el.dataset.color===color))}
@@ -970,7 +963,7 @@
     document.getElementById('bg-custom-color').addEventListener('input',function(){saveBg(this.value)});
     document.getElementById('bg-reset').addEventListener('click',function(){localStorage.removeItem(BG_STORAGE_KEY);document.body.style.background='';document.getElementById('bg-custom-color').value='#f5f3f0';document.querySelectorAll('.bg-preset').forEach(el=>el.classList.remove('active'));closeModal('bg-modal');toast('已恢复默认背景')});
 
-    // ---------- 搜索 ----------
+    // ========== 搜索 ==========
     function setupSearchSuggestions(){
       const input=document.getElementById('search-input');
       const sugg=document.getElementById('suggestions');
@@ -991,7 +984,7 @@
       document.addEventListener('click',e=>{if(!document.getElementById('search-wrap').contains(e.target))sugg.style.display='none'});
     }
 
-    // ---------- 登录/注册 ----------
+    // ========== 登录/注册 ==========
     function openUserAuthModal(tab='login'){document.querySelectorAll('.modal-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));document.querySelectorAll('.modal-tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+tab));document.getElementById('login-error').classList.remove('show');document.getElementById('reg-error').classList.remove('show');openModal('user-auth-modal')}
     document.querySelectorAll('.modal-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.modal-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.modal-tab-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');document.getElementById('tab-'+tab.dataset.tab).classList.add('active')})});
     document.getElementById('user-auth-close').addEventListener('click',()=>closeModal('user-auth-modal'));
@@ -1003,7 +996,7 @@
     document.getElementById('register-submit').addEventListener('click',doUserRegister);
     async function doUserRegister(){const nickname=document.getElementById('reg-nickname').value.trim();const email=document.getElementById('reg-email').value.trim();const password=document.getElementById('reg-password').value;const errEl=document.getElementById('reg-error');if(!nickname){errEl.textContent='请输入昵称';errEl.classList.add('show');return}if(!email){errEl.textContent='请输入邮箱';errEl.classList.add('show');return}if(password.length<6){errEl.textContent='密码至少6位';errEl.classList.add('show');return}const btn=document.getElementById('register-submit');btn.disabled=true;btn.textContent='注册中…';try{const data=await supa.signUp(email,password,nickname);if(data.access_token){await onUserLoggedIn();closeModal('user-auth-modal');toast('注册成功，欢迎加入！','success')}else{closeModal('user-auth-modal');toast('注册成功！请查收邮件并完成验证后登录','success')}}catch(e){errEl.textContent='注册失败：'+e.message;errEl.classList.add('show')}finally{btn.disabled=false;btn.textContent='注册'}}
 
-    // ---------- 事件绑定 ----------
+    // ========== 事件绑定 ==========
     document.getElementById('detail-back').addEventListener('click', closeDetail);
     document.getElementById('detail-heart').addEventListener('click', function(){if(!currentDetailArt)return;handleLike(currentDetailArt.id,null);const card=document.querySelector('.heart-btn[data-id="'+currentDetailArt.id+'"]');if(card){const nowLiked=userLikedSet.has(currentDetailArt.id);const count=likeCountsMap[currentDetailArt.id]||0;card.innerHTML=(nowLiked?'❤️':'🤍')+'<span class="heart-count">'+count+'</span>';card.classList.toggle('liked',nowLiked)}});
     document.querySelectorAll('.tag-pill').forEach(btn=>{btn.addEventListener('click',()=>{if(isLikedView||isHistoryView)exitSpecialView();document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentTag=btn.dataset.tag;applyFilters()})});
@@ -1024,7 +1017,7 @@
       if(el){el.addEventListener('click',e=>{if(e.target===el)closeModal(id)})}
     });
 
-    // ---------- 公告 ----------
+    // ========== 公告 ==========
     let announcements=[],annSha=null;const ANN_FILE='announcements.json';
     async function fetchAnnouncements(){
       try{
@@ -1040,7 +1033,7 @@
     document.getElementById('announce-post').addEventListener('click',async()=>{if(!isOwner){toast('仅站长可发布公告');return}const input=document.getElementById('announce-input');const text=input.value.trim();if(!text){toast('请输入公告内容');return}announcements.push({id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),text,date:Date.now()});await saveAnnouncements(getGitHubToken());renderAnnouncements();input.value='';toast('公告发布成功','success')});
     document.getElementById('announce-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('announce-post').click()});
 
-    // ---------- 初始化 ----------
+    // ========== 初始化 ==========
     document.addEventListener('DOMContentLoaded', function(){
       (async()=>{
         if(supa.loadSession()){
