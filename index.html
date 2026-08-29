@@ -407,9 +407,9 @@
   <div class="toast" id="toast"></div>
   <script>
     'use strict';
-    // ========== 配置区域（请修改） ==========
-    const CLOUDINARY_CLOUD_NAME = 'mxwtqy3s';        // 你的 Cloudinary Cloud Name
-    const CLOUDINARY_UPLOAD_PRESET = 'ml_default';   // Unsigned Preset 名称
+    // ========== 配置区域（请务必修改） ==========
+    const CLOUDINARY_CLOUD_NAME = '你的cloud_name';        // 你的 Cloudinary Cloud Name（不是 ml_default）
+    const CLOUDINARY_UPLOAD_PRESET = '你的upload_preset';   // 你创建的 Unsigned Preset 名称
     const OWNER_EMAIL = '551250969@qq.com';                 // 站长邮箱
     const GITHUB_OWNER = 'ljhLJH0102-0721';                 // 你的GitHub用户名
     const GITHUB_REPO = 'Public';                           // 仓库名
@@ -419,7 +419,7 @@
     const SUPA_URL = 'https://pqzvjeuoyqzoqptulsde.supabase.co';
     const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxenZqZXVveXF6b3FwdHVsc2RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3ODczODAsImV4cCI6MjEwMzM2MzM4MH0.C8ihm_67nDph7aXvmJX8KmwXlp6mLnGl5gfevEepo4M';
 
-    // ---------- Supabase 封装（保持原有） ----------
+    // ---------- Supabase 封装 ----------
     const supa=(()=>{
       let _session=null;
       function saveSession(s){_session=s;if(s)localStorage.setItem('sb_session',JSON.stringify(s));else localStorage.removeItem('sb_session');}
@@ -455,12 +455,33 @@
         return text?JSON.parse(text):null;
       }
       async function authFetch(path,body){const res=await fetch(SUPA_URL+'/auth/v1'+path,{method:'POST',headers:{apikey:SUPA_ANON,'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(data.msg||data.message||data.error_description||'操作失败');return data}
-      return{get session(){return _session},get user(){return _session?.user??null},loadSession,saveSession,async signUp(email,password,nickname){const data=await authFetch('/signup',{email,password,data:{nickname}});if(data.access_token){data.expires_at=Math.floor(Date.now()/1000)+data.expires_in;data.user=data.user||{email};this.saveSession(data)}return data},async signIn(email,password){const data=await authFetch('/token?grant_type=password',{email,password});if(data.access_token){data.expires_at=Math.floor(Date.now()/1000)+data.expires_in;this.saveSession(data)}return data},async signOut(){if(_session?.access_token){await fetch(SUPA_URL+'/auth/v1/logout',{method:'POST',headers:{apikey:SUPA_ANON,'Authorization':'Bearer '+_session.access_token}}).catch(()=>{})}this.saveSession(null)},async getProfile(userId){const rows=await rest('GET','profiles',{select:'id,nickname,avatar_url',filters:[['id','eq.'+userId]]});return rows?.[0]??null},async updateNickname(userId,nickname){await rest('PATCH','profiles',{filters:[['id','eq.'+userId]],body:{nickname}})},async upsertProfile(userId,nickname){await rest('POST','profiles',{body:{id:userId,nickname},returning:true})},async getLikeCounts(artworkIds){if(!artworkIds.length)return {};const rows=await rest('GET','likes',{select:'artwork_id',filters:[['artwork_id','in.('+artworkIds.join(',')+')']]});const counts={};(rows||[]).forEach(r=>{counts[r.artwork_id]=(counts[r.artwork_id]||0)+1});return counts},async getUserLikes(userId,artworkIds){if(!userId||!artworkIds.length)return new Set();const rows=await rest('GET','likes',{select:'artwork_id',filters:[['user_id','eq.'+userId],['artwork_id','in.('+artworkIds.join(',')+')']]});return new Set((rows||[]).map(r=>r.artwork_id))},async addLike(userId,artworkId){await rest('POST','likes',{body:{user_id:userId,artwork_id:artworkId}})},async removeLike(userId,artworkId){await rest('DELETE','likes',{filters:[['user_id','eq.'+userId],['artwork_id','eq.'+artworkId]]})},async getComments(artworkId){const rows=await rest('GET','comments',{select:'id,user_id,content,created_at',filters:[['artwork_id','eq.'+artworkId],['order','created_at.asc']]});if(!rows||rows.length===0)return rows;const userIds=[...new Set(rows.map(r=>r.user_id))];const profiles=await rest('GET','profiles',{select:'id,nickname',filters:[['id','in.('+userIds.join(',')+')']]});const profileMap={};(profiles||[]).forEach(p=>profileMap[p.id]=p.nickname);return rows.map(r=>({...r,profiles:{nickname:profileMap[r.user_id]||'匿名用户'}}))},async addComment(userId,artworkId,content){const rows=await rest('POST','comments',{body:{user_id:userId,artwork_id:artworkId,content},returning:true});return rows?.[0]},async deleteComment(commentId){await rest('DELETE','comments',{filters:[['id','eq.'+commentId]]})}}})();
+      return{
+        get session(){return _session},
+        get user(){return _session?.user??null},
+        loadSession, saveSession,
+        signUp: async (email,password,nickname)=>{const data=await authFetch('/signup',{email,password,data:{nickname}});if(data.access_token){data.expires_at=Math.floor(Date.now()/1000)+data.expires_in;data.user=data.user||{email};saveSession(data)}return data},
+        signIn: async (email,password)=>{const data=await authFetch('/token?grant_type=password',{email,password});if(data.access_token){data.expires_at=Math.floor(Date.now()/1000)+data.expires_in;saveSession(data)}return data},
+        signOut: async ()=>{if(_session?.access_token){await fetch(SUPA_URL+'/auth/v1/logout',{method:'POST',headers:{apikey:SUPA_ANON,'Authorization':'Bearer '+_session.access_token}}).catch(()=>{})}saveSession(null)},
+        getProfile: async (userId)=>{const rows=await rest('GET','profiles',{select:'id,nickname,avatar_url',filters:[['id','eq.'+userId]]});return rows?.[0]??null},
+        updateNickname: async (userId,nickname)=>{await rest('PATCH','profiles',{filters:[['id','eq.'+userId]],body:{nickname}})},
+        upsertProfile: async (userId,nickname)=>{await rest('POST','profiles',{body:{id:userId,nickname},returning:true})},
+        getLikeCounts: async (artworkIds)=>{if(!artworkIds.length)return {};const rows=await rest('GET','likes',{select:'artwork_id',filters:[['artwork_id','in.('+artworkIds.join(',')+')']]});const counts={};(rows||[]).forEach(r=>{counts[r.artwork_id]=(counts[r.artwork_id]||0)+1});return counts},
+        getUserLikes: async (userId,artworkIds)=>{if(!userId||!artworkIds.length)return new Set();const rows=await rest('GET','likes',{select:'artwork_id',filters:[['user_id','eq.'+userId],['artwork_id','in.('+artworkIds.join(',')+')']]});return new Set((rows||[]).map(r=>r.artwork_id))},
+        addLike: async (userId,artworkId)=>{await rest('POST','likes',{body:{user_id:userId,artwork_id:artworkId}})},
+        removeLike: async (userId,artworkId)=>{await rest('DELETE','likes',{filters:[['user_id','eq.'+userId],['artwork_id','eq.'+artworkId]]})},
+        getComments: async (artworkId)=>{const rows=await rest('GET','comments',{select:'id,user_id,content,created_at',filters:[['artwork_id','eq.'+artworkId],['order','created_at.asc']]});if(!rows||rows.length===0)return rows;const userIds=[...new Set(rows.map(r=>r.user_id))];const profiles=await rest('GET','profiles',{select:'id,nickname',filters:[['id','in.('+userIds.join(',')+')']]});const profileMap={};(profiles||[]).forEach(p=>profileMap[p.id]=p.nickname);return rows.map(r=>({...r,profiles:{nickname:profileMap[r.user_id]||'匿名用户'}}))},
+        addComment: async (userId,artworkId,content)=>{const rows=await rest('POST','comments',{body:{user_id:userId,artwork_id:artworkId,content},returning:true});return rows?.[0]},
+        deleteComment: async (commentId)=>{await rest('DELETE','comments',{filters:[['id','eq.'+commentId]]})},
+        // 暴露 rest 供 loadArtworks 使用
+        rest: rest
+      };
+    })();
 
     // ---------- GitHub 交互（仅用于 R18 图片） ----------
     const GITHUB_API = 'https://api.github.com';
     function ghHeaders(token){return {'Accept':'application/vnd.github+json','Authorization':'Bearer '+token}}
-    async function ghGetFile(path,token){const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,{headers:ghHeaders(token)});if(r.status===404)return null;if(!r.ok)throw new Error('GitHub '+r.status);return r.json()}
+    async function ghGetFile(path,token){if(!token) return null; // 没有token跳过
+      const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,{headers:ghHeaders(token)});if(r.status===404)return null;if(!r.ok)throw new Error('GitHub '+r.status);return r.json()}
     async function ghPutFile(path,b64,message,sha,token){const body={message,content:b64,branch:GITHUB_BRANCH};if(sha)body.sha=sha;const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,{method:'PUT',headers:{...ghHeaders(token),'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error('GitHub '+r.status);return r.json()}
     async function ghDeleteFile(path,message,sha,token){const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,{method:'DELETE',headers:{...ghHeaders(token),'Content-Type':'application/json'},body:JSON.stringify({message,sha,branch:GITHUB_BRANCH})});if(!r.ok)throw new Error('GitHub '+r.status)}
 
@@ -500,6 +521,7 @@
     async function loadArtworks(){
       showSkeletons();
       try{
+        // 使用 supa.rest 获取所有作品
         const rows = await supa.rest('GET', 'artworks', {select: '*'});
         artworks = rows || [];
         await loadLikeData(artworks.map(a=>a.id));
@@ -522,6 +544,8 @@
       }catch(e){
         console.error('loadArtworks error:',e);
         toast('加载作品失败','error');
+        // 显示空状态
+        artworks = [];
         applyFilters();
       }
     }
@@ -813,7 +837,6 @@
           // R18 上传到 GitHub
           const token = getGitHubToken();
           if(!token){
-            // 弹出输入Token
             openModal('token-modal');
             btn.disabled=false;btn.textContent='发布';
             return; // 中断，等待token输入
@@ -1015,6 +1038,25 @@
       if(el){el.addEventListener('click',e=>{if(e.target===el)closeModal(id)})}
     });
 
+    // ---------- 公告 ----------
+    let announcements=[],annSha=null;const ANN_FILE='announcements.json';
+    async function fetchAnnouncements(){
+      try{
+        const token = getGitHubToken();
+        if(!token){ // 没有token跳过，不报错
+          renderAnnouncements();
+          return;
+        }
+        const file=await ghGetFile(ANN_FILE, token);
+        if(file){annSha=file.sha;const bin=atob(file.content.replace(/\s/g,''));announcements=JSON.parse(decodeURIComponent(escape(bin)))}else{announcements=[]}
+      }catch{announcements=[]}
+      renderAnnouncements();
+    }
+    async function saveAnnouncements(token){const json=JSON.stringify(announcements,null,2);const b64=btoa(unescape(encodeURIComponent(json)));const r=await ghPutFile(ANN_FILE,b64,'update announcements',annSha,token);annSha=r.content.sha}
+    function renderAnnouncements(){const container=document.getElementById('announce-text');const empty=document.getElementById('announce-empty');while(container.children.length>2)container.removeChild(container.lastChild);if(!announcements.length){empty.style.display='inline';return}empty.style.display='none';announcements.forEach(ann=>{const w=document.createElement('span');w.className='ann-item';w.innerHTML='<span>'+escHtml(ann.text)+'</span><span class="del-ann" data-id="'+ann.id+'">✕</span>';container.appendChild(w)});container.querySelectorAll('.del-ann').forEach(el=>{el.addEventListener('click',async e=>{e.stopPropagation();if(!isOwner){toast('仅站长可删除公告');return}if(!confirm('删除此公告？'))return;announcements=announcements.filter(a=>a.id!==el.dataset.id);await saveAnnouncements(getGitHubToken());renderAnnouncements();toast('公告已删除')})});if(isOwner){document.getElementById('announcement-bar').classList.add('admin-mode');document.getElementById('announce-actions').style.display='flex'}else{document.getElementById('announcement-bar').classList.remove('admin-mode');document.getElementById('announce-actions').style.display='none'}}
+    document.getElementById('announce-post').addEventListener('click',async()=>{if(!isOwner){toast('仅站长可发布公告');return}const input=document.getElementById('announce-input');const text=input.value.trim();if(!text){toast('请输入公告内容');return}announcements.push({id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),text,date:Date.now()});await saveAnnouncements(getGitHubToken());renderAnnouncements();input.value='';toast('公告发布成功','success')});
+    document.getElementById('announce-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('announce-post').click()});
+
     // ---------- 初始化 ----------
     document.addEventListener('DOMContentLoaded', function(){
       (async()=>{
@@ -1026,18 +1068,9 @@
         loadBg();
         setupSearchSuggestions();
         await loadArtworks();
-        // 加载公告（保留原有公告功能）
-        fetchAnnouncements();
+        await fetchAnnouncements();
       })();
     });
-
-    // ---------- 公告（保留原有） ----------
-    let announcements=[],annSha=null;const ANN_FILE='announcements.json';
-    async function fetchAnnouncements(){try{const file=await ghGetFile(ANN_FILE, getGitHubToken());if(file){annSha=file.sha;const bin=atob(file.content.replace(/\s/g,''));announcements=JSON.parse(decodeURIComponent(escape(bin)))}else{announcements=[]}}catch{announcements=[]}renderAnnouncements()}
-    async function saveAnnouncements(token){const json=JSON.stringify(announcements,null,2);const b64=btoa(unescape(encodeURIComponent(json)));const r=await ghPutFile(ANN_FILE,b64,'update announcements',annSha,token);annSha=r.content.sha}
-    function renderAnnouncements(){const container=document.getElementById('announce-text');const empty=document.getElementById('announce-empty');while(container.children.length>2)container.removeChild(container.lastChild);if(!announcements.length){empty.style.display='inline';return}empty.style.display='none';announcements.forEach(ann=>{const w=document.createElement('span');w.className='ann-item';w.innerHTML='<span>'+escHtml(ann.text)+'</span><span class="del-ann" data-id="'+ann.id+'">✕</span>';container.appendChild(w)});container.querySelectorAll('.del-ann').forEach(el=>{el.addEventListener('click',async e=>{e.stopPropagation();if(!isOwner){toast('仅站长可删除公告');return}if(!confirm('删除此公告？'))return;announcements=announcements.filter(a=>a.id!==el.dataset.id);await saveAnnouncements(getGitHubToken());renderAnnouncements();toast('公告已删除')})});if(isOwner){document.getElementById('announcement-bar').classList.add('admin-mode');document.getElementById('announce-actions').style.display='flex'}else{document.getElementById('announcement-bar').classList.remove('admin-mode');document.getElementById('announce-actions').style.display='none'}}
-    document.getElementById('announce-post').addEventListener('click',async()=>{if(!isOwner){toast('仅站长可发布公告');return}const input=document.getElementById('announce-input');const text=input.value.trim();if(!text){toast('请输入公告内容');return}announcements.push({id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),text,date:Date.now()});await saveAnnouncements(getGitHubToken());renderAnnouncements();input.value='';toast('公告发布成功','success')});
-    document.getElementById('announce-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('announce-post').click()});
   </script>
 </body>
 </html>
