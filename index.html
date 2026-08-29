@@ -390,6 +390,11 @@
   <div class="toast" id="toast"></div>
   <script>
     'use strict';
+    // ==================== 配置区域（你只需要改这里） ====================
+    const CLOUDINARY_CLOUD_NAME = 'mxwtqy3s';      // 你的 Cloud Name
+    const CLOUDINARY_UPLOAD_PRESET = 'ml_default'; // 你创建的 Unsigned Preset 名称
+    // ==================================================================
+
     const SUPA_URL='https://pqzvjeuoyqzoqptulsde.supabase.co';
     const SUPA_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxenZqZXVveXF6b3FwdHVsc2RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3ODczODAsImV4cCI6MjEwMzM2MzM4MH0.C8ihm_67nDph7aXvmJX8KmwXlp6mLnGl5gfevEepo4M';
     const supa=(()=>{
@@ -457,7 +462,7 @@
     async function ghPutFile(path,b64,message,sha,token){const body={message,content:b64,branch:CFG.branch};if(sha)body.sha=sha;const r=await fetch('https://api.github.com/repos/'+CFG.owner+'/'+CFG.repo+'/contents/'+path,{method:'PUT',headers:{...ghHeaders(token),'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error('GitHub '+r.status);return r.json()}
     async function ghDeleteFile(path,message,sha,token){const r=await fetch('https://api.github.com/repos/'+CFG.owner+'/'+CFG.repo+'/contents/'+path,{method:'DELETE',headers:{...ghHeaders(token),'Content-Type':'application/json'},body:JSON.stringify({message,sha,branch:CFG.branch})});if(!r.ok)throw new Error('GitHub '+r.status)}
     async function ghVerifyToken(token){const r=await fetch('https://api.github.com/repos/'+CFG.owner+'/'+CFG.repo,{headers:ghHeaders(token)});if(!r.ok)throw new Error('Token 无效');return r.json()}
-    function cdnUrl(path){return 'https://cdn.jsdelivr.net/gh/'+CFG.owner+'/'+CFG.repo+'@'+CFG.branch+'/'+path}
+    function cdnUrl(path){return 'https://cdn.jsdelivr.net/gh/'+CFG.owner+'/'+CFG.repo+'@'+CFG.branch+'/'+path} // 已不再使用，但保留以免报错
     let artworks=[],filtered=[];let currentTag='all',currentSort='newest',searchQuery='';let isAdmin=false,adminToken='';let currentDetailArt=null;
     let isLikedView=false;
     let isHistoryView=false;
@@ -465,12 +470,12 @@
     async function persistArtworks(token){const file=await ghGetFile('artworks.json',token);const sha=file?file.sha:null;const json=JSON.stringify(artworks,null,2);const base64=btoa(unescape(encodeURIComponent(json)));await ghPutFile('artworks.json',base64,'update artworks',sha,token)}
     function applyFilters(){let arr=[];if(isLikedView){const likedIds=Array.from(userLikedSet);arr=artworks.filter(a=>likedIds.includes(a.id))}else if(isHistoryView){const recent=getRecent();const recentIds=recent.map(r=>r.id);arr=artworks.filter(a=>recentIds.includes(a.id));const orderMap={};recent.forEach((r,idx)=>orderMap[r.id]=idx);arr.sort((a,b)=>(orderMap[a.id]||Infinity)-(orderMap[b.id]||Infinity))}else{arr=[...artworks];if(currentTag!=='all')arr=arr.filter(a=>a.tag===currentTag);if(searchQuery)arr=arr.filter(a=>a.title.toLowerCase().includes(searchQuery)||(a.desc||'').toLowerCase().includes(searchQuery));if(currentSort==='newest')arr.sort((a,b)=>b.date-a.date);if(currentSort==='oldest')arr.sort((a,b)=>a.date-b.date);if(currentSort==='title')arr.sort((a,b)=>a.title.localeCompare(b.title,'zh'))}filtered=arr;renderGallery();}
     function showSkeletons(n=8){document.getElementById('gallery').innerHTML=Array.from({length:n},()=>'<div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>').join('')}
-    function renderGallery(){const g=document.getElementById('gallery');if(!g)return;if(!filtered.length){let msg='还没有作品';if(isLikedView)msg='还没有喜欢的作品';else if(isHistoryView)msg='还没有浏览记录';g.innerHTML='<div class="empty"><div class="empty-icon">🖼️</div><p>'+msg+'</p></div>';return}g.innerHTML='';filtered.forEach((art,idx)=>{const liked=isLiked(art.id);const count=getLikeCount(art.id);const card=document.createElement('div');card.className='artwork-card';card.innerHTML='<div class="card-img-wrap"><img src="'+cdnUrl(art.imagePath)+'" alt="'+escHtml(art.title)+'" loading="lazy" /><span class="card-tag">'+escHtml(art.tag)+'</span></div><div class="card-info"><div class="card-left"><div class="card-title">'+escHtml(art.title)+'</div><div class="card-meta">'+fmtDate(art.date)+'</div></div><button class="heart-btn '+(liked?'liked':'')+'" data-id="'+art.id+'">'+(liked?'❤️':'🤍')+'<span class="heart-count">'+count+'</span></button></div>';card.querySelector('.heart-btn').addEventListener('click',e=>{e.stopPropagation();handleLike(art.id,e.currentTarget)});card.addEventListener('click',()=>{openDetail(idx);addRecent(art)});g.appendChild(card)})}
+    function renderGallery(){const g=document.getElementById('gallery');if(!g)return;if(!filtered.length){let msg='还没有作品';if(isLikedView)msg='还没有喜欢的作品';else if(isHistoryView)msg='还没有浏览记录';g.innerHTML='<div class="empty"><div class="empty-icon">🖼️</div><p>'+msg+'</p></div>';return}g.innerHTML='';filtered.forEach((art,idx)=>{const liked=isLiked(art.id);const count=getLikeCount(art.id);const card=document.createElement('div');card.className='artwork-card';card.innerHTML='<div class="card-img-wrap"><img src="'+art.imagePath+'" alt="'+escHtml(art.title)+'" loading="lazy" /><span class="card-tag">'+escHtml(art.tag)+'</span></div><div class="card-info"><div class="card-left"><div class="card-title">'+escHtml(art.title)+'</div><div class="card-meta">'+fmtDate(art.date)+'</div></div><button class="heart-btn '+(liked?'liked':'')+'" data-id="'+art.id+'">'+(liked?'❤️':'🤍')+'<span class="heart-count">'+count+'</span></button></div>';card.querySelector('.heart-btn').addEventListener('click',e=>{e.stopPropagation();handleLike(art.id,e.currentTarget)});card.addEventListener('click',()=>{openDetail(idx);addRecent(art)});g.appendChild(card)})}
     async function handleLike(artworkId,btn){if(!supa.user){openUserAuthModal();toast('请先登录才能点赞');return}const wasLiked=userLikedSet.has(artworkId);if(wasLiked){userLikedSet.delete(artworkId);likeCountsMap[artworkId]=Math.max(0,(likeCountsMap[artworkId]||0)-1)}else{userLikedSet.add(artworkId);likeCountsMap[artworkId]=(likeCountsMap[artworkId]||0)+1}function updateButtonUI(){const nowLiked=userLikedSet.has(artworkId);if(btn){btn.innerHTML=(nowLiked?'❤️':'🤍')+'<span class="heart-count">'+(likeCountsMap[artworkId]||0)+'</span>';btn.classList.toggle('liked',nowLiked)}if(currentDetailArt?.id===artworkId){const dh=document.getElementById('detail-heart');dh.innerHTML=(nowLiked?'❤️':'🤍')+' <span class="detail-heart-count">'+(likeCountsMap[artworkId]||0)+'</span>';dh.classList.toggle('liked',nowLiked)}}updateButtonUI();try{if(wasLiked)await supa.removeLike(supa.user.id,artworkId);else await supa.addLike(supa.user.id,artworkId)}catch(e){if(wasLiked){userLikedSet.add(artworkId);likeCountsMap[artworkId]=(likeCountsMap[artworkId]||0)+1}else{userLikedSet.delete(artworkId);likeCountsMap[artworkId]=Math.max(0,(likeCountsMap[artworkId]||0)-1)}updateButtonUI();if(e.message==='SESSION_EXPIRED'){toast('登录已过期，请重新登录','error');supa.saveSession(null);updateUserUI()}else{toast('点赞失败，请重试','error')}}}
     function showLikedView(){if(!supa.user){openUserAuthModal();toast('请先登录查看喜欢的作品');return}isLikedView=true;isHistoryView=false;applyFilters();document.getElementById('main-header').classList.add('hidden');document.getElementById('tags-bar').classList.add('hidden');document.getElementById('view-back-bar').classList.add('show');document.getElementById('view-title').textContent='❤️ 我喜欢';document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('active'));}
     function showHistoryView(){isHistoryView=true;isLikedView=false;applyFilters();document.getElementById('main-header').classList.add('hidden');document.getElementById('tags-bar').classList.add('hidden');document.getElementById('view-back-bar').classList.add('show');document.getElementById('view-title').textContent='📜 历史浏览';document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('active'));}
     function exitSpecialView(){isLikedView=false;isHistoryView=false;document.getElementById('main-header').classList.remove('hidden');document.getElementById('tags-bar').classList.remove('hidden');document.getElementById('view-back-bar').classList.remove('show');document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('active'));document.querySelector('.tag-pill[data-tag="all"]').classList.add('active');currentTag='all';applyFilters()}
-    function openDetail(idx){const art=filtered[idx];if(!art)return;currentDetailArt=art;document.getElementById('main-view').classList.add('hidden');const dv=document.getElementById('detail-view');dv.classList.add('open');document.body.style.overflow='auto';document.getElementById('detail-title').textContent=art.title;document.getElementById('detail-image').src=cdnUrl(art.imagePath);document.getElementById('detail-tag').textContent=art.tag;document.getElementById('detail-title-text').textContent=art.title;document.getElementById('detail-date').textContent='发布于 '+fmtDate(art.date);document.getElementById('detail-desc').textContent=art.desc||'暂无描述';const liked=isLiked(art.id);const count=getLikeCount(art.id);const dh=document.getElementById('detail-heart');dh.innerHTML=(liked?'❤️':'🤍')+' <span class="detail-heart-count">'+count+'</span>';dh.classList.toggle('liked',liked);const delBtn=document.getElementById('detail-delete');delBtn.style.display=isAdmin?'block':'none';delBtn.dataset.id=art.id;delBtn.dataset.imgpath=art.imagePath;const wrap=document.getElementById('detail-image-wrap');const img=document.getElementById('detail-image');wrap.classList.remove('zoomed');img.style.transform='';wrap.onclick=e=>{e.stopPropagation();wrap.classList.toggle('zoomed')};renderCommentSection(art.id);dv.scrollTop=0;window.scrollTo(0,0)}
+    function openDetail(idx){const art=filtered[idx];if(!art)return;currentDetailArt=art;document.getElementById('main-view').classList.add('hidden');const dv=document.getElementById('detail-view');dv.classList.add('open');document.body.style.overflow='auto';document.getElementById('detail-title').textContent=art.title;document.getElementById('detail-image').src=art.imagePath;document.getElementById('detail-tag').textContent=art.tag;document.getElementById('detail-title-text').textContent=art.title;document.getElementById('detail-date').textContent='发布于 '+fmtDate(art.date);document.getElementById('detail-desc').textContent=art.desc||'暂无描述';const liked=isLiked(art.id);const count=getLikeCount(art.id);const dh=document.getElementById('detail-heart');dh.innerHTML=(liked?'❤️':'🤍')+' <span class="detail-heart-count">'+count+'</span>';dh.classList.toggle('liked',liked);const delBtn=document.getElementById('detail-delete');delBtn.style.display=isAdmin?'block':'none';delBtn.dataset.id=art.id;delBtn.dataset.imgpath=art.imagePath;const wrap=document.getElementById('detail-image-wrap');const img=document.getElementById('detail-image');wrap.classList.remove('zoomed');img.style.transform='';wrap.onclick=e=>{e.stopPropagation();wrap.classList.toggle('zoomed')};renderCommentSection(art.id);dv.scrollTop=0;window.scrollTo(0,0)}
     function closeDetail(){document.getElementById('detail-view').classList.remove('open');document.getElementById('main-view').classList.remove('hidden');document.body.style.overflow='auto';document.getElementById('comment-input-area').innerHTML='';document.getElementById('comment-list').innerHTML='';currentDetailArt=null;if(isLikedView||isHistoryView){applyFilters()}}
     document.getElementById('detail-back').addEventListener('click',closeDetail);
     document.getElementById('detail-heart').addEventListener('click',function(){if(!currentDetailArt)return;handleLike(currentDetailArt.id,null);const card=document.querySelector('.heart-btn[data-id="'+currentDetailArt.id+'"]');if(card){const nowLiked=userLikedSet.has(currentDetailArt.id);const count=likeCountsMap[currentDetailArt.id]||0;card.innerHTML=(nowLiked?'❤️':'🤍')+'<span class="heart-count">'+count+'</span>';card.classList.toggle('liked',nowLiked)}});
@@ -532,7 +537,63 @@
     document.getElementById('upload-close').addEventListener('click',()=>closeModal('upload-modal'));
     function resetUploadForm(){pickedFile=null;pickedDataUrl=null;fileInput.value='';previewImg.src='';previewWrap.style.display='none';dropZone.style.display='';document.getElementById('art-title').value='';document.getElementById('art-desc').value='';document.getElementById('art-tag').value='油画';document.getElementById('upload-progress').style.display='none';document.getElementById('progress-fill').style.width='0%'}
     function setProgress(pct,label){document.getElementById('upload-progress').style.display='block';document.getElementById('progress-fill').style.width=pct+'%';document.getElementById('progress-text').textContent=label}
-    document.getElementById('upload-submit').addEventListener('click',async()=>{const title=document.getElementById('art-title').value.trim();const tag=document.getElementById('art-tag').value;const desc=document.getElementById('art-desc').value.trim();if(!pickedFile)return toast('请选图');if(!title)return toast('请填标题');const btn=document.getElementById('upload-submit');btn.disabled=true;btn.textContent='上传中…';try{setProgress(20,'读取…');const base64=pickedDataUrl.split(',')[1];const ext=(pickedFile.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');const imgPath='images/'+Date.now()+'-'+Math.random().toString(36).slice(2,6)+'.'+ext;setProgress(50,'上传图片…');await ghPutFile(imgPath,base64,'add '+title,null,adminToken);setProgress(80,'更新列表…');const artwork={id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),title,tag,desc,date:Date.now(),imagePath:imgPath};artworks.unshift(artwork);await persistArtworks(adminToken);setProgress(100,'完成！');setTimeout(()=>{closeModal('upload-modal');resetUploadForm();applyFilters();toast('发布成功','success')},500)}catch{toast('上传失败','error')}finally{btn.disabled=false;btn.textContent='发布'}});
+    // ==================== 核心修改：上传改用 Cloudinary ====================
+    document.getElementById('upload-submit').addEventListener('click', async function () {
+      const title = document.getElementById('art-title').value.trim();
+      const tag = document.getElementById('art-tag').value;
+      const desc = document.getElementById('art-desc').value.trim();
+      if (!pickedFile) return toast('请选图');
+      if (!title) return toast('请填标题');
+
+      const btn = this;
+      btn.disabled = true;
+      btn.textContent = '上传中…';
+
+      try {
+        // 构建 FormData 直接上传到 Cloudinary
+        const formData = new FormData();
+        formData.append('file', pickedFile);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+        const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`;
+        const res = await fetch(url, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error?.message || '上传失败');
+        }
+
+        const data = await res.json();
+        const publicUrl = data.secure_url; // Cloudinary 返回 HTTPS 链接
+
+        // 构造作品对象并存入 artworks（imagePath 存 Cloudinary URL）
+        const artwork = {
+          id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2),
+          title,
+          tag,
+          desc,
+          date: Date.now(),
+          imagePath: publicUrl,
+        };
+        artworks.unshift(artwork);
+        await persistArtworks(adminToken); // 推送到 GitHub
+
+        closeModal('upload-modal');
+        resetUploadForm();
+        applyFilters();
+        toast('发布成功！', 'success');
+      } catch (e) {
+        toast('上传失败：' + e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '发布';
+      }
+    });
+    // ==================================================================
+
     const adminBtn=document.getElementById('admin-btn');if(adminBtn){adminBtn.addEventListener('click',()=>{if(isAdmin){isAdmin=false;adminToken='';sessionStorage.removeItem('ag_token');document.getElementById('upload-btn').style.display='none';document.getElementById('admin-badge').style.display='none';document.getElementById('admin-btn').textContent='管理员';document.getElementById('announce-actions').style.display='none';document.getElementById('announcement-bar').classList.remove('admin-mode');renderAnnouncements();toast('已退出管理员')}else{openModal('auth-modal')}});}
     document.getElementById('auth-submit').addEventListener('click',doAdminLogin);
     document.getElementById('auth-cancel').addEventListener('click',()=>closeModal('auth-modal'));
