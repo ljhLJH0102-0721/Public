@@ -407,14 +407,14 @@
   <div class="toast" id="toast"></div>
   <script>
     'use strict';
-    // ========== 配置区域（请务必修改） ==========
-    const CLOUDINARY_CLOUD_NAME = '你的cloud_name';        // 你的 Cloudinary Cloud Name（不是 ml_default）
-    const CLOUDINARY_UPLOAD_PRESET = '你的upload_preset';   // 你创建的 Unsigned Preset 名称
+    // ==================== 唯一需要你修改的地方 ====================
+    const CLOUDINARY_CLOUD_NAME = '你的真实cloud_name';     // 去 Cloudinary 控制台抄，形如 dx8xxxxxx
+    const CLOUDINARY_UPLOAD_PRESET = '你的真实preset名称';   // 你创建的 unsigned preset
     const OWNER_EMAIL = '551250969@qq.com';                 // 站长邮箱
     const GITHUB_OWNER = 'ljhLJH0102-0721';                 // 你的GitHub用户名
     const GITHUB_REPO = 'Public';                           // 仓库名
     const GITHUB_BRANCH = 'main';                           // 分支
-    // ========================================
+    // ==========================================================
 
     const SUPA_URL = 'https://pqzvjeuoyqzoqptulsde.supabase.co';
     const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxenZqZXVveXF6b3FwdHVsc2RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3ODczODAsImV4cCI6MjEwMzM2MzM4MH0.C8ihm_67nDph7aXvmJX8KmwXlp6mLnGl5gfevEepo4M';
@@ -472,19 +472,16 @@
         getComments: async (artworkId)=>{const rows=await rest('GET','comments',{select:'id,user_id,content,created_at',filters:[['artwork_id','eq.'+artworkId],['order','created_at.asc']]});if(!rows||rows.length===0)return rows;const userIds=[...new Set(rows.map(r=>r.user_id))];const profiles=await rest('GET','profiles',{select:'id,nickname',filters:[['id','in.('+userIds.join(',')+')']]});const profileMap={};(profiles||[]).forEach(p=>profileMap[p.id]=p.nickname);return rows.map(r=>({...r,profiles:{nickname:profileMap[r.user_id]||'匿名用户'}}))},
         addComment: async (userId,artworkId,content)=>{const rows=await rest('POST','comments',{body:{user_id:userId,artwork_id:artworkId,content},returning:true});return rows?.[0]},
         deleteComment: async (commentId)=>{await rest('DELETE','comments',{filters:[['id','eq.'+commentId]]})},
-        // 暴露 rest 供 loadArtworks 使用
         rest: rest
       };
     })();
 
-    // ---------- GitHub 交互（仅用于 R18 图片） ----------
+    // ---------- GitHub 交互 ----------
     const GITHUB_API = 'https://api.github.com';
     function ghHeaders(token){return {'Accept':'application/vnd.github+json','Authorization':'Bearer '+token}}
-    async function ghGetFile(path,token){if(!token) return null; // 没有token跳过
-      const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,{headers:ghHeaders(token)});if(r.status===404)return null;if(!r.ok)throw new Error('GitHub '+r.status);return r.json()}
+    async function ghGetFile(path,token){if(!token) return null;const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,{headers:ghHeaders(token)});if(r.status===404)return null;if(!r.ok)throw new Error('GitHub '+r.status);return r.json()}
     async function ghPutFile(path,b64,message,sha,token){const body={message,content:b64,branch:GITHUB_BRANCH};if(sha)body.sha=sha;const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,{method:'PUT',headers:{...ghHeaders(token),'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error('GitHub '+r.status);return r.json()}
     async function ghDeleteFile(path,message,sha,token){const r=await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,{method:'DELETE',headers:{...ghHeaders(token),'Content-Type':'application/json'},body:JSON.stringify({message,sha,branch:GITHUB_BRANCH})});if(!r.ok)throw new Error('GitHub '+r.status)}
-
     function getGitHubToken(){return localStorage.getItem('github_token') || ''}
     function setGitHubToken(token){localStorage.setItem('github_token', token)}
 
@@ -517,16 +514,14 @@
     function openModal(id){const el=document.getElementById(id);if(el)el.classList.add('open');document.body.style.overflow='hidden'}
     function closeModal(id){const el=document.getElementById(id);if(el)el.classList.remove('open');document.body.style.overflow=''}
 
-    // ---------- 加载作品（从 Supabase） ----------
+    // ---------- 加载作品 ----------
     async function loadArtworks(){
       showSkeletons();
       try{
-        // 使用 supa.rest 获取所有作品
         const rows = await supa.rest('GET', 'artworks', {select: '*'});
         artworks = rows || [];
         await loadLikeData(artworks.map(a=>a.id));
         applyFilters();
-        // 如果 artworks 为空，尝试从旧 GitHub 迁移（一次性）
         if(artworks.length === 0){
           try{
             const res = await fetch('https://raw.githubusercontent.com/'+GITHUB_OWNER+'/'+GITHUB_REPO+'/'+GITHUB_BRANCH+'/artworks.json');
@@ -536,15 +531,14 @@
                 await supa.rest('POST', 'artworks', {body:{id:art.id, title:art.title, tag:art.tag, description:art.desc||'', date:art.date, imagePath:art.imagePath, r18:false}});
               }
               toast('已迁移旧数据','success');
-              loadArtworks(); // 重新加载
+              loadArtworks();
               return;
             }
           }catch(e){console.warn('迁移失败',e)}
         }
       }catch(e){
         console.error('loadArtworks error:',e);
-        toast('加载作品失败','error');
-        // 显示空状态
+        toast('加载作品失败，请检查Supabase表是否创建','error');
         artworks = [];
         applyFilters();
       }
@@ -554,21 +548,15 @@
       if(!artworkIds.length)return;
       try{
         likeCountsMap = await supa.getLikeCounts(artworkIds);
-        if(supa.user){
-          userLikedSet = await supa.getUserLikes(supa.user.id, artworkIds);
-        }else{
-          userLikedSet = new Set();
-        }
+        if(supa.user) userLikedSet = await supa.getUserLikes(supa.user.id, artworkIds);
+        else userLikedSet = new Set();
       }catch(e){console.warn('loadLikeData:',e)}
     }
 
     // ---------- 过滤与渲染 ----------
     function applyFilters(){
       let arr = [...artworks];
-      // R18 过滤
-      if(!showR18){
-        arr = arr.filter(a => !a.r18);
-      }
+      if(!showR18) arr = arr.filter(a => !a.r18);
       if(isLikedView){
         const likedIds = Array.from(userLikedSet);
         arr = arr.filter(a => likedIds.includes(a.id));
@@ -773,7 +761,7 @@
       });
     }
 
-    // ---------- 删除作品（仅站长） ----------
+    // ---------- 删除 ----------
     document.getElementById('detail-delete').addEventListener('click', async function(){
       if(!isOwner) return;
       if(!confirm('删除此作品？'))return;
@@ -781,9 +769,7 @@
       const r18=this.dataset.r18==='true';
       const imgPath=this.dataset.imagePath;
       try{
-        // 删除 Supabase 记录
         await supa.rest('DELETE','artworks',{filters:[['id','eq.'+id]]});
-        // 如果是 R18，删除 GitHub 图片文件
         if(r18 && imgPath){
           const token=getGitHubToken();
           if(!token){toast('需要 GitHub Token 删除 R18 图片','error');return}
@@ -814,7 +800,6 @@
 
     document.getElementById('upload-btn').addEventListener('click',function(){
       if(!supa.user){toast('请先登录');openUserAuthModal();return}
-      // 显示R18选项如果是站长
       document.getElementById('r18-toggle-row').style.display = isOwner ? 'flex' : 'none';
       document.getElementById('art-r18').checked = false;
       openModal('upload-modal');
@@ -834,14 +819,12 @@
       try{
         let imageUrl;
         if(isR18){
-          // R18 上传到 GitHub
           const token = getGitHubToken();
           if(!token){
             openModal('token-modal');
             btn.disabled=false;btn.textContent='发布';
-            return; // 中断，等待token输入
+            return;
           }
-          // 读取文件为base64
           const reader = new FileReader();
           const base64 = await new Promise((resolve,reject)=>{
             reader.onload=e=>resolve(e.target.result.split(',')[1]);
@@ -853,7 +836,6 @@
           await ghPutFile(path, base64, 'add R18 '+title, null, token);
           imageUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_OWNER}/${GITHUB_REPO}@${GITHUB_BRANCH}/${path}`;
         }else{
-          // 普通上传到 Cloudinary
           const formData=new FormData();
           formData.append('file', pickedFile);
           formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
@@ -863,7 +845,6 @@
           imageUrl=data.secure_url;
         }
 
-        // 插入 Supabase
         const artwork = {
           id: Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),
           title, tag, description: desc, date: Date.now(),
@@ -884,13 +865,11 @@
       }
     });
 
-    // Token 模态框
     document.getElementById('token-submit').addEventListener('click', function(){
       const token = document.getElementById('github-token-input').value.trim();
       if(!token){toast('请输入Token');return}
       setGitHubToken(token);
       closeModal('token-modal');
-      // 重新触发上传
       document.getElementById('upload-submit').click();
     });
     document.getElementById('token-cancel').addEventListener('click',()=>closeModal('token-modal'));
@@ -946,7 +925,6 @@
       if(supa.user){
         const nickname=currentUserProfile?.nickname||supa.user.email.split('@')[0];
         container.innerHTML='<div class="user-dropdown-header"><div class="ud-name">'+escHtml(nickname)+(isOwner?' 👑':'')+'</div><div class="ud-email">'+escHtml(supa.user.email)+'</div></div><div class="user-dropdown-item" id="dd-liked">❤️ 我喜欢的</div><div class="user-dropdown-item" id="dd-history">📜 历史浏览</div><div class="user-dropdown-item"><div class="toggle-label" id="r18-toggle"><span>🔞 R18</span><div class="toggle-track'+(showR18?' active':'')+'"><div class="toggle-thumb"></div></div></div></div><div class="user-dropdown-item" id="dd-bg">🎨 更换背景</div><div class="user-dropdown-item" id="dd-change-nick">✏️ 修改昵称</div><div class="user-dropdown-item danger" id="dd-logout">退出登录</div>';
-        // R18 toggle
         document.getElementById('r18-toggle').addEventListener('click', function(e){
           e.stopPropagation();
           showR18 = !showR18;
@@ -980,7 +958,7 @@
     document.getElementById('bg-custom-color').addEventListener('input',function(){saveBg(this.value)});
     document.getElementById('bg-reset').addEventListener('click',function(){localStorage.removeItem(BG_STORAGE_KEY);document.body.style.background='';document.getElementById('bg-custom-color').value='#f5f3f0';document.querySelectorAll('.bg-preset').forEach(el=>el.classList.remove('active'));closeModal('bg-modal');toast('已恢复默认背景')});
 
-    // ---------- 搜索建议 ----------
+    // ---------- 搜索 ----------
     function setupSearchSuggestions(){
       const input=document.getElementById('search-input');
       const sugg=document.getElementById('suggestions');
@@ -1028,11 +1006,7 @@
     document.getElementById('nick-close').addEventListener('click',()=>closeModal('nick-modal'));
     document.getElementById('nick-cancel').addEventListener('click',()=>closeModal('nick-modal'));
     document.getElementById('nick-submit').addEventListener('click',async()=>{const name=document.getElementById('nick-input').value.trim();if(!name){toast('昵称不能为空');return}const btn=document.getElementById('nick-submit');btn.disabled=true;btn.textContent='保存中…';try{await supa.updateNickname(supa.user.id,name);if(currentUserProfile)currentUserProfile.nickname=name;updateUserUI();closeModal('nick-modal');toast('昵称已更新','success')}catch{toast('更新失败','error')}finally{btn.disabled=false;btn.textContent='保存'}});
-
-    // 废弃的admin按钮
     document.getElementById('admin-btn')?.addEventListener('click', ()=>{toast('管理员登录已移除，请使用普通登录')});
-
-    // 模态框点击背景关闭
     ['upload-modal','auth-modal','user-auth-modal','nick-modal','bg-modal','token-modal'].forEach(id=>{
       const el=document.getElementById(id);
       if(el){el.addEventListener('click',e=>{if(e.target===el)closeModal(id)})}
@@ -1043,10 +1017,7 @@
     async function fetchAnnouncements(){
       try{
         const token = getGitHubToken();
-        if(!token){ // 没有token跳过，不报错
-          renderAnnouncements();
-          return;
-        }
+        if(!token){renderAnnouncements();return}
         const file=await ghGetFile(ANN_FILE, token);
         if(file){annSha=file.sha;const bin=atob(file.content.replace(/\s/g,''));announcements=JSON.parse(decodeURIComponent(escape(bin)))}else{announcements=[]}
       }catch{announcements=[]}
@@ -1062,9 +1033,7 @@
       (async()=>{
         if(supa.loadSession()){
           try{await onUserLoggedIn();}catch{supa.saveSession(null);updateUserUI()}
-        }else{
-          updateUserUI();
-        }
+        }else{updateUserUI()}
         loadBg();
         setupSearchSuggestions();
         await loadArtworks();
