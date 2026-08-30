@@ -1,0 +1,5 @@
+# Agent internal directory — never commit
+.deep-copilot/
+
+# Environment files — contain credentials
+.env
