@@ -274,10 +274,15 @@
     .pg-btn:hover{border-color:var(--accent);color:var(--accent)}
     .pg-btn:disabled{opacity:.4;cursor:not-allowed}
     .pg-label{font-size:.8rem;color:var(--text3);font-weight:600;min-width:48px;text-align:center}
-    #pages-strip{display:flex;gap:6px;margin-top:8px;overflow-x:auto;padding:2px}
-    #pages-strip .ps-thumb{width:52px;height:52px;border-radius:6px;overflow:hidden;flex-shrink:0;border:2px solid var(--border);position:relative;background:#eee}
-    #pages-strip .ps-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-    #pages-strip .ps-thumb .ps-num{position:absolute;left:2px;top:2px;background:rgba(0,0,0,.62);color:#fff;font-size:.58rem;padding:0 5px;border-radius:8px;line-height:1.5}
+    #pages-list{flex-direction:column;gap:6px;margin-top:8px;max-height:190px;overflow-y:auto;padding:2px}
+    .pl-item{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:4px 8px}
+    .pl-thumb{width:38px;height:38px;border-radius:6px;object-fit:cover;border:1px solid var(--border2);flex-shrink:0;background:#eee}
+    .pl-name{flex:1;font-size:.74rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pl-ops{display:flex;gap:4px;flex-shrink:0}
+    .pl-btn{border:1px solid var(--border2);background:#f8f8f8;color:var(--text2);border-radius:6px;width:26px;height:26px;font-size:.66rem;cursor:pointer;line-height:1;font-family:inherit}
+    .pl-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+    .pl-btn:disabled{opacity:.35;cursor:not-allowed}
+    .pl-btn.pl-del:hover{background:#fef2f2;border-color:var(--danger);color:var(--danger)}
     #file-hint{color:var(--accent);font-size:.72rem;margin-left:6px;font-weight:500}
     .wb-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:2px}
     .wb-tab{flex-shrink:0;padding:5px 14px;border-radius:16px;font-size:.76rem;font-weight:600;border:1.5px solid var(--border);background:#fff;color:var(--text2);cursor:pointer;transition:all .15s;font-family:inherit}
@@ -498,7 +503,8 @@
           <div class="dz-sub" id="dz-sub">JPG · PNG · WEBP · GIF · 单张最大 100MB</div>
           <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif" />
         </div>
-        <div id="pages-strip" style="display:none;"></div>
+        <div id="pages-list" style="display:none;"></div>
+        <button type="button" class="btn btn-ghost" id="add-more-btn" style="display:none;margin-top:8px;align-self:flex-start;">＋ 继续添加图片</button>
         <div id="preview-wrap"><img id="preview-img" alt="预览" /><button class="preview-remove" id="preview-remove">✕</button></div>
       </div>
       <div class="form-row"><label>标题 *</label><input type="text" id="art-title" placeholder="作品名称" maxlength="80" /></div>
@@ -777,10 +783,15 @@ document.getElementById('detail-download').addEventListener('click',async functi
     document.getElementById('nick-cancel').addEventListener('click',()=>closeModal('nick-modal'));
     document.getElementById('set-nick-save').addEventListener('click',async()=>{const input=document.getElementById('set-nick-input');const name=input.value.trim();if(!name){toast('昵称不能为空');return}const btn=document.getElementById('set-nick-save');btn.disabled=true;btn.textContent='保存中…';try{await supa.updateNickname(supa.user.id,name);if(currentUserProfile)currentUserProfile.nickname=name;input.value='';updateUserUI();renderUserDropdown();toast('昵称已更新','success')}catch{toast('更新失败','error')}finally{btn.disabled=false;btn.textContent='保存'}});
     let pickedFile=null,pickedDataUrl=null,pickedFiles=[];const fileInput=document.getElementById('file-input');const dropZone=document.getElementById('drop-zone');const previewImg=document.getElementById('preview-img');const previewWrap=document.getElementById('preview-wrap');
-    function renderPagesStrip(){const strip=document.getElementById('pages-strip');if(!strip)return;const list=pickedFiles||[];strip.innerHTML='';const fh=document.getElementById('file-hint');if(list.length>1){list.forEach((f,i)=>{const w=document.createElement('div');w.className='ps-thumb';const im=document.createElement('img');im.src=URL.createObjectURL(f);w.appendChild(im);const n=document.createElement('span');n.className='ps-num';n.textContent=(i+1)+'/'+list.length;w.appendChild(n);strip.appendChild(w)});strip.style.display='flex';if(fh)fh.textContent='已选 '+list.length+' 页，可逐页翻译';return}strip.style.display='none';if(fh)fh.textContent=''}
-    function clearPicked(){pickedFiles=[];pickedFile=null;pickedDataUrl=null;previewImg.src='';previewWrap.style.display='none';dropZone.style.display='';if(fileInput)fileInput.value='';renderPagesStrip()}
-    function handlePickFiles(list){if(!list||!list.length)return;const files=[...list].filter(f=>f&&f.type.startsWith('image/'));if(!files.length)return toast('请选图片');if(files.some(f=>f.size>100*1024*1024))return toast('单张图片最大 100MB');const multiOk=currentKindSel()==='comic';pickedFiles=multiOk?files:files.slice(0,1);pickedFile=pickedFiles[0];const reader=new FileReader();reader.onload=e=>{pickedDataUrl=e.target.result;previewImg.src=pickedDataUrl;previewWrap.style.display='block';dropZone.style.display='none';renderPagesStrip()};reader.readAsDataURL(pickedFiles[0])}
-    if(fileInput)fileInput.addEventListener('change',e=>handlePickFiles(e.target.files));
+    function renderPagesList(){const box=document.getElementById('pages-list');if(!box)return;const list=pickedFiles||[];box.innerHTML='';const fh=document.getElementById('file-hint');if(list.length>1){box.style.display='flex';if(fh)fh.textContent='已选 '+list.length+' 页，可继续添加、移除或用 ▲▼ 调整顺序'}else{box.style.display='none';if(fh)fh.textContent=''}list.forEach((f,i)=>{const it=document.createElement('div');it.className='pl-item';const im=document.createElement('img');im.className='pl-thumb';im.src=URL.createObjectURL(f);const nm=document.createElement('span');nm.className='pl-name';nm.textContent='第 '+(i+1)+' 页 · '+f.name;nm.title=f.name;const ops=document.createElement('span');ops.className='pl-ops';ops.innerHTML='<button type="button" class="pl-btn" data-act="up" data-i="'+i+'"'+(i===0?' disabled':'')+' title="上移">▲</button><button type="button" class="pl-btn" data-act="down" data-i="'+i+'"'+(i===list.length-1?' disabled':'')+' title="下移">▼</button><button type="button" class="pl-btn pl-del" data-act="del" data-i="'+i+'" title="移除">✕</button>';it.appendChild(im);it.appendChild(nm);it.appendChild(ops);box.appendChild(it)})}
+    function refreshPickedUI(){pickedFile=pickedFiles[0]||null;renderPagesList();const addBtn=document.getElementById('add-more-btn');if(addBtn)addBtn.style.display=(currentKindSel()==='comic'&&pickedFiles.length)?'':'none';if(pickedFile){const reader=new FileReader();reader.onload=e=>{pickedDataUrl=e.target.result;previewImg.src=pickedDataUrl;previewWrap.style.display='block';dropZone.style.display='none'};reader.readAsDataURL(pickedFile)}else{pickedDataUrl=null;previewImg.src='';previewWrap.style.display='none';dropZone.style.display=''}}
+    function movePage(i,dir){const j=i+dir;if(j<0||j>=pickedFiles.length)return;const t=pickedFiles[i];pickedFiles[i]=pickedFiles[j];pickedFiles[j]=t;refreshPickedUI()}
+    function removePage(i){pickedFiles.splice(i,1);refreshPickedUI()}
+    const pagesListBox=document.getElementById('pages-list');if(pagesListBox)pagesListBox.addEventListener('click',e=>{const b=e.target.closest('.pl-btn');if(!b)return;const i=+b.dataset.i;const act=b.dataset.act;if(act==='up')movePage(i,-1);else if(act==='down')movePage(i,1);else if(act==='del')removePage(i)});
+    const addMoreBtn=document.getElementById('add-more-btn');if(addMoreBtn)addMoreBtn.addEventListener('click',()=>{if(!fileInput)return;fileInput.value='';fileInput.click()});
+    function clearPicked(){pickedFiles=[];pickedFile=null;pickedDataUrl=null;previewImg.src='';previewWrap.style.display='none';dropZone.style.display='';if(fileInput)fileInput.value='';const box=document.getElementById('pages-list');if(box){box.innerHTML='';box.style.display='none'}const ab=document.getElementById('add-more-btn');if(ab)ab.style.display='none';const fh=document.getElementById('file-hint');if(fh)fh.textContent=''}
+    function handlePickFiles(list){if(!list||!list.length)return;const files=[...list].filter(f=>f&&f.type.startsWith('image/'));if(!files.length)return toast('请选图片');if(files.some(f=>f.size>100*1024*1024))return toast('单张图片最大 100MB');const multiOk=currentKindSel()==='comic';const seen=multiOk?new Set(pickedFiles.map(f=>f.name+'|'+f.size+'|'+(f.lastModified||0))):new Set();let add=[];let dup=0;files.forEach(f=>{const key=f.name+'|'+f.size+'|'+(f.lastModified||0);if(seen.has(key)){dup++;return}seen.add(key);add.push(f)});if(!multiOk)add=add.slice(0,1);if(!add.length){if(dup)toast('这些图片已在上面的列表中','error');return}const merged=multiOk?pickedFiles.concat(add):add;pickedFiles=merged;if(dup&&multiOk)toast('已忽略 '+dup+' 张重复图片');refreshPickedUI()}
+    if(fileInput)fileInput.addEventListener('change',e=>{handlePickFiles(e.target.files);fileInput.value=''});
     if(dropZone){dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag')});
     dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag'));
     dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag');handlePickFiles(e.dataTransfer.files)});}
