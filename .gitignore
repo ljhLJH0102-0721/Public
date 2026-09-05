@@ -3,3 +3,7 @@
 
 # Environment files — contain credentials
 .env
+
+# Python artifacts
+__pycache__/
+*.pyc
