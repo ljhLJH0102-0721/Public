@@ -6,9 +6,9 @@
   <title>鸾尾花论坛</title>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#f8f8f8;--surface:#fff;--border:#e5e5e5;--border2:#d0d0d0;--text:#1a1a1a;--text2:#555;--text3:#999;--accent:#6a4e9c;--accent-h:#5a3e8c;--accent-bg:#f0ecf5;--radius:12px;--radius-s:8px;--shadow:0 2px 12px rgba(0,0,0,0.08);--shadow-h:0 8px 24px rgba(0,0,0,0.12);--heart:#ff4757;--danger:#e74c3c;--announce-bg:#f0ecf5;--announce-text:#3d2a5c}
+    :root{--bg:#f7f8fd;--bg-grad:linear-gradient(165deg,#eaf2ff 0%,#dde8ff 45%,#eae5ff 100%);--surface:#fff;--border:#e5e3f2;--border2:#d3d1e7;--text:#1c1a26;--text2:#565270;--text3:#8e8ba6;--accent:#6a4e9c;--accent-h:#5a3e8c;--accent-bg:#efecfa;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(84,72,150,.10);--shadow-h:0 10px 28px rgba(84,72,150,.16);--heart:#ff4757;--danger:#e74c3c;--announce-bg:#f0ecf5;--announce-text:#3d2a5c}
     html{scroll-behavior:smooth}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg-grad);background-attachment:fixed;color:var(--text);min-height:100vh;transition:background .3s,color .3s}
     button{cursor:pointer;border:none;background:none;font-family:inherit}
     a{text-decoration:none;color:inherit}
     img{display:block}
@@ -108,7 +108,7 @@
     .kind-opt input{width:auto;margin:0}
     .kind-opt:has(input:checked){border-color:var(--accent);background:var(--accent-bg);color:var(--accent)}
     .kind-opt:has(input[value="comic"]:checked){border-color:#3a7bd5;background:#eaf3ff;color:#3a7bd5}
-    #sp-view{display:none;min-height:100vh;background:linear-gradient(165deg,#fdf2f6 0%,#f1ebff 55%,#eaf6ff 100%)}
+    #sp-view{display:none;min-height:100vh;background:linear-gradient(165deg,#eef4ff 0%,#e6ecff 55%,#f0eaff 100%)}
     #sp-view.open{display:block}
     #set-view{display:none;min-height:100vh;background:linear-gradient(165deg,#fdf6f2 0%,#f3eaff 55%,#eaf6ff 100%)}
     #set-view.open{display:block}
@@ -134,7 +134,7 @@
     .sp-title{font-size:1.35rem;font-weight:800;background:linear-gradient(90deg,#6a4e9c,#d2688f);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
     .sp-sub{font-size:.78rem;color:var(--text3);margin-top:2px}
     .sp-list{max-width:880px;margin:0 auto;padding:22px 16px 70px;display:flex;flex-direction:column;gap:14px}
-    .sp-card{display:flex;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 14px rgba(106,78,156,.09);cursor:pointer;transition:transform .2s,box-shadow .2s;border:1px solid rgba(106,78,156,.08)}
+    .sp-card{display:flex;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-radius:18px;overflow:hidden;box-shadow:0 2px 14px rgba(84,72,150,.12);cursor:pointer;transition:transform .2s,box-shadow .2s;border:1px solid rgba(106,78,156,.10)}
     .sp-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(106,78,156,.18)}
     .sp-card-img{width:150px;height:150px;flex-shrink:0;background:#f0ecf5;position:relative}
     .sp-card-img img{width:100%;height:100%;object-fit:cover;display:block}
@@ -159,7 +159,7 @@
     #gallery-wrap{padding:16px}
     #gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
     @media(min-width:700px){#gallery{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}
-    .artwork-card{border-radius:var(--radius);overflow:hidden;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;will-change:transform;backface-visibility:hidden;position:relative}
+    .artwork-card{border-radius:var(--radius);overflow:hidden;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:1px solid var(--border);cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;will-change:transform;backface-visibility:hidden;position:relative}
     .artwork-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-h)}
     .card-img-wrap{overflow:hidden;background:#f0f0f0;position:relative}
     .card-img-wrap img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;transition:filter .15s}
@@ -208,7 +208,7 @@
     .img-viewer .iv-hint{position:absolute;bottom:72px;left:0;right:0;text-align:center;color:rgba(255,255,255,.55);font-size:.72rem;z-index:2;pointer-events:none;padding:0 16px}
     .artwork-card.coll-card{outline:2px solid rgba(106,78,156,.4);outline-offset:-2px}
     .card-tag.coll-tag{background:linear-gradient(135deg,#6a4e9c,#a86fd6);color:#fff;font-weight:600}
-    #coll-view{display:none;min-height:100vh;background:linear-gradient(165deg,#fdf2f6 0%,#f1ebff 55%,#eaf6ff 100%)}
+    #coll-view{display:none;min-height:100vh;background:linear-gradient(165deg,#eef4ff 0%,#e6ecff 55%,#f0eaff 100%)}
     #coll-view.open{display:block}
     .coll-wrap{max-width:900px;margin:0 auto;padding:16px 14px 80px}
     .coll-head{display:flex;align-items:center;gap:12px;padding:8px 2px 14px}
@@ -498,17 +498,24 @@
         <div class="set-item">
           <div class="set-item-label">页面背景</div>
           <div class="bg-options" id="set-bg-options">
-            <div class="bg-preset" style="background:#f5f3f0;" data-color="#f5f3f0">☀️</div>
-            <div class="bg-preset" style="background:#1e1e1e;color:#fff;" data-color="#1e1e1e">🌙</div>
-            <div class="bg-preset" style="background:#2b2b2b;color:#fff;" data-color="#2b2b2b">🖤</div>
-            <div class="bg-preset" style="background:#faf0e6;" data-color="#faf0e6">📜</div>
-            <div class="bg-preset" style="background:#d4e9ff;" data-color="#d4e9ff">💧</div>
-            <div class="bg-preset" style="background:#fce4d6;" data-color="#fce4d6">🌸</div>
-            <div class="bg-preset" style="background:#e6d5c9;" data-color="#e6d5c9">🪵</div>
+            <div class="bg-preset" style="background:linear-gradient(165deg,#eaf2ff 0%,#dde8ff 45%,#eae5ff 100%)" data-key="blue" data-grad="linear-gradient(165deg,#eaf2ff 0%,#dde8ff 45%,#eae5ff 100%)">💙</div>
+            <div class="bg-preset" style="background:linear-gradient(165deg,#e3f4ff 0%,#cfe9ff 50%,#e4e9ff 100%)" data-key="water" data-grad="linear-gradient(165deg,#e3f4ff 0%,#cfe9ff 50%,#e4e9ff 100%)">💧</div>
+            <div class="bg-preset" style="background:linear-gradient(165deg,#fffdf7 0%,#f6f2ec 55%,#efe7dc 100%)" data-key="sun" data-grad="linear-gradient(165deg,#fffdf7 0%,#f6f2ec 55%,#efe7dc 100%)">☀️</div>
+            <div class="bg-preset" style="background:linear-gradient(165deg,#ffeef5 0%,#ffe0ec 55%,#f3e6ff 100%)" data-key="sakura" data-grad="linear-gradient(165deg,#ffeef5 0%,#ffe0ec 55%,#f3e6ff 100%)">🌸</div>
+            <div class="bg-preset" style="background:linear-gradient(165deg,#fdf7ee 0%,#f8efe3 55%,#efe0cc 100%)" data-key="paper" data-grad="linear-gradient(165deg,#fdf7ee 0%,#f8efe3 55%,#efe0cc 100%)">📜</div>
+            <div class="bg-preset" style="background:linear-gradient(165deg,#f5e8db 0%,#ead9c8 55%,#dcc7b3 100%)" data-key="wood" data-grad="linear-gradient(165deg,#f5e8db 0%,#ead9c8 55%,#dcc7b3 100%)">🪵</div>
+            <div class="bg-preset" style="background:linear-gradient(165deg,#1b1b24 0%,#14141b 55%,#201a2b 100%);color:#fff" data-key="night" data-grad="linear-gradient(165deg,#1b1b24 0%,#14141b 55%,#201a2b 100%)">🌙</div>
+            <div class="bg-preset" style="background:linear-gradient(165deg,#2b2b2b 0%,#191919 55%,#241f2b 100%);color:#fff" data-key="black" data-grad="linear-gradient(165deg,#2b2b2b 0%,#191919 55%,#241f2b 100%)">🖤</div>
           </div>
           <div class="bg-custom-wrap">
-            <label>自定义</label>
-            <input type="color" id="set-bg-custom" value="#f5f3f0" />
+            <label>自定义渐变</label>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;">
+              <input type="color" id="set-bg-c1" value="#dbe8ff" />
+              <span style="color:var(--text3);font-size:.8rem;">→</span>
+              <input type="color" id="set-bg-c2" value="#eae5ff" />
+              <input type="range" id="set-bg-deg" min="0" max="360" value="165" style="flex:1;min-width:110px;" />
+              <span id="set-bg-deg-label" style="font-size:.78rem;color:var(--text3);min-width:36px;">165°</span>
+            </div>
           </div>
           <div class="set-bg-reset-wrap"><button class="btn btn-ghost" id="set-bg-reset">恢复默认背景</button></div>
         </div>
@@ -640,19 +647,27 @@
   <div class="modal-backdrop" id="bg-modal">
     <div class="modal">
       <div class="modal-header"><span class="modal-title">🎨 更换背景</span><button class="modal-x" id="bg-close">✕</button></div>
-      <p style="font-size:.85rem;color:var(--text2);margin-bottom:12px;">选择预设背景或自定义颜色</p>
+      <p style="font-size:.85rem;color:var(--text2);margin-bottom:12px;">选择预设渐变，或用下面的颜色/角度自定义</p>
       <div class="bg-options" id="bg-options">
-        <div class="bg-preset" style="background:#f5f3f0;" data-color="#f5f3f0">☀️</div>
-        <div class="bg-preset" style="background:#1e1e1e;color:#fff;" data-color="#1e1e1e">🌙</div>
-        <div class="bg-preset" style="background:#2b2b2b;color:#fff;" data-color="#2b2b2b">🖤</div>
-        <div class="bg-preset" style="background:#faf0e6;" data-color="#faf0e6">📜</div>
-        <div class="bg-preset" style="background:#d4e9ff;" data-color="#d4e9ff">💧</div>
-        <div class="bg-preset" style="background:#fce4d6;" data-color="#fce4d6">🌸</div>
-        <div class="bg-preset" style="background:#e6d5c9;" data-color="#e6d5c9">🪵</div>
+        <div class="bg-preset" style="background:linear-gradient(165deg,#eaf2ff 0%,#dde8ff 45%,#eae5ff 100%)" data-key="blue" data-grad="linear-gradient(165deg,#eaf2ff 0%,#dde8ff 45%,#eae5ff 100%)">💙</div>
+        <div class="bg-preset" style="background:linear-gradient(165deg,#e3f4ff 0%,#cfe9ff 50%,#e4e9ff 100%)" data-key="water" data-grad="linear-gradient(165deg,#e3f4ff 0%,#cfe9ff 50%,#e4e9ff 100%)">💧</div>
+        <div class="bg-preset" style="background:linear-gradient(165deg,#fffdf7 0%,#f6f2ec 55%,#efe7dc 100%)" data-key="sun" data-grad="linear-gradient(165deg,#fffdf7 0%,#f6f2ec 55%,#efe7dc 100%)">☀️</div>
+        <div class="bg-preset" style="background:linear-gradient(165deg,#ffeef5 0%,#ffe0ec 55%,#f3e6ff 100%)" data-key="sakura" data-grad="linear-gradient(165deg,#ffeef5 0%,#ffe0ec 55%,#f3e6ff 100%)">🌸</div>
+        <div class="bg-preset" style="background:linear-gradient(165deg,#fdf7ee 0%,#f8efe3 55%,#efe0cc 100%)" data-key="paper" data-grad="linear-gradient(165deg,#fdf7ee 0%,#f8efe3 55%,#efe0cc 100%)">📜</div>
+        <div class="bg-preset" style="background:linear-gradient(165deg,#f5e8db 0%,#ead9c8 55%,#dcc7b3 100%)" data-key="wood" data-grad="linear-gradient(165deg,#f5e8db 0%,#ead9c8 55%,#dcc7b3 100%)">🪵</div>
+        <div class="bg-preset" style="background:linear-gradient(165deg,#1b1b24 0%,#14141b 55%,#201a2b 100%);color:#fff" data-key="night" data-grad="linear-gradient(165deg,#1b1b24 0%,#14141b 55%,#201a2b 100%)">🌙</div>
+        <div class="bg-preset" style="background:linear-gradient(165deg,#2b2b2b 0%,#191919 55%,#241f2b 100%);color:#fff" data-key="black" data-grad="linear-gradient(165deg,#2b2b2b 0%,#191919 55%,#241f2b 100%)">🖤</div>
       </div>
       <div class="bg-custom-wrap">
-        <label>自定义</label>
-        <input type="color" id="bg-custom-color" value="#f5f3f0" />
+        <label>自定义渐变</label>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;">
+          <input type="color" id="bg-c1" value="#dbe8ff" />
+          <span style="color:var(--text3);font-size:.8rem;">→</span>
+          <input type="color" id="bg-c2" value="#eae5ff" />
+          <input type="range" id="bg-deg" min="0" max="360" value="165" style="flex:1;min-width:110px;" />
+          <span id="bg-deg-label" style="font-size:.78rem;color:var(--text3);min-width:36px;">165°</span>
+        </div>
+        <div id="bg-preview" style="height:44px;border-radius:10px;margin-top:10px;border:1px solid var(--border);"></div>
       </div>
       <div class="modal-footer" style="border:none;padding:0;margin-top:16px;">
         <button class="btn btn-ghost" id="bg-reset">重置默认</button>
@@ -883,13 +898,19 @@ document.getElementById('detail-download').addEventListener('click',async functi
     if(hotBtn){hotBtn.addEventListener('click',function(e){e.stopPropagation();renderHotList();document.getElementById('hot-dropdown').classList.toggle('open')});}
     document.addEventListener('click',function(e){if(!e.target.closest('.hot-wrap')){const dd=document.getElementById('hot-dropdown');if(dd)dd.classList.remove('open')}});
     const BG_STORAGE_KEY='bg_color';
-    function syncBgUI(color){document.querySelectorAll('.bg-preset').forEach(el=>el.classList.toggle('active',!!color&&el.dataset.color===color));const c1=document.getElementById('bg-custom-color');if(c1)c1.value=color||'#f5f3f0';const c2=document.getElementById('set-bg-custom');if(c2)c2.value=color||'#f5f3f0'}
-    function loadBg(){try{const color=localStorage.getItem(BG_STORAGE_KEY);if(color){document.body.style.background=color;syncBgUI(color)}else{syncBgUI('')}}catch{}}
-    function saveBg(color){localStorage.setItem(BG_STORAGE_KEY,color);document.body.style.background=color;syncBgUI(color)}
-    function resetBg(){localStorage.removeItem(BG_STORAGE_KEY);document.body.style.background='';syncBgUI('')}
-    document.querySelectorAll('.bg-preset').forEach(el=>{el.addEventListener('click',function(){saveBg(this.dataset.color)})});
-    const customColor1=document.getElementById('bg-custom-color');if(customColor1)customColor1.addEventListener('input',function(){saveBg(this.value)});const customColor2=document.getElementById('set-bg-custom');if(customColor2)customColor2.addEventListener('input',function(){saveBg(this.value)});
-    const bgReset1=document.getElementById('bg-reset');if(bgReset1)bgReset1.addEventListener('click',function(){resetBg();closeModal('bg-modal');toast('已恢复默认背景')});const bgReset2=document.getElementById('set-bg-reset');if(bgReset2)bgReset2.addEventListener('click',function(){resetBg();toast('已恢复默认背景')});
+    const BG_DEFAULT_GRAD='linear-gradient(165deg,#eaf2ff 0%,#dde8ff 45%,#eae5ff 100%)';
+    function buildGrad(c1,c2,deg){return 'linear-gradient('+(deg||165)+'deg,'+c1+' 0%,'+c2+' 100%)'}
+    function parseBg(){try{const raw=localStorage.getItem(BG_STORAGE_KEY);if(!raw)return{type:'default'};if(raw.charAt(0)==='{'){const o=JSON.parse(raw);if(o&&o.c1&&o.c2)return{type:'grad',c1:o.c1,c2:o.c2,deg:o.deg||165,key:o.key||'',grad:o.grad||buildGrad(o.c1,o.c2,o.deg)};return{type:'grad',grad:o&&o.grad,key:(o&&o.key)||''}}if(raw.indexOf('gradient')>-1)return{type:'grad',grad:raw};return{type:'solid',color:raw}}catch(e){return{type:'default'}}}
+    function bgCss(v){if(!v||v.type==='default')return BG_DEFAULT_GRAD;if(v.type==='solid')return v.color;if(v.c1&&v.c2)return buildGrad(v.c1,v.c2,v.deg);return v.grad||BG_DEFAULT_GRAD}
+    function syncBgUI(v){document.querySelectorAll('.bg-preset').forEach(el=>{const on=!!(v&&v.type!=='default'&&((v.key&&el.dataset.key===v.key)||(!v.key&&!v.c1&&v.grad&&el.dataset.grad===v.grad)));el.classList.toggle('active',on)});const c1=(v&&v.c1)||'#dbe8ff',c2=(v&&v.c2)||'#eae5ff',deg=(v&&v.deg)||165;['bg','set-bg'].forEach(function(pfx){const e1=document.getElementById(pfx+'-c1'),e2=document.getElementById(pfx+'-c2'),e3=document.getElementById(pfx+'-deg'),e4=document.getElementById(pfx+'-deg-label');if(e1)e1.value=c1;if(e2)e2.value=c2;if(e3)e3.value=deg;if(e4)e4.textContent=deg+'°'});const pv=document.getElementById('bg-preview');if(pv)pv.style.background=buildGrad(c1,c2,deg)}
+    function loadBg(){const v=parseBg();document.body.style.background=bgCss(v);syncBgUI(v)}
+    function savePreset(el){const v={type:'grad',grad:el.dataset.grad,key:el.dataset.key};try{localStorage.setItem(BG_STORAGE_KEY,JSON.stringify(v))}catch(e){}document.body.style.background=v.grad;syncBgUI(v)}
+    function saveGrad(c1,c2,deg){const v={type:'grad',c1:c1,c2:c2,deg:deg||165,key:'',grad:buildGrad(c1,c2,deg)};try{localStorage.setItem(BG_STORAGE_KEY,JSON.stringify({type:'grad',c1:c1,c2:c2,deg:v.deg,key:''}))}catch(e){}document.body.style.background=v.grad;syncBgUI(v)}
+    function readEditor(pfx){const e1=document.getElementById(pfx+'-c1'),e2=document.getElementById(pfx+'-c2'),e3=document.getElementById(pfx+'-deg');return{c1:(e1&&e1.value)||'#dbe8ff',c2:(e2&&e2.value)||'#eae5ff',deg:((e3&&+e3.value)||165)}}
+    function resetBg(){try{localStorage.removeItem(BG_STORAGE_KEY)}catch(e){}document.body.style.background='';syncBgUI(parseBg());toast('已恢复默认背景（蓝色渐变）')}
+    document.querySelectorAll('.bg-preset').forEach(el=>{el.addEventListener('click',function(){savePreset(this)})});
+    ['bg','set-bg'].forEach(function(pfx){const e3=document.getElementById(pfx+'-deg');const onCh=function(){const ed=readEditor(pfx);if(pfx==='bg'){const l=document.getElementById('bg-deg-label');if(l)l.textContent=ed.deg+'°'}else{const l=document.getElementById('set-bg-deg-label');if(l)l.textContent=ed.deg+'°'}saveGrad(ed.c1,ed.c2,ed.deg)};const e1=document.getElementById(pfx+'-c1'),e2=document.getElementById(pfx+'-c2');if(e1)e1.addEventListener('input',onCh);if(e2)e2.addEventListener('input',onCh);if(e3)e3.addEventListener('input',onCh)});
+    const bgReset1=document.getElementById('bg-reset');if(bgReset1)bgReset1.addEventListener('click',function(){resetBg();closeModal('bg-modal')});const bgReset2=document.getElementById('set-bg-reset');if(bgReset2)bgReset2.addEventListener('click',function(){resetBg()});
 
 
 
