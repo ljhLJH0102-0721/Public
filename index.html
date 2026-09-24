@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){var V='v42';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
+  <script>(function(){var V='v43';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -35,11 +35,12 @@
     .announce-actions .btn-sm{padding:2px 12px;border-radius:16px;font-size:.75rem;background:var(--accent);color:#fff;font-weight:600}
     .announce-actions .btn-sm:hover{background:var(--accent-h)}
     .sn-svg{width:17px;height:17px;flex-shrink:0}
-    #side-nav.collapsed{width:64px;padding-left:10px;padding-right:10px}
-    #side-nav.collapsed .sn-label,#side-nav.collapsed .sn-group,#side-nav.collapsed .sn-foot,#side-nav.collapsed .sn-brand span:last-child{display:none}
-    #side-nav.collapsed .sn-item{justify-content:center;padding:0}
-    #side-nav.collapsed .sn-brand{justify-content:center;padding:4px 0 10px}
+    body.nav-collapsed #side-nav{width:64px;padding-left:10px;padding-right:10px}
+    body.nav-collapsed #side-nav .sn-label,body.nav-collapsed #side-nav .sn-group,body.nav-collapsed #side-nav .sn-collapse .sn-label,body.nav-collapsed #side-nav .sn-brand span:last-child{display:none}
+    body.nav-collapsed #side-nav .sn-item{justify-content:center;padding:0}
+    body.nav-collapsed #side-nav .sn-brand{justify-content:center;padding:4px 0 10px}
     body.nav-collapsed{padding-left:64px}
+    @media(max-width:1023px){body.nav-collapsed{padding-left:0}}
     .sn-collapse{display:none;margin-top:auto}
     @media(min-width:1024px){.sn-collapse{display:flex}}
         /* ===== sidebar / layout ===== */
@@ -844,28 +845,7 @@
         <div class="post-reader-bar"><span class="sp-back" id="post-back">← 返回博文列表</span></div>
         <article class="post-article" id="post-article"></article>
       </div>
-      <div class="trans-area" id="trans-area" style="display:none">
-        <div class="trans-head">
-          <div class="trans-title">🌐 翻译</div>
-          <div class="trans-langs">
-            <select class="trans-select" id="trans-from">
-              <option value="auto">自动检测</option><option value="zh-CN">中文</option><option value="en">英语</option><option value="ja">日语</option><option value="ko">韩语</option>
-            </select>
-            <span class="trans-arrow">→</span>
-            <select class="trans-select" id="trans-to">
-              <option value="zh-CN">中文</option><option value="en">英语</option><option value="ja">日语</option><option value="ko">韩语</option>
-            </select>
-          </div>
-        </div>
-        <textarea class="trans-input" id="trans-input" rows="10" placeholder="粘贴或输入要翻译的文字…"></textarea>
-        <div class="trans-actions">
-          <button class="btn btn-primary" id="trans-go">翻译</button>
-          <button class="btn btn-ghost" id="trans-clear">清空</button>
-          <button class="btn btn-outline" id="trans-copy" style="display:none">复制译文</button>
-        </div>
-        <div class="trans-result" id="trans-result" style="display:none"></div>
-        <div class="trans-note">支持长文：自动按段落/句子分段翻译再拼接（每段约 480 字），翻译过程中即时显示已完成部分 · 引擎：Google 优先，MyMemory 兜底</div>
-      </div>
+      
       <div id="gallery"></div></div>
   </div>
   <div id="set-view">
@@ -1053,6 +1033,28 @@
       </div>
       <div class="work-progress" id="work-progress" style="display:none;"><div class="progress-bar"><div class="progress-fill" id="work-progress-fill"></div></div><div class="work-status" id="work-status"></div></div>
       <div class="work-blocks" id="work-blocks"></div>
+<div class="trans-area" id="trans-area" style="display:block">
+        <div class="trans-head">
+          <div class="trans-title">🌐 翻译</div>
+          <div class="trans-langs">
+            <select class="trans-select" id="trans-from">
+              <option value="auto">自动检测</option><option value="zh-CN">中文</option><option value="en">英语</option><option value="ja">日语</option><option value="ko">韩语</option>
+            </select>
+            <span class="trans-arrow">→</span>
+            <select class="trans-select" id="trans-to">
+              <option value="zh-CN">中文</option><option value="en">英语</option><option value="ja">日语</option><option value="ko">韩语</option>
+            </select>
+          </div>
+        </div>
+        <textarea class="trans-input" id="trans-input" rows="10" placeholder="粘贴或输入要翻译的文字…"></textarea>
+        <div class="trans-actions">
+          <button class="btn btn-primary" id="trans-go">翻译</button>
+          <button class="btn btn-ghost" id="trans-clear">清空</button>
+          <button class="btn btn-outline" id="trans-copy" style="display:none">复制译文</button>
+        </div>
+        <div class="trans-result" id="trans-result" style="display:none"></div>
+        <div class="trans-note">支持长文：自动按段落/句子分段翻译再拼接（每段约 480 字），翻译过程中即时显示已完成部分 · 引擎：Google 优先，MyMemory 兜底</div>
+      </div>
       <div class="work-foot">
         <span class="work-hint" id="work-hint">识别/翻译结果均为初稿，逐条可编辑校对；保存后作品详情页可查看译文。</span>
         <button class="btn btn-ghost" id="work-export" disabled>📋 复制 JSON</button>
@@ -1272,7 +1274,6 @@
     function navIco(n){return '<svg class="sn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+(NAV_ICONS[n]||'')+'</svg>'}
     function navGroups(){return [
       {t:'',items:[{k:'image',i:'image',l:'插图'},{k:'comic',i:'comic',l:'漫画'},{k:'post',i:'post',l:'博文'}]},
-      {t:'创作',items:[{k:'workbench',i:'palette',l:'创作工作台'},{k:'translate',i:'translate',l:'翻译'}]},
       {t:'我的',items:[{k:'liked',i:'heart',l:'我喜欢的'},{k:'history',i:'clock',l:'历史浏览'},{k:'space',i:'user',l:'我的空间'},{k:'upload',i:'upload',l:'上传作品'}]},
       {t:'更多',items:[{k:'announce',i:'bell',l:'公告'},{k:'settings',i:'settings',l:'设置'},{k:'theme',i:'moon',l:'夜间模式'},supa.user?{k:'logout',i:'logout',l:'退出登录'}:{k:'account',i:'key',l:'登录 / 注册'}]},
     ]}
