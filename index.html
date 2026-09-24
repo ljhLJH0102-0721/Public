@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){var V='v41';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
+  <script>(function(){var V='v42';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -1404,7 +1404,7 @@ document.getElementById('detail-download').addEventListener('click',async functi
     function rgbToHex(r,g,b){function f(x){return ('0'+Math.max(0,Math.min(255,Math.round(x))).toString(16)).slice(-2)}return '#'+f(r)+f(g)+f(b)}
     function mixHex(a,b,w){const A=hexToRgb(a),B=hexToRgb(b);if(!A||!B)return a||b;return rgbToHex(A.r+(B.r-A.r)*w,A.g+(B.g-A.g)*w,A.b+(B.b-A.b)*w)}
     function lumaHex(c){const x=hexToRgb(c);if(!x)return 0;return 0.299*x.r+0.587*x.g+0.114*x.b}
-    function applyTheme(c1,c2){const st=document.documentElement.style;if(!c1){['--accent','--accent-2','--accent-h','--accent-bg','--accent-rgb','--accent-fg'].forEach(function(k){st.removeProperty(k)});return}c2=c2||c1;let a=c1,b2=c2;if(lumaHex(a)>lumaHex(b2)){a=c2;b2=c1}if(lumaHex(a)>205)a=mixHex(a,'#000000',0.38);let rgb=hexToRgb(a);if(!rgb){a='#cc785c';b2='#e09a7d';rgb=hexToRgb(a)}st.setProperty('--accent',a);st.setProperty('--accent-2',b2);st.setProperty('--accent-h',mixHex(a,'#000000',0.14));st.setProperty('--accent-bg',mixHex(a,'#ffffff',0.90));st.setProperty('--accent-rgb',rgb.r+','+rgb.g+','+rgb.b);st.setProperty('--accent-fg',lumaHex(a)>165?'#1b1b19':'#ffffff')}
+    
     const BG_STORAGE_KEY='bg_color';
     const BG_DEFAULT_GRAD='';
     function buildGrad(){}
