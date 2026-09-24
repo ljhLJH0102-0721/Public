@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){var V='v34';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
+  <script>(function(){var V='v36';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#f7f8fd;--bg-grad:linear-gradient(165deg,#eaf2ff 0%,#dde8ff 45%,#eae5ff 100%);--surface:#fff;--border:#e5e3f2;--border2:#d3d1e7;--text:#1c1a26;--text2:#565270;--text3:#8e8ba6;--accent:#6a4e9c;--accent-2:#a06fe0;--accent-h:#5a3e8c;--accent-bg:#efecfa;--accent-rgb:106,78,156;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(84,72,150,.10);--shadow-h:0 10px 28px rgba(84,72,150,.16);--heart:#ff4757;--danger:#e74c3c;--announce-bg:#f0ecf5;--announce-text:#3d2a5c}
@@ -832,14 +832,14 @@
             </select>
           </div>
         </div>
-        <textarea class="trans-input" id="trans-input" rows="6" placeholder="粘贴或输入要翻译的文字…"></textarea>
+        <textarea class="trans-input" id="trans-input" rows="10" placeholder="粘贴或输入要翻译的文字…"></textarea>
         <div class="trans-actions">
           <button class="btn btn-primary" id="trans-go">翻译</button>
           <button class="btn btn-ghost" id="trans-clear">清空</button>
           <button class="btn btn-outline" id="trans-copy" style="display:none">复制译文</button>
         </div>
         <div class="trans-result" id="trans-result" style="display:none"></div>
-        <div class="trans-note">使用 MyMemory 免费翻译接口 · 单次最多约 900 字</div>
+        <div class="trans-note">支持长文：自动按段落/句子分段翻译再拼接（每段约 480 字），翻译过程中即时显示已完成部分 · 引擎：Google 优先，MyMemory 兜底</div>
       </div>
       <div id="gallery"></div></div>
   </div>
@@ -1251,11 +1251,28 @@
     async function loadPosts(){try{postsCache=await supa.listPosts()}catch(e){postsCache=null;console.warn('loadPosts:',e)}if(Array.isArray(postsCache)&&postsCache.length)await loadAuthorProfiles(postsCache)}
     /* ===== 翻译 ===== */
     function detectLang(s){const x=String(s||'');if(/[\u3040-\u30ff]/.test(x))return 'ja';if(/[\uac00-\ud7af]/.test(x))return 'ko';if(/[\u4e00-\u9fff]/.test(x))return 'zh-CN';return 'en'}
+    function splitChunks(text,max){const parts=String(text).replace(/\r/g,'').split(/\n{2,}/);const out=[];let buf='';
+      const flush=function(){if(buf.trim())out.push(buf);buf=''};
+      const pack=function(s){if(!s)return;if((buf+(buf?'\n\n':'')+s).length<=max)buf+=(buf?'\n\n':'')+s;else{flush();buf=s}};
+      parts.forEach(function(p){if(p.length<=max){pack(p);return}flush();const raw=p.split(/([。．.!！?？;；:：])/);const segs=[];for(let k=0;k<raw.length;k+=2)segs.push((raw[k]||'')+((raw[k+1])||''));let acc='';segs.forEach(function(s){if((acc+s).length<=max){acc+=s;return}if(acc){out.push(acc);acc=''}if(s.length<=max){acc=s}else{for(let i=0;i<s.length;i+=max)out.push(s.slice(i,i+max))}});if(acc)out.push(acc)});
+      flush();return out.filter(function(x){return x.trim()})}
+    function lvCode(c){const s=String(c||'zh-CN');return /^zh/i.test(s)?'zh':s.split('-')[0].toLowerCase()}
+    async function transBackend(text,from,to){
+      try{const r=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl='+encodeURIComponent(from)+'&tl='+encodeURIComponent(to)+'&q='+encodeURIComponent(text));if(r.ok){const j=await r.json();if(Array.isArray(j)&&Array.isArray(j[0])){const s=j[0].map(function(x){return (x&&x[0])||''}).join('');if(s&&s.trim()&&s.trim()!==text.trim())return s}}}catch(e){}
+      try{const r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(text)+'&langpair='+encodeURIComponent(from+'|'+to));if(r.ok){const j=await r.json();const res=j&&j.responseData&&j.responseData.translatedText;if(res&&!/^MYMEMORY WARNING/i.test(res))return res}}catch(e){}
+      throw new Error('翻译服务不可用')}
     async function doTranslate(){const inp=document.getElementById('trans-input');const out=document.getElementById('trans-result');const fromSel=document.getElementById('trans-from');const toSel=document.getElementById('trans-to');const btn=document.getElementById('trans-go');const cpBtn=document.getElementById('trans-copy');const text=String((inp&&inp.value)||'').trim();if(!text){toast('请输入要翻译的文字');return}
-      let from=fromSel?fromSel.value:'auto';const to=toSel?toSel.value:'zh-CN';if(from==='auto')from=detectLang(text);if(from===to){if(out){out.style.display='block';out.textContent=text}toast('源语言与目标语言相同');return}
+      let from=fromSel?fromSel.value:'auto';const to=toSel?toSel.value:'zh-CN';if(from==='auto')from=detectLang(text);
+      if(from!=='auto'&&lvCode(from)===lvCode(to)){if(out){out.style.display='block';out.textContent=text}if(cpBtn)cpBtn.style.display='';window.__lastTrans=text;toast('源语言与目标语言相同');return}
+      const chunks=splitChunks(text,480);
       if(btn){btn.disabled=true;btn.textContent='翻译中…'}
-      try{const q=encodeURIComponent(text.slice(0,900));const r=await fetch('https://api.mymemory.translated.net/get?q='+q+'&langpair='+encodeURIComponent(from+'|'+to));if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();const res=j&&j.responseData&&j.responseData.translatedText;if(!res)throw new Error(String((j&&j.responseDetails)||'服务未返回译文'));if(out){out.style.display='block';out.textContent=res}if(cpBtn)cpBtn.style.display='';window.__lastTrans=res}
-      catch(e){console.error('translate:',e);toast('翻译失败：'+((e&&e.message)||'网络不可用'),'error')}
+      if(out){out.style.display='block';out.textContent='翻译中 0/'+chunks.length+'…'}
+      const done=[];let failed=0;
+      try{for(let i=0;i<chunks.length;i++){if(out&&i===0)out.textContent='翻译中 1/'+chunks.length+'…';try{done.push(await transBackend(chunks[i],from,to))}catch(e){failed++;done.push(chunks[i])}if(out)out.textContent=done.join('\n\n')+(i<chunks.length-1?('\n\n…翻译中 '+(i+2)+'/'+chunks.length):'');if(i<chunks.length-1)await new Promise(function(r){setTimeout(r,150)})}
+        const res=done.join('\n\n');
+        if(out)out.textContent=res;if(cpBtn)cpBtn.style.display='';window.__lastTrans=res;
+        toast(failed?('完成，其中 '+failed+'/'+chunks.length+' 段未能译出（已保留原文）'):('翻译完成 · 共 '+chunks.length+' 段'),failed?'error':'success');
+      }catch(e){console.error('translate:',e);if(out)out.textContent='';toast('翻译失败：'+((e&&e.message)||'网络不可用'),'error')}
       finally{if(btn){btn.disabled=false;btn.textContent='翻译'}}}
     function clearTranslate(){const inp=document.getElementById('trans-input');const out=document.getElementById('trans-result');const cpBtn=document.getElementById('trans-copy');if(inp)inp.value='';if(out){out.textContent='';out.style.display='none'}if(cpBtn)cpBtn.style.display='none';window.__lastTrans=''}
     function copyTrans(){const s=window.__lastTrans||'';if(!s){toast('还没有译文');return}try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(()=>toast('译文已复制','success'),()=>toast('复制失败，请手动选择','error'))}else{toast('当前环境不支持自动复制，请手动选择','error')}}catch(e){toast('复制失败','error')}}
@@ -1545,7 +1562,7 @@ document.getElementById('detail-download').addEventListener('click',async functi
     function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
     function fmtDate(ts){return new Date(ts).toLocaleDateString('zh-CN',{year:'numeric',month:'short',day:'numeric'})}
     document.addEventListener('DOMContentLoaded',function(){
-      (async()=>{try{const _qp=new URLSearchParams(location.search);if(_qp.has('logout')){try{await supa.signOut()}catch(e){}userLikedSet=new Set();showR18=false;localStorage.setItem('show_r18','0');updateUserUI();toast('已退出登录','success')}}catch(e){}if(supa.loadSession()){try{await onUserLoggedIn()}catch{supa.saveSession(null);updateUserUI()}}else{updateUserUI()}loadBg();setupSearchSuggestions();fetchArtworks();fetchAnnouncements();;loadPosts();
+      (async()=>{try{const _qp=new URLSearchParams(location.search);if(_qp.has('logout')){try{await supa.signOut()}catch(e){}userLikedSet=new Set();showR18=false;localStorage.setItem('show_r18','0');updateUserUI();toast('已退出登录','success')}}catch(e){}if(supa.loadSession()){try{await onUserLoggedIn()}catch{supa.saveSession(null);updateUserUI()}}else{updateUserUI()}loadBg();setupSearchSuggestions();fetchArtworks();fetchAnnouncements();;loadPosts();(function(){try{const si=document.getElementById('search-input');if(si&&si.value&&!searchQuery){si.value='';const sg=document.getElementById('suggestions');if(sg)sg.style.display='none';const uw=document.getElementById('user-result-wrap');if(uw){uw.innerHTML='';uw.style.display='none'}}}catch(e){}})();
     try{const _q2=new URLSearchParams(location.search);if(_q2.has('login')&&!supa.user)setTimeout(function(){openUserAuthModal()},500);const _u=_q2.get('u');if(_u)setTimeout(function(){openUserPage(_u)},700)}catch(e){}})();
     });
   </script>
