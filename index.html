@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){var V='v46';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
+  <script>(function(){var V='v47';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -49,7 +49,7 @@
     .sn-brand{display:flex;align-items:center;gap:8px;padding:4px 8px 12px;font-weight:800;font-size:1rem;color:var(--accent)}
     .sn-group{margin:12px 8px 4px;font-size:.68rem;font-weight:800;letter-spacing:.08em;color:var(--text3);text-transform:uppercase}
     .sn-item{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:var(--radius-s);color:var(--text2);font-size:.86rem;font-weight:600;width:100%;text-align:left;transition:background .16s,color .16s;font-family:inherit}
-    .sn-item:hover{background:var(--accent-bg);color:var(--accent)}
+    @media(hover:hover){.sn-item:hover{background:var(--accent-bg);color:var(--accent)}}
     .sn-item.active{background:var(--accent-bg);color:var(--accent)}
     .sn-ico{width:18px;text-align:center;flex-shrink:0;font-size:.95rem}
     .sn-foot{margin-top:auto;padding:14px 8px 0;font-size:.66rem;color:var(--text3)}
@@ -1298,10 +1298,19 @@
     function toggleCollapse(){const c=document.body.classList.toggle('nav-collapsed');try{localStorage.setItem('nav_collapsed',c?'1':'0')}catch(e){}window.dispatchEvent(new Event('resize'))}
     function openNav(){const n=document.getElementById('side-nav');const m=document.getElementById('nav-mask');if(n)n.classList.add('open');if(m)m.classList.add('open');document.body.style.overflow='hidden'}
     function closeNav(){const n=document.getElementById('side-nav');const m=document.getElementById('nav-mask');if(n)n.classList.remove('open');if(m)m.classList.remove('open');document.body.style.overflow=''}
-    function syncNavActive(){try{const dark=document.documentElement.getAttribute('data-theme')==='dark';document.querySelectorAll('#side-nav .sn-item').forEach(function(b){const k=b.dataset.nav;let on=false;
-      if(k==='liked')on=!!isLikedView;else if(k==='history')on=!!isHistoryView;else if(k==='space')on=!!(isUserView||isMySpaceView);else if(k==='theme')on=dark;
-      else if(k==='image'||k==='comic'||k==='post'||k==='translate')on=(!isLikedView&&!isHistoryView&&!isUserView&&currentKind===k);
-      b.classList.toggle('active',on)})}catch(e){}}
+    let navActiveKey='image';
+    function syncNavActive(){try{
+      const dark=document.documentElement.getAttribute('data-theme')==='dark';
+      const special=(isLikedView||isHistoryView||isUserView||isMySpaceView);
+      document.querySelectorAll('#side-nav .sn-item').forEach(function(b){
+        const k=b.dataset.nav;let on=false;
+        if(k==='collapse')on=false;
+        else if(k==='theme')on=dark;
+        else if(k==='liked')on=!!isLikedView;
+        else if(k==='history')on=!!isHistoryView;
+        else if(k==='space')on=!!(isUserView||isMySpaceView);
+        else on=(!special&&navActiveKey===k);
+        b.classList.toggle('active',on)})}catch(e){}}
     function logoutNow(){try{supa.signOut()}catch(e){}userLikedSet=new Set();showSkeletons();updateUserUI();renderSideNav();resetToHome()}
     (function(){
       const nav=document.getElementById('side-nav');const mask=document.getElementById('nav-mask');
@@ -1311,6 +1320,7 @@
       nav.addEventListener('click',function(e){const b=e.target.closest('.sn-item');if(!b)return;const k=b.dataset.nav;
         if(k==='collapse'){toggleCollapse();return}
         closeNav();
+        navActiveKey=k;
         if(k==='theme'){toggleTheme();return}
         if(k==='workspace'){openWorkspace();return}
         ['sp-view','set-view','coll-view','detail-view'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('open')});
@@ -1329,7 +1339,7 @@
         if(isLikedView||isHistoryView||isUserView)exitSpecialView();
         currentKind=k;renderTagBar();applyFilters();syncNavActive()});
     })();
-    function resetToHome(){isLikedView=false;isHistoryView=false;isUserView=false;isMySpaceView=false;currentUserId=null;currentTag='all';searchQuery='';currentKind='image';postReadingId=null;searchAuthorsResult=[];searchAuthorsQuery='';const si=document.getElementById('search-input');if(si)si.value='';const sg=document.getElementById('suggestions');if(sg)sg.style.display='none';const uw=document.getElementById('user-result-wrap');if(uw){uw.innerHTML='';uw.style.display='none'}const pv=document.getElementById('post-view');if(pv)pv.style.display='none';['sp-view','set-view','coll-view','detail-view'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('open')});const mv=document.getElementById('main-view');if(mv)mv.classList.remove('hidden');document.querySelectorAll('.kind-pill').forEach(b=>b.classList.toggle('active',b.dataset.kind==='all'))}
+    function resetToHome(){setTimeout(function(){try{navActiveKey=currentKind;syncNavActive()}catch(e){}},0);isLikedView=false;isHistoryView=false;isUserView=false;isMySpaceView=false;currentUserId=null;currentTag='all';searchQuery='';currentKind='image';postReadingId=null;searchAuthorsResult=[];searchAuthorsQuery='';const si=document.getElementById('search-input');if(si)si.value='';const sg=document.getElementById('suggestions');if(sg)sg.style.display='none';const uw=document.getElementById('user-result-wrap');if(uw){uw.innerHTML='';uw.style.display='none'}const pv=document.getElementById('post-view');if(pv)pv.style.display='none';['sp-view','set-view','coll-view','detail-view'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('open')});const mv=document.getElementById('main-view');if(mv)mv.classList.remove('hidden');document.querySelectorAll('.kind-pill').forEach(b=>b.classList.toggle('active',b.dataset.kind==='all'))}
     function showPostsArea(){isLikedView=false;isHistoryView=false;isMySpaceView=false;isUserView=false;postReadingId=null;const _pv=document.getElementById('post-view');if(_pv)_pv.style.display='none';const mv=document.getElementById('main-view');if(mv)mv.classList.remove('hidden');['sp-view','set-view','coll-view'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('open')});currentKind='post';document.querySelectorAll('.kind-pill').forEach(b=>b.classList.toggle('active',b.dataset.kind==='post'));applyFilters();window.scrollTo(0,0)}
     function renderPosts(){const list=document.getElementById('posts-list');if(!list)return;if(postsCache===null){list.innerHTML='<div class="post-empty">📝 博文功能还差一步<br />请在 Supabase 执行创建 posts 表的 SQL，然后刷新本页。</div>';return}const q=searchQuery||'';const rows=q?(postsCache||[]).filter(p=>{const ts=[p.title||'',p.content||''].map(s=>String(s).toLowerCase());return ts.some(s=>s.includes(q))}):(postsCache||[]);if(!rows.length){list.innerHTML='<div class="post-empty">'+(q?'没有匹配的博文':'还没有博文，点右上角「✍️ 写博文」发布第一篇吧')+'</div>';return}list.innerHTML=rows.map(p=>{const mine=supa.user&&supa.user.id===p.user_id;const imgs=Array.isArray(p.images)?p.images:[];const body=String(p.content||'');const excerpt=body.replace(/\s+/g,' ').slice(0,140);return '<div class="post-card" data-pid="'+p.id+'"><div class="post-card-head">'+authorChip(p,26)+'<span class="post-card-date">'+postDate(p)+'</span>'+(mine?'<span class="post-card-own">我的</span>':'')+'</div>'+(p.title?'<h2 class="post-card-title">'+escHtml(p.title)+'</h2>':'')+'<div class="post-card-excerpt">'+escHtml(excerpt)+(body.length>140?'…':'')+'</div>'+(imgs.length?'<div class="post-card-thumb"><img src="'+escHtml(imgs[0])+'" alt="" loading="lazy" /></div>':'')+'<div class="post-card-foot">'+(imgs.length?imgs.length+' 张配图':'纯文字')+'</div></div>'}).join('');list.querySelectorAll('.post-card').forEach(el=>el.addEventListener('click',e=>{const chip=e.target.closest('.author-chip');if(chip&&chip.dataset.uid){e.stopPropagation();openUserPage(chip.dataset.uid);return}openPostView(el.dataset.pid)}))}
     function openPostView(pid){const p=(postsCache||[]).find(x=>x.id===pid);if(!p)return;const art=document.getElementById('post-article');const ttl=document.getElementById('post-view-title');const sub=document.getElementById('post-view-sub');if(ttl)ttl.textContent=p.title||'无标题博文';if(sub)sub.textContent=postDate(p);const mine=supa.user&&supa.user.id===p.user_id;
