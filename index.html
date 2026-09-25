@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){var V='v45';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
+  <script>(function(){var V='v46';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -1273,7 +1273,7 @@
     };
     function navIco(n){return '<svg class="sn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+(NAV_ICONS[n]||'')+'</svg>'}
     function navGroups(){return [
-      {t:'',items:[{k:'image',i:'image',l:'插图'},{k:'comic',i:'comic',l:'漫画'},{k:'post',i:'post',l:'博文'}]},
+      {t:'',items:[{k:'workspace',i:'palette',l:'工作区'},{k:'image',i:'image',l:'插图'},{k:'comic',i:'comic',l:'漫画'},{k:'post',i:'post',l:'博文'}]},
       {t:'我的',items:[{k:'liked',i:'heart',l:'我喜欢的'},{k:'history',i:'clock',l:'历史浏览'},{k:'space',i:'user',l:'我的空间'},{k:'upload',i:'upload',l:'上传作品'}]},
       {t:'更多',items:[{k:'announce',i:'bell',l:'公告'},{k:'settings',i:'settings',l:'设置'},{k:'theme',i:'moon',l:'夜间模式'},supa.user?{k:'logout',i:'logout',l:'退出登录'}:{k:'account',i:'key',l:'登录 / 注册'}]},
     ]}
@@ -1283,6 +1283,16 @@
       navGroups().forEach(function(g){if(g.t)h+='<div class="sn-group">'+g.t+'</div>';g.items.forEach(function(it){h+='<button class="sn-item" data-nav="'+it.k+'" title="'+it.l+'">'+navIco(it.i)+'<span class="sn-label">'+it.l+'</span></button>'})});
       h+='<button class="sn-item sn-collapse" data-nav="collapse" title="收起侧栏">'+navIco('panel')+'<span class="sn-label">收起侧栏</span></button>';
       nav.innerHTML=h;syncNavActive()}
+    function openWorkspace(){
+      try{_wb={art:null,img:'',pages:null,multi:false,page:0,pagesBlocks:null,srcLang:'jpn',dstLang:'zh-CN',blocks:null}}catch(e){}
+      const wt=document.getElementById('work-title');if(wt)wt.textContent='🔤 工作区';
+      const th=document.getElementById('work-thumb');if(th){th.innerHTML='🖼';th.classList.add('empty')}
+      const note=document.querySelector('#work-modal .work-note');
+      if(note)note.textContent='这里是工作区：可直接粘贴文本翻译（支持长文，自动分段）。要翻译漫画对白，请从作品卡片进入漫画翻译工作台。';
+      document.querySelectorAll('#work-modal .work-ctrl,#work-modal .work-blocks,#work-modal .work-foot').forEach(function(e){e.style.display='none'});
+      const ta=document.getElementById('trans-area');if(ta)ta.style.display='block';
+      openModal('work-modal');
+    }
     function applySiteTheme(th){const d=(th==='dark');const el=document.documentElement;if(d)el.setAttribute('data-theme','dark');else el.removeAttribute('data-theme');document.body.classList.toggle('dark',d);el.style.colorScheme=d?'dark':'light';try{localStorage.setItem('site_theme',d?'dark':'light')}catch(e){}}
     function toggleTheme(){const cur=document.documentElement.getAttribute('data-theme')==='dark';applySiteTheme(cur?'light':'dark');toast(cur?'已切换为浅色模式':'已开启夜间模式','success');renderSideNav()}
     function toggleCollapse(){const c=document.body.classList.toggle('nav-collapsed');try{localStorage.setItem('nav_collapsed',c?'1':'0')}catch(e){}window.dispatchEvent(new Event('resize'))}
@@ -1302,6 +1312,7 @@
         if(k==='collapse'){toggleCollapse();return}
         closeNav();
         if(k==='theme'){toggleTheme();return}
+        if(k==='workspace'){openWorkspace();return}
         ['sp-view','set-view','coll-view','detail-view'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('open')});
         const _pv=document.getElementById('post-view');if(_pv)_pv.style.display='none';
         const _mv=document.getElementById('main-view');if(_mv)_mv.classList.remove('hidden');
@@ -1464,7 +1475,7 @@ document.getElementById('detail-download')?.addEventListener('click',async funct
     let _wb=null,_ocr=null;
     function langName(code){const m={jpn:'日语',eng:'英语',kor:'韩语',chi_sim:'简体中文',chi_tra:'繁体中文',fra:'法语',deu:'德语',spa:'西班牙语','zh-CN':'中文（简体）','zh-TW':'中文（繁体）',en:'英语',ja:'日语',ko:'韩语'};return m[code]||code}
     function loadLocalTrans(id){try{const s=localStorage.getItem('comic_trans_'+id);return s?JSON.parse(s):null}catch(e){return null}}
-    function openWorkbench(art,img){if(!art)return;const pages=(art.pages&&art.pages.length>1)?art.pages:null;const tr=art.translation||null;_wb={art,img:img||imgSrc(art.imagePath),pages,multi:!!pages,page:0,pagesBlocks:pages?pages.map(()=>[]):null,srcLang:(tr&&tr.srcLang)||'jpn',dstLang:(tr&&tr.dstLang)||'zh-CN',blocks:null};document.getElementById('work-title').textContent=(art.r18?'🔞 ':'📚 ')+art.title;const th=document.getElementById('work-thumb');th.innerHTML='';th.classList.remove('empty');const im=document.createElement('img');im.src=_wb.img;im.alt='';im.onerror=()=>{th.innerHTML='';th.classList.add('empty');th.textContent='🖼'};th.appendChild(im);const ws=document.getElementById('work-src'),wd=document.getElementById('work-dst');if(ws)ws.value=_wb.srcLang;if(wd)wd.value=_wb.dstLang;const box=document.getElementById('work-blocks');box.innerHTML='';box.dataset.empty=pages?('共 '+pages.length+' 页：先在上方页签选择要翻译的页，再点“识别文字”提取该页对白'):'点“识别文字”提取图片中的对白，再点“翻译”，结果可逐条校对';document.getElementById('work-progress').style.display='none';const ob=document.getElementById('work-ocr');ob.disabled=false;ob.textContent='🔍 识别文字';if(_wb.multi){const trp=tr&&tr.pages;pages.forEach((p,i)=>{const bl=(trp&&trp[i]&&trp[i].blocks)||null;if(bl&&bl.length)_wb.pagesBlocks[i]=bl.map(b=>({src:b.src||'',dst:b.dst||''}))})}else if(tr&&tr.blocks&&tr.blocks.length){_wb.blocks=tr.blocks.map(b=>({src:b.src||'',dst:b.dst||''}))}renderWbTabs();updateWbButtons();if((_wb.blocks&&_wb.blocks.length)||(_wb.multi&&_wb.pagesBlocks.some(l=>l&&l.length))){setTimeout(()=>{if(_wb.multi)_wb.blocks=_wb.pagesBlocks[0]||[];renderWbBlocks();toast('已载入已有译文，可直接修改','success')},300)}openModal('work-modal')}
+    function openWorkbench(art,img){if(!art)return;document.querySelectorAll('#work-modal .work-ctrl,#work-modal .work-blocks,#work-modal .work-foot').forEach(function(e){e.style.display=''});const _note=document.querySelector('#work-modal .work-note');if(_note)_note.textContent='识别漫画图片中的对白并翻译为中文（默认），可逐条校对后保存；R18 作品的翻译稿会存到站长仓库。';const pages=(art.pages&&art.pages.length>1)?art.pages:null;const tr=art.translation||null;_wb={art,img:img||imgSrc(art.imagePath),pages,multi:!!pages,page:0,pagesBlocks:pages?pages.map(()=>[]):null,srcLang:(tr&&tr.srcLang)||'jpn',dstLang:(tr&&tr.dstLang)||'zh-CN',blocks:null};document.getElementById('work-title').textContent=(art.r18?'🔞 ':'📚 ')+art.title;const th=document.getElementById('work-thumb');th.innerHTML='';th.classList.remove('empty');const im=document.createElement('img');im.src=_wb.img;im.alt='';im.onerror=()=>{th.innerHTML='';th.classList.add('empty');th.textContent='🖼'};th.appendChild(im);const ws=document.getElementById('work-src'),wd=document.getElementById('work-dst');if(ws)ws.value=_wb.srcLang;if(wd)wd.value=_wb.dstLang;const box=document.getElementById('work-blocks');box.innerHTML='';box.dataset.empty=pages?('共 '+pages.length+' 页：先在上方页签选择要翻译的页，再点“识别文字”提取该页对白'):'点“识别文字”提取图片中的对白，再点“翻译”，结果可逐条校对';document.getElementById('work-progress').style.display='none';const ob=document.getElementById('work-ocr');ob.disabled=false;ob.textContent='🔍 识别文字';if(_wb.multi){const trp=tr&&tr.pages;pages.forEach((p,i)=>{const bl=(trp&&trp[i]&&trp[i].blocks)||null;if(bl&&bl.length)_wb.pagesBlocks[i]=bl.map(b=>({src:b.src||'',dst:b.dst||''}))})}else if(tr&&tr.blocks&&tr.blocks.length){_wb.blocks=tr.blocks.map(b=>({src:b.src||'',dst:b.dst||''}))}renderWbTabs();updateWbButtons();if((_wb.blocks&&_wb.blocks.length)||(_wb.multi&&_wb.pagesBlocks.some(l=>l&&l.length))){setTimeout(()=>{if(_wb.multi)_wb.blocks=_wb.pagesBlocks[0]||[];renderWbBlocks();toast('已载入已有译文，可直接修改','success')},300)}openModal('work-modal')}
     function renderWbTabs(){const tabs=document.getElementById('wb-tabs');if(!tabs)return;if(!_wb||!_wb.multi||!_wb.pages){tabs.style.display='none';return}tabs.style.display='flex';tabs.innerHTML='';_wb.pages.forEach((p,i)=>{const b=document.createElement('button');b.type='button';b.className='wb-tab'+(i===_wb.page?' active':'');b.textContent='第 '+(i+1)+' 页';b.addEventListener('click',()=>wbSetPage(i));tabs.appendChild(b)})}
     function wbSetPage(i){if(!_wb||!_wb.multi)return;if(i===_wb.page)return;if(_wb.pagesBlocks)_wb.pagesBlocks[_wb.page]=_wb.blocks||[];_wb.page=i;_wb.blocks=_wb.pagesBlocks[i]||[];const th=document.getElementById('work-thumb');if(th&&_wb.pages&&_wb.pages[i]){th.innerHTML='';th.classList.remove('empty');const im=document.createElement('img');im.src=_wb.pages[i];im.alt='';im.onerror=()=>{th.innerHTML='';th.classList.add('empty');th.textContent='🖼'};th.appendChild(im)}renderWbTabs();renderWbBlocks()}
     function updateWbButtons(){const trans=document.getElementById('work-trans'),save=document.getElementById('work-save'),exp=document.getElementById('work-export');const has=_wb&&((_wb.blocks&&_wb.blocks.length>0)||(_wb.multi&&_wb.pagesBlocks.some(l=>l&&l.length)));let anyDst=false;if(_wb){if(_wb.multi){anyDst=_wb.pagesBlocks.some(l=>l&&l.some(b=>b.dst&&b.dst.trim()))}else{anyDst=!!(_wb.blocks&&_wb.blocks.some(b=>b.dst&&b.dst.trim()))}}if(trans)trans.disabled=!has;if(save)save.disabled=!anyDst;if(exp)exp.disabled=!anyDst}
