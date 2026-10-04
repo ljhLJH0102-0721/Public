@@ -1,0 +1,194 @@
+{
+  "FileReferences": {
+    "DisplayInfo": "romasha_talk.cdi3.json",
+    "Expressions": [],
+    "Moc": "romasha_talk.moc3",
+    "Motions": {
+      "BaseMotions": [
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/amazing.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/angry.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/chui.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/device.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/donbiki.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/doya.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/guruguru.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/hatujo.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/iyaiya.motion3.json"
+        },
+        {
+          "FadeInTime": 0.001,
+          "FadeOutTime": 0.001,
+          "File": "motions/Neutral.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/poster.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/question.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/relief.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/sad.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/skirt(bust).motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/skirt(hip).motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/skirt.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/smallamazing.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/smallangry.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/smallangryB.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/smalldoya.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/smallgikuri.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/smallsmile.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/smile.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/talk.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/talk_Alc.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/talk_ero.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/taol_fall.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/trouble.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/troublesmile.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/victory.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/wait.motion3.json"
+        },
+        {
+          "FadeInTime": 0.1,
+          "FadeOutTime": 0.1,
+          "File": "motions/wait_haji.motion3.json"
+        }
+      ]
+    },
+    "Physics": "romasha_talk.physics3.json",
+    "Textures": [
+      "romasha_talk.2048/texture_00.png"
+    ]
+  },
+  "Groups": [
+    {
+      "Ids": [],
+      "Name": "LipSync",
+      "Target": "Parameter"
+    },
+    {
+      "Ids": [],
+      "Name": "EyeBlink",
+      "Target": "Parameter"
+    }
+  ],
+  "HitAreas": [],
+  "Version": 3
+}

@@ -1,0 +1,1082 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "formchange",
+			"GroupId": "ParamGroup",
+			"Name": "着せ替え"
+		},
+		{
+			"Id": "negligeeONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "ネグリジェの着せ替え"
+		},
+		{
+			"Id": "negligeeinnerONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "ネグリジェインナーの切り替え"
+		},
+		{
+			"Id": "leotard_ON",
+			"GroupId": "ParamGroup",
+			"Name": "レオタードの着せ替え"
+		},
+		{
+			"Id": "mizugiONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "水着の着せ替え"
+		},
+		{
+			"Id": "mizugiSUKE",
+			"GroupId": "ParamGroup",
+			"Name": "水着濡れ透けの表現"
+		},
+		{
+			"Id": "minzokucloth",
+			"GroupId": "ParamGroup",
+			"Name": "民族衣装着せ替え"
+		},
+		{
+			"Id": "minzoku_bust_ON",
+			"GroupId": "ParamGroup",
+			"Name": "民族胸布の着せ替え"
+		},
+		{
+			"Id": "minzoku_westONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "民族腰布のONOFF"
+		},
+		{
+			"Id": "FudeONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "フードONOFF"
+		},
+		{
+			"Id": "fundoshi_ONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "ふんどしのONOFF"
+		},
+		{
+			"Id": "bunny",
+			"GroupId": "ParamGroup",
+			"Name": "バニースーツ着せ替え"
+		},
+		{
+			"Id": "bunnycuffsONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "バニーカフスのONOFF"
+		},
+		{
+			"Id": "bunny_bust_porori",
+			"GroupId": "ParamGroup",
+			"Name": "バニー胸めくれ"
+		},
+		{
+			"Id": "bunnybodyONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "バニーボディのONOFF"
+		},
+		{
+			"Id": "bunnyamiamiONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "バニー網タイツの着せ替え"
+		},
+		{
+			"Id": "bunnyneckONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "バニーネックのONOFF"
+		},
+		{
+			"Id": "bunnyearONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "バニー耳のONOFF"
+		},
+		{
+			"Id": "bath_taol_ON",
+			"GroupId": "ParamGroup",
+			"Name": "バスタオルの切り替え"
+		},
+		{
+			"Id": "bath_taol_fall",
+			"GroupId": "ParamGroup",
+			"Name": "バスタオルのオチ"
+		},
+		{
+			"Id": "taolONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "タオルの切り替え"
+		},
+		{
+			"Id": "gaze_ON",
+			"GroupId": "ParamGroup",
+			"Name": "タオルの変更"
+		},
+		{
+			"Id": "taolnure",
+			"GroupId": "ParamGroup",
+			"Name": "タオルの濡れ透け"
+		},
+		{
+			"Id": "underhear",
+			"GroupId": "ParamGroup",
+			"Name": "陰毛の切り替え"
+		},
+		{
+			"Id": "milk_on",
+			"GroupId": "ParamGroup",
+			"Name": "母乳の切り替え"
+		},
+		{
+			"Id": "milk_move",
+			"GroupId": "ParamGroup",
+			"Name": "母乳の流れ"
+		},
+		{
+			"Id": "nipplepierce",
+			"GroupId": "ParamGroup",
+			"Name": "乳首ピアスの切り替え"
+		},
+		{
+			"Id": "bigbust",
+			"GroupId": "ParamGroup",
+			"Name": "巨乳の切り替え"
+		},
+		{
+			"Id": "tatuONOFF",
+			"GroupId": "ParamGroup",
+			"Name": "淫紋の切り替え"
+		},
+		{
+			"Id": "tatuCHIKACHIKA",
+			"GroupId": "ParamGroup",
+			"Name": "淫紋の点滅"
+		},
+		{
+			"Id": "pantsuONFOFF",
+			"GroupId": "ParamGroup",
+			"Name": "パンツの切り替え"
+		},
+		{
+			"Id": "seieki_ON",
+			"GroupId": "ParamGroup",
+			"Name": "精液の表示"
+		},
+		{
+			"Id": "buraONFOFF",
+			"GroupId": "ParamGroup",
+			"Name": "ブラの切り替え"
+		},
+		{
+			"Id": "ParamAngleX",
+			"GroupId": "ParamGroup2",
+			"Name": "顔の角度 X"
+		},
+		{
+			"Id": "ParamAngleY",
+			"GroupId": "ParamGroup2",
+			"Name": "顔の角度 Y"
+		},
+		{
+			"Id": "ParamAngleZ",
+			"GroupId": "ParamGroup2",
+			"Name": "顔の角度 Z"
+		},
+		{
+			"Id": "highlightONOFF",
+			"GroupId": "ParamGroup2",
+			"Name": "ハイライトのONOFF"
+		},
+		{
+			"Id": "highlightR_yureX",
+			"GroupId": "ParamGroup2",
+			"Name": "右ハイライトの揺れX"
+		},
+		{
+			"Id": "highlightR_yureY",
+			"GroupId": "ParamGroup2",
+			"Name": "右ハイライトの揺れY"
+		},
+		{
+			"Id": "matugeL_yure",
+			"GroupId": "ParamGroup2",
+			"Name": "左まつげの揺れ"
+		},
+		{
+			"Id": "matugeR_yure",
+			"GroupId": "ParamGroup2",
+			"Name": "右まつげの揺れ"
+		},
+		{
+			"Id": "highlightL_yureX",
+			"GroupId": "ParamGroup2",
+			"Name": "左ハイライトの揺れX"
+		},
+		{
+			"Id": "highlightL_yureY",
+			"GroupId": "ParamGroup2",
+			"Name": "左ハイライトの揺れY"
+		},
+		{
+			"Id": "eyeOpenL",
+			"GroupId": "ParamGroup2",
+			"Name": "左目　開閉"
+		},
+		{
+			"Id": "eyeOpenR",
+			"GroupId": "ParamGroup2",
+			"Name": "右目　開閉"
+		},
+		{
+			"Id": "ParamEyeBallX",
+			"GroupId": "ParamGroup2",
+			"Name": "目玉 X"
+		},
+		{
+			"Id": "ParamEyeBallY",
+			"GroupId": "ParamGroup2",
+			"Name": "目玉 Y"
+		},
+		{
+			"Id": "hitomi_from",
+			"GroupId": "ParamGroup2",
+			"Name": "瞳の変形"
+		},
+		{
+			"Id": "smile_eye",
+			"GroupId": "ParamGroup2",
+			"Name": "喜び目の表現"
+		},
+		{
+			"Id": "ParamBrowLAngle",
+			"GroupId": "ParamGroup2",
+			"Name": "左眉　角度"
+		},
+		{
+			"Id": "ParamBrowRAngle",
+			"GroupId": "ParamGroup2",
+			"Name": "右眉　角度"
+		},
+		{
+			"Id": "ParamBrowLForm",
+			"GroupId": "ParamGroup2",
+			"Name": "左眉　変形"
+		},
+		{
+			"Id": "ParamBrowRForm",
+			"GroupId": "ParamGroup2",
+			"Name": "右眉　変形"
+		},
+		{
+			"Id": "ParamEyeLSmile",
+			"GroupId": "ParamGroup2",
+			"Name": "左目の変形"
+		},
+		{
+			"Id": "ParamEyeRSmile",
+			"GroupId": "ParamGroup2",
+			"Name": "右目の変形"
+		},
+		{
+			"Id": "mouth_scale",
+			"GroupId": "ParamGroup2",
+			"Name": "口の拡大縮小"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "ParamGroup2",
+			"Name": "口　開閉"
+		},
+		{
+			"Id": "ParamMouthForm",
+			"GroupId": "ParamGroup2",
+			"Name": "口　変形"
+		},
+		{
+			"Id": "ParamMouthForm2",
+			"GroupId": "ParamGroup2",
+			"Name": "口変形2"
+		},
+		{
+			"Id": "ParamCheek",
+			"GroupId": "ParamGroup2",
+			"Name": "照れ"
+		},
+		{
+			"Id": "ase",
+			"GroupId": "ParamGroup2",
+			"Name": "汗"
+		},
+		{
+			"Id": "namida",
+			"GroupId": "ParamGroup2",
+			"Name": "涙"
+		},
+		{
+			"Id": "heart_eye_ONOFF",
+			"GroupId": "ParamGroup2",
+			"Name": "ハート目"
+		},
+		{
+			"Id": "eye_guruguru",
+			"GroupId": "ParamGroup2",
+			"Name": "ぐるぐる目"
+		},
+		{
+			"Id": "cheek_D_ON",
+			"GroupId": "ParamGroup2",
+			"Name": "デフォルメチーク"
+		},
+		{
+			"Id": "cheek_on",
+			"GroupId": "ParamGroup2",
+			"Name": "チーク"
+		},
+		{
+			"Id": "angry",
+			"GroupId": "ParamGroup2",
+			"Name": "怒り"
+		},
+		{
+			"Id": "blessONOFF",
+			"GroupId": "ParamGroup2",
+			"Name": "吐息の表示"
+		},
+		{
+			"Id": "bless_move",
+			"GroupId": "ParamGroup2",
+			"Name": "呼吸の移動"
+		},
+		{
+			"Id": "elboR_ONOFF",
+			"GroupId": "ParamGroup3",
+			"Name": "右肘のONOFF"
+		},
+		{
+			"Id": "elboL_ONOFF",
+			"GroupId": "ParamGroup3",
+			"Name": "左肘のONOFF"
+		},
+		{
+			"Id": "armL_top_ONOFF",
+			"GroupId": "ParamGroup3",
+			"Name": "左上腕のONOFF"
+		},
+		{
+			"Id": "nadenadeleft",
+			"GroupId": "ParamGroup3",
+			"Name": "撫で下ろし腕のONOFF"
+		},
+		{
+			"Id": "nadehand_angle",
+			"GroupId": "ParamGroup3",
+			"Name": "撫で手の回転"
+		},
+		{
+			"Id": "nadenadeleft_angle",
+			"GroupId": "ParamGroup3",
+			"Name": "撫で腕の回転"
+		},
+		{
+			"Id": "nadenadeleft_mage",
+			"GroupId": "ParamGroup3",
+			"Name": "撫で手の曲げ"
+		},
+		{
+			"Id": "arm_device_ONOFF",
+			"GroupId": "ParamGroup3",
+			"Name": "デバイス腕のONOFF"
+		},
+		{
+			"Id": "arm_device_allangle",
+			"GroupId": "ParamGroup3",
+			"Name": "デバイス腕全体の回転"
+		},
+		{
+			"Id": "hand_device_angle",
+			"GroupId": "ParamGroup3",
+			"Name": "デバイス手首の回転"
+		},
+		{
+			"Id": "hand_device_yure_hitosashi",
+			"GroupId": "ParamGroup3",
+			"Name": "デバイス人差し指の揺れ"
+		},
+		{
+			"Id": "hand_device_nigiri",
+			"GroupId": "ParamGroup3",
+			"Name": "デバイス指の握り"
+		},
+		{
+			"Id": "arm_device_angle",
+			"GroupId": "ParamGroup3",
+			"Name": "デバイス肘の回転"
+		},
+		{
+			"Id": "arm_device_yure",
+			"GroupId": "ParamGroup3",
+			"Name": "デバイス腕の揺れ"
+		},
+		{
+			"Id": "attentionright",
+			"GroupId": "ParamGroup3",
+			"Name": "注意腕のONOFF"
+		},
+		{
+			"Id": "attention_angle",
+			"GroupId": "ParamGroup3",
+			"Name": "注意腕の回転"
+		},
+		{
+			"Id": "attention_hand_angle",
+			"GroupId": "ParamGroup3",
+			"Name": "注意手の回転"
+		},
+		{
+			"Id": "attention_hand_mage",
+			"GroupId": "ParamGroup3",
+			"Name": "注意手の曲げ"
+		},
+		{
+			"Id": "attention_yubi_mage",
+			"GroupId": "ParamGroup3",
+			"Name": "注意人差し指の曲げ"
+		},
+		{
+			"Id": "amazingrightONFOFF",
+			"GroupId": "ParamGroup3",
+			"Name": "驚き腕のONOFF"
+		},
+		{
+			"Id": "amazing_arm_angle",
+			"GroupId": "ParamGroup3",
+			"Name": "驚き腕の回転"
+		},
+		{
+			"Id": "amazing_hand_angle",
+			"GroupId": "ParamGroup3",
+			"Name": "驚き手の回転"
+		},
+		{
+			"Id": "amazing_hand_mage",
+			"GroupId": "ParamGroup3",
+			"Name": "驚き手の曲げ"
+		},
+		{
+			"Id": "hearchange",
+			"GroupId": "ParamGroup4",
+			"Name": "髪型の切り替え"
+		},
+		{
+			"Id": "aho_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "あほ毛の揺れ"
+		},
+		{
+			"Id": "ribon_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "リボンの揺れ"
+		},
+		{
+			"Id": "tie_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "ネクタイの揺れ"
+		},
+		{
+			"Id": "skirt_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "スカートの揺れ"
+		},
+		{
+			"Id": "minzoku_bigbust_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "民族胸布巨乳の揺れ"
+		},
+		{
+			"Id": "minzoku_bust_R",
+			"GroupId": "ParamGroup4",
+			"Name": "民族胸布の揺れR"
+		},
+		{
+			"Id": "minzoku_bust_L",
+			"GroupId": "ParamGroup4",
+			"Name": "民族胸布の揺れL"
+		},
+		{
+			"Id": "minzoku_hudo_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "民族フードの揺れ"
+		},
+		{
+			"Id": "neglige_ribon_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "ネグリジェリボンの揺れ"
+		},
+		{
+			"Id": "negulige_skirt_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "ネグリジェスカートの揺れ"
+		},
+		{
+			"Id": "ParamHairFront2",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　前1"
+		},
+		{
+			"Id": "ParamHairFront3",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　前2"
+		},
+		{
+			"Id": "ParamHairFront4",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　前3"
+		},
+		{
+			"Id": "ParamHairFront5",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　前4"
+		},
+		{
+			"Id": "ParamHairFront6",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　前5"
+		},
+		{
+			"Id": "ParamHairFront7",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　前6"
+		},
+		{
+			"Id": "ParamHairFront8",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　前7"
+		},
+		{
+			"Id": "ParamHairFront9",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　前8"
+		},
+		{
+			"Id": "ParamHairBack",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　後"
+		},
+		{
+			"Id": "ParamHairSide",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　横"
+		},
+		{
+			"Id": "ParamHairSide2",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　横2"
+		},
+		{
+			"Id": "mitsuami_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "三編みの揺れ"
+		},
+		{
+			"Id": "sidetale_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　サイドテール"
+		},
+		{
+			"Id": "pony_tale",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　ポニーテール"
+		},
+		{
+			"Id": "longhear_yure",
+			"GroupId": "ParamGroup4",
+			"Name": "髪揺れ　ロングヘアー"
+		},
+		{
+			"Id": "all",
+			"GroupId": "ParamGroup5",
+			"Name": "全体の調整"
+		},
+		{
+			"Id": "allmoveX",
+			"GroupId": "ParamGroup5",
+			"Name": "全体の移動X"
+		},
+		{
+			"Id": "allmoveY",
+			"GroupId": "ParamGroup5",
+			"Name": "全体の移動Y"
+		},
+		{
+			"Id": "bust_bura__X",
+			"GroupId": "ParamGroup5",
+			"Name": "ブラ胸の動きX"
+		},
+		{
+			"Id": "bust_bura_Y",
+			"GroupId": "ParamGroup5",
+			"Name": "ブラ胸の動きY"
+		},
+		{
+			"Id": "bustX",
+			"GroupId": "ParamGroup5",
+			"Name": "胸の動きX"
+		},
+		{
+			"Id": "bust_Y",
+			"GroupId": "ParamGroup5",
+			"Name": "胸の動きY"
+		},
+		{
+			"Id": "bigbustX",
+			"GroupId": "ParamGroup5",
+			"Name": "巨乳の動きX"
+		},
+		{
+			"Id": "bigbustY",
+			"GroupId": "ParamGroup5",
+			"Name": "巨乳の動きY"
+		},
+		{
+			"Id": "ParamBodyAngleX",
+			"GroupId": "ParamGroup5",
+			"Name": "体の回転　X"
+		},
+		{
+			"Id": "ParamBodyAngleX2",
+			"GroupId": "ParamGroup5",
+			"Name": "体の回転　X2"
+		},
+		{
+			"Id": "ParamBodyAngleY",
+			"GroupId": "ParamGroup5",
+			"Name": "体の回転　Y"
+		},
+		{
+			"Id": "ParamBodyAngleZ",
+			"GroupId": "ParamGroup5",
+			"Name": "体の回転　Z"
+		},
+		{
+			"Id": "legR_angle",
+			"GroupId": "ParamGroup5",
+			"Name": "右脚の回転"
+		},
+		{
+			"Id": "legL_angle",
+			"GroupId": "ParamGroup5",
+			"Name": "左脚の回転"
+		},
+		{
+			"Id": "handR_move",
+			"GroupId": "ParamGroup5",
+			"Name": "右手の動き"
+		},
+		{
+			"Id": "handR_angle",
+			"GroupId": "ParamGroup5",
+			"Name": "右手の回転"
+		},
+		{
+			"Id": "armR_angle",
+			"GroupId": "ParamGroup5",
+			"Name": "右腕の回転"
+		},
+		{
+			"Id": "elboR_angle",
+			"GroupId": "ParamGroup5",
+			"Name": "右肘の回転"
+		},
+		{
+			"Id": "elboR_mage",
+			"GroupId": "ParamGroup5",
+			"Name": "右肘の曲げ"
+		},
+		{
+			"Id": "armR_mage",
+			"GroupId": "ParamGroup5",
+			"Name": "右腕の曲げ"
+		},
+		{
+			"Id": "handL_move",
+			"GroupId": "ParamGroup5",
+			"Name": "左手の動き"
+		},
+		{
+			"Id": "handL_angle",
+			"GroupId": "ParamGroup5",
+			"Name": "左手の回転"
+		},
+		{
+			"Id": "elboL_mage",
+			"GroupId": "ParamGroup5",
+			"Name": "左肘の曲げ"
+		},
+		{
+			"Id": "arm_L_mageX",
+			"GroupId": "ParamGroup5",
+			"Name": "左腕の曲げX"
+		},
+		{
+			"Id": "arm_L_mageY",
+			"GroupId": "ParamGroup5",
+			"Name": "左腕の曲げY"
+		},
+		{
+			"Id": "armL_angle",
+			"GroupId": "ParamGroup5",
+			"Name": "左腕の回転"
+		},
+		{
+			"Id": "skirt_makure",
+			"GroupId": "ParamGroup5",
+			"Name": "スカートめくれの切り替え"
+		},
+		{
+			"Id": "skirt_castoff",
+			"GroupId": "ParamGroup5",
+			"Name": "スカートの消失"
+		},
+		{
+			"Id": "skiry_custm_ON",
+			"GroupId": "ParamGroup5",
+			"Name": "改造スカートの表示"
+		},
+		{
+			"Id": "mekure",
+			"GroupId": "ParamGroup5",
+			"Name": "スカートめくれ"
+		},
+		{
+			"Id": "ParamBreath",
+			"GroupId": "ParamGroup5",
+			"Name": "呼吸"
+		}
+	],
+	"ParameterGroups": [
+		{
+			"Id": "ParamGroup",
+			"GroupId": "",
+			"Name": "パーツの切り替え"
+		},
+		{
+			"Id": "ParamGroup2",
+			"GroupId": "",
+			"Name": "表情"
+		},
+		{
+			"Id": "ParamGroup3",
+			"GroupId": "",
+			"Name": "腕差分"
+		},
+		{
+			"Id": "ParamGroup4",
+			"GroupId": "",
+			"Name": "パーツの揺れ"
+		},
+		{
+			"Id": "ParamGroup5",
+			"GroupId": "",
+			"Name": "体の動き"
+		}
+	],
+	"Parts": [
+		{
+			"Id": "Part63",
+			"Name": "フォルダー 1"
+		},
+		{
+			"Id": "Part62",
+			"Name": "デフォーマ挿入先"
+		},
+		{
+			"Id": "Part",
+			"Name": "巨乳衣装差分"
+		},
+		{
+			"Id": "Part13",
+			"Name": "通常衣装差分"
+		},
+		{
+			"Id": "Part32",
+			"Name": "ロマーシャベース"
+		},
+		{
+			"Id": "Part124",
+			"Name": "フード後面"
+		},
+		{
+			"Id": "PartSketch0",
+			"Name": "[ 下絵 ]"
+		},
+		{
+			"Id": "Part2",
+			"Name": "民族フード前面"
+		},
+		{
+			"Id": "Part3",
+			"Name": "巨乳民族衣装"
+		},
+		{
+			"Id": "Part4",
+			"Name": "巨乳水着"
+		},
+		{
+			"Id": "Part5",
+			"Name": "巨乳バニースーツ"
+		},
+		{
+			"Id": "Part6",
+			"Name": "巨乳ネグリジェ"
+		},
+		{
+			"Id": "Part7",
+			"Name": "巨乳通常制服"
+		},
+		{
+			"Id": "Part8",
+			"Name": "巨乳改造制服"
+		},
+		{
+			"Id": "Part14",
+			"Name": "巨乳用バスタオル"
+		},
+		{
+			"Id": "Part76",
+			"Name": "デバイス腕"
+		},
+		{
+			"Id": "Part15",
+			"Name": "注意腕"
+		},
+		{
+			"Id": "Part16",
+			"Name": "うっかり腕"
+		},
+		{
+			"Id": "Part17",
+			"Name": "なでおろし腕"
+		},
+		{
+			"Id": "Part18",
+			"Name": "振り上げ腕L"
+		},
+		{
+			"Id": "Part19",
+			"Name": "振り上げ腕R"
+		},
+		{
+			"Id": "Part20",
+			"Name": "民族衣装"
+		},
+		{
+			"Id": "Part21",
+			"Name": "水着"
+		},
+		{
+			"Id": "Part22",
+			"Name": "ネグリジェ"
+		},
+		{
+			"Id": "Part23",
+			"Name": "バニースーツ"
+		},
+		{
+			"Id": "Part24",
+			"Name": "改造制服"
+		},
+		{
+			"Id": "Part25",
+			"Name": "式典制服"
+		},
+		{
+			"Id": "Part26",
+			"Name": "通常制服"
+		},
+		{
+			"Id": "Part27",
+			"Name": "ミニタオル"
+		},
+		{
+			"Id": "Part9",
+			"Name": "巨乳ピアスL"
+		},
+		{
+			"Id": "Part11",
+			"Name": "巨乳ピアスR"
+		},
+		{
+			"Id": "Part29",
+			"Name": "ピアスR"
+		},
+		{
+			"Id": "Part28",
+			"Name": "ピアスL"
+		},
+		{
+			"Id": "Part30",
+			"Name": "電子タトゥー"
+		},
+		{
+			"Id": "Part31",
+			"Name": "陰毛"
+		},
+		{
+			"Id": "Part33",
+			"Name": "吐息"
+		},
+		{
+			"Id": "Part34",
+			"Name": "前髪"
+		},
+		{
+			"Id": "Part35",
+			"Name": "前髪ベース"
+		},
+		{
+			"Id": "Part36",
+			"Name": "横髪"
+		},
+		{
+			"Id": "Part37",
+			"Name": "左目"
+		},
+		{
+			"Id": "Part38",
+			"Name": "右目"
+		},
+		{
+			"Id": "Part39",
+			"Name": "頬染め"
+		},
+		{
+			"Id": "Part40",
+			"Name": "口"
+		},
+		{
+			"Id": "Part41",
+			"Name": "アクセ"
+		},
+		{
+			"Id": "Part42",
+			"Name": "顔"
+		},
+		{
+			"Id": "Part10",
+			"Name": "巨乳L"
+		},
+		{
+			"Id": "Part44",
+			"Name": "胸L"
+		},
+		{
+			"Id": "Part12",
+			"Name": "巨乳胸R"
+		},
+		{
+			"Id": "Part45",
+			"Name": "胸R"
+		},
+		{
+			"Id": "Part46",
+			"Name": "左上腕"
+		},
+		{
+			"Id": "Part47",
+			"Name": "左肘"
+		},
+		{
+			"Id": "Part48",
+			"Name": "左手"
+		},
+		{
+			"Id": "Part43",
+			"Name": "ブラおっぱい"
+		},
+		{
+			"Id": "Part49",
+			"Name": "裸右下腕"
+		},
+		{
+			"Id": "Part50",
+			"Name": "右手"
+		},
+		{
+			"Id": "Part51",
+			"Name": "パンツ"
+		},
+		{
+			"Id": "Part52",
+			"Name": "裸左腿"
+		},
+		{
+			"Id": "Part53",
+			"Name": "裸左脚"
+		},
+		{
+			"Id": "Part54",
+			"Name": "首"
+		},
+		{
+			"Id": "Part55",
+			"Name": "上半身裸"
+		},
+		{
+			"Id": "Part56",
+			"Name": "裸右二の腕"
+		},
+		{
+			"Id": "Part57",
+			"Name": "裸右腿"
+		},
+		{
+			"Id": "Part58",
+			"Name": "裸右脚"
+		},
+		{
+			"Id": "Part59",
+			"Name": "三編み"
+		},
+		{
+			"Id": "Part60",
+			"Name": "ポニーテール"
+		},
+		{
+			"Id": "Part61",
+			"Name": "ロングヘアー"
+		}
+	],
+	"CombinedParameters": [
+		[
+			"ParamAngleX",
+			"ParamAngleY"
+		],
+		[
+			"highlightR_yureX",
+			"highlightR_yureY"
+		],
+		[
+			"highlightL_yureX",
+			"highlightL_yureY"
+		],
+		[
+			"ParamEyeBallX",
+			"ParamEyeBallY"
+		],
+		[
+			"allmoveX",
+			"allmoveY"
+		],
+		[
+			"bust_bura__X",
+			"bust_bura_Y"
+		],
+		[
+			"bustX",
+			"bust_Y"
+		],
+		[
+			"bigbustX",
+			"bigbustY"
+		]
+	]
+}
