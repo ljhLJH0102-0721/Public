@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){var V='v54';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
+  <script>(function(){var V='v55';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -1716,43 +1716,201 @@ document.getElementById('detail-download')?.addEventListener('click',async funct
 <div id="l2d-pet">
   <div id="l2d-bubble"></div>
   <canvas id="l2d-canvas"></canvas>
+  <button id="l2d-gear" title="看板娘设置">⚙</button>
   <button id="l2d-hide" title="隐藏看板娘">✕</button>
+  <div id="l2d-panel">
+    <div class="l2d-p-head"><span>🌸 看板娘设置</span><span id="l2d-p-close">✕</span></div>
+    <div class="l2d-p-body">
+      <div class="l2d-p-row"><label for="l2d-on">显示桌宠</label><input type="checkbox" id="l2d-on" checked></div>
+      <div class="l2d-p-sub">大小</div>
+      <div class="l2d-p-chips" id="l2d-size"></div>
+      <div class="l2d-p-sub">服装</div>
+      <div class="l2d-p-chips" id="l2d-outfit"></div>
+      <div id="l2d-outfit18-wrap" style="display:none">
+        <div class="l2d-p-sub">服装 · R18</div>
+        <div class="l2d-p-chips" id="l2d-outfit18"></div>
+      </div>
+      <div class="l2d-p-sub">发型</div>
+      <div class="l2d-p-chips" id="l2d-hair"></div>
+      <div class="l2d-p-sub">配饰（可多选）</div>
+      <div class="l2d-p-chips" id="l2d-acc"></div>
+      <div id="l2d-acc18-wrap" style="display:none">
+        <div class="l2d-p-sub">配饰 · R18</div>
+        <div class="l2d-p-chips" id="l2d-acc18"></div>
+      </div>
+      <div class="l2d-p-tip">设置会自动保存在你的浏览器里</div>
+    </div>
+  </div>
 </div>
+<button id="l2d-restore" title="显示看板娘" style="display:none">🌸</button>
 <script src="pet/live2dcubismcore.min.js" defer></script>
 <script src="pet/pixi.js" defer></script>
 <script src="pet/cubism4.min.js" defer></script>
 <script>
 (function(){
   'use strict';
-  try{ if(localStorage.getItem('l2d_pet_off')==='1') return; }catch(e){}
   var mob=window.innerWidth<768;
-  var W=mob?168:230, H=mob?220:300, PET='pet/';
+  var SIZES={ s:{w:180,h:240,l:'小'}, m:{w:260,h:340,l:'中'}, l:{w:360,h:470,l:'大'}, xl:{w:460,h:600,l:'特大'} };
+  var PET='pet/';
   var JSD='https://cdn.jsdelivr.net/gh/ljhLJH0102-0721/Public@main/pet/';
-  var CSS='#l2d-pet{position:fixed;right:4px;bottom:0;width:'+W+'px;height:'+H+'px;z-index:80;pointer-events:none}'
-    +'#l2d-canvas{width:100%;height:100%;display:block;pointer-events:auto;cursor:pointer}'
-    +'#l2d-bubble{position:absolute;bottom:74%;left:50%;transform:translateX(-50%);max-width:190px;background:rgba(255,255,255,.96);border:2px solid #ffb6c1;border-radius:12px;padding:8px 12px;font-size:13px;color:#8a4b6b;line-height:1.55;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.16);z-index:2;word-break:break-word}'
-    +'#l2d-bubble:after{content:"";position:absolute;top:100%;left:50%;margin-left:-7px;border:7px solid transparent;border-top-color:#ffb6c1}'
-    +'#l2d-hide{position:absolute;top:0;right:0;width:22px;height:22px;border:none;border-radius:50%;background:rgba(255,255,255,.85);color:#a8355f;font-size:12px;line-height:22px;cursor:pointer;opacity:0;transition:opacity .2s;pointer-events:auto;z-index:3}'
-    +'#l2d-pet:hover #l2d-hide{opacity:.9}';
-  var st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
+  var CFG_KEY='l2d_pet_cfg';
+  var DEF={ on:true, size:(mob?'m':'l'), outfit:'uniform_dress', hair:'loose', acc:{}, acc18:{} };
+  var cfg={};
+  try{ cfg=JSON.parse(localStorage.getItem(CFG_KEY)||'{}')||{} }catch(e){ cfg={} }
+  for(var dk in DEF){ if(!(dk in cfg)) cfg[dk]=DEF[dk] }
+  if(!cfg.acc||typeof cfg.acc!=='object') cfg.acc={};
+  if(!cfg.acc18||typeof cfg.acc18!=='object') cfg.acc18={};
+  if(!SIZES[cfg.size]) cfg.size=(mob?'m':'l');
+  try{ if(localStorage.getItem('l2d_pet_off')==='1'&&!(CFG_KEY in localStorage)) cfg.on=false }catch(e){}
+  function saveCfg(){ try{ localStorage.setItem(CFG_KEY, JSON.stringify(cfg)) }catch(e){} }
+  var R18=false;
+  try{ R18=localStorage.getItem('show_r18')==='1' }catch(e){}
+
+  /* ===== 换装参数表：取自桌面版 outfit_manager.py（作者实测映射）===== */
+  var RESET={ formchange:-1, negligeeONOFF:0, negligeeinnerONOFF:0, mizugiONOFF:0, mizugiSUKE:0,
+    minzokucloth:0, minzoku_bust_ON:0, minzoku_westONOFF:0, FudeONOFF:0, bath_taol_ON:0, taolONOFF:0,
+    bunny:0, bunnycuffsONOFF:0, bunnyamiamiONOFF:0, bunnyneckONOFF:0, bunnyearONOFF:0,
+    buraONFOFF:0, pantsuONFOFF:0, underhear:0, leotard_ON:0, fundoshi_ONOFF:0,
+    tatuONOFF:0, cheek_on:0, heart_eye_ONOFF:0, bigbust:0, gaze_ON:0, alcol_ON:0,
+    nipplepierce:0, milk_on:0 };
+  var OUTFITS={
+    uniform_tight:{l:'紧身制服',p:{formchange:0}},
+    uniform_dress:{l:'通常制服',p:{formchange:1}},
+    sleepwear:{l:'睡衣',p:{negligeeONOFF:1,negligeeinnerONOFF:0}},
+    swimsuit:{l:'泳装',p:{mizugiONOFF:1,mizugiSUKE:0}},
+    ethnic_wear:{l:'民族衣装',p:{minzokucloth:1,FudeONOFF:0}},
+    ethnic_cloak:{l:'民族斗篷',p:{minzokucloth:1,FudeONOFF:1}},
+    towel:{l:'浴巾',p:{bath_taol_ON:1,buraONFOFF:30,pantsuONFOFF:30}},
+    bunny:{l:'兔女郎',p:{bunny:1}},
+    leotard:{l:'紧身连衣',p:{leotard_ON:1}},
+    underwear:{l:'内衣',p:{underhear:1}}
+  };
+  var OUTFITS18={
+    fundoshi:{l:'兜裆布',p:{fundoshi_ONOFF:1}},
+    nude:{l:'无衣着',p:{buraONFOFF:30,pantsuONFOFF:30}}
+  };
+  var HAIRS={ loose:{l:'散发',v:30}, bun:{l:'丸子头',v:0} };
+  var ACCS={
+    tattoo:{l:'电子纹身',p:{tatuONOFF:1}},
+    blush:{l:'脸红',p:{cheek_on:1}},
+    heart_eye:{l:'心形眼',p:{heart_eye_ONOFF:1}},
+    bigbust:{l:'丰胸',p:{bigbust:1}},
+    gaze:{l:'特殊视线',p:{gaze_ON:1}}
+  };
+  var ACCS18={
+    pierce:{l:'乳环',p:{nipplepierce:1}},
+    milk:{l:'乳汁',p:{milk_on:1}}
+  };
+
   var box=document.getElementById('l2d-pet');
   var bubble=document.getElementById('l2d-bubble');
   var cv=document.getElementById('l2d-canvas');
+  var gear=document.getElementById('l2d-gear');
   var hideBtn=document.getElementById('l2d-hide');
-  hideBtn.addEventListener('click',function(e){ e.stopPropagation(); box.style.display='none'; try{localStorage.setItem('l2d_pet_off','1')}catch(err){} });
+  var panel=document.getElementById('l2d-panel');
+  var restore=document.getElementById('l2d-restore');
+  var W=SIZES[cfg.size].w, H=SIZES[cfg.size].h;
+
+  var CSS='#l2d-pet{position:fixed;right:4px;bottom:0;z-index:80;pointer-events:none}'
+    +'#l2d-canvas{width:100%;height:100%;display:block;pointer-events:auto;cursor:pointer}'
+    +'#l2d-bubble{position:absolute;bottom:78%;left:50%;transform:translateX(-50%);max-width:200px;background:rgba(255,255,255,.96);border:2px solid #ffb6c1;border-radius:12px;padding:8px 12px;font-size:13px;color:#8a4b6b;line-height:1.55;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.16);z-index:6;word-break:break-word}'
+    +'#l2d-bubble:after{content:"";position:absolute;top:100%;left:50%;margin-left:-7px;border:7px solid transparent;border-top-color:#ffb6c1}'
+    +'#l2d-gear,#l2d-hide{position:absolute;top:0;width:22px;height:22px;border:none;border-radius:50%;background:rgba(255,255,255,.85);color:#a8355f;font-size:12px;line-height:22px;padding:0;cursor:pointer;opacity:0;transition:opacity .2s;pointer-events:auto;z-index:7}'
+    +'#l2d-gear{right:26px}#l2d-hide{right:2px}'
+    +'#l2d-pet:hover #l2d-gear,#l2d-pet:hover #l2d-hide{opacity:.92}'
+    +'#l2d-panel{position:absolute;bottom:6px;right:0;width:236px;max-height:72vh;overflow-y:auto;background:rgba(255,255,255,.98);border:2px solid #ffb6c1;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:none;pointer-events:auto;z-index:9}'
+    +'.l2d-p-head{display:flex;justify-content:space-between;align-items:center;padding:7px 11px;background:linear-gradient(90deg,#ffd9e2,#ffeef3);color:#a2547a;font-weight:700;font-size:13px;border-radius:12px 12px 0 0}'
+    +'#l2d-p-close{cursor:pointer;padding:0 3px}'
+    +'.l2d-p-body{padding:6px 11px 11px;font-family:"Microsoft YaHei",inherit;font-size:12px;color:#5c4a52}'
+    +'.l2d-p-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0}'
+    +'.l2d-p-sub{margin:9px 0 5px;font-weight:700;color:#a2547a;font-size:11px;letter-spacing:.5px}'
+    +'.l2d-p-chips{display:flex;flex-wrap:wrap;gap:5px}'
+    +'.l2d-chip{border:1px solid #ffd0dd;background:#fff8fa;color:#8a4b6b;border-radius:9px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s}'
+    +'.l2d-chip:hover{border-color:#ff9dc0}'
+    +'.l2d-chip.on{background:#ff9dc0;border-color:#ff9dc0;color:#fff;font-weight:700}'
+    +'.l2d-p-tip{margin-top:10px;color:#b9a3ac;font-size:10px;text-align:center}'
+    +'#l2d-restore{position:fixed;right:10px;bottom:10px;width:34px;height:34px;border-radius:50%;border:2px solid #ffb6c1;background:rgba(255,255,255,.95);font-size:16px;line-height:30px;cursor:pointer;z-index:80;box-shadow:0 3px 12px rgba(0,0,0,.18);padding:0}';
+  var st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
+
   var LINES=['欢迎来到鸾尾花论坛♡','今天想看什么插画呢？','嘿嘿…你终于来啦','新作品我已经先睹为快啦！','点我一下会怎么样呢…？','公告栏记得看一看哦','好期待你的新作品呀','累了就歇会儿吧♡','漫画区更新了没有呢…','我就在这里陪着你哦'];
   var IDLE_M=['wait','smile','smallsmile','talk','donbiki','doya','victory'];
   var CLICK_M=['amazing','hatujo','smallamazing','smalldoya','smallgikuri','smallsmile','troublesmile','victory','question','relief','guruguru','iyaiya'];
   function pick(a){return a[Math.floor(Math.random()*a.length)]}
   var bubbleTimer=null;
   function say(t){ bubble.textContent=t; bubble.style.opacity=1; if(bubbleTimer)clearTimeout(bubbleTimer); bubbleTimer=setTimeout(function(){bubble.style.opacity=0},4200); }
-  var model=null, motionIndex=null, app=null;
+  var model=null, core=null, app=null, motionIndex=null, baseW=0, baseH=0;
   function play(name,pri){ if(!model||!motionIndex) return; var i=(name in motionIndex)?motionIndex[name]:motionIndex['Neutral']; if(i==null) return; try{ model.motion('BaseMotions',i,pri||2) }catch(e){} }
+
+  /* ===== 换装应用 ===== */
+  function setP(id,v){ try{ if(core&&core.setParameterValueById) core.setParameterValueById(id,v) }catch(e){} }
+  function applyLook(){
+    if(!core) return;
+    for(var k in RESET) setP(k,RESET[k]);
+    var o=OUTFITS[cfg.outfit]||(R18?OUTFITS18[cfg.outfit]:null)||OUTFITS.uniform_dress;
+    for(var k2 in o.p) setP(k2,o.p[k2]);
+    for(var a in cfg.acc){ if(cfg.acc[a]===1&&ACCS[a]){ for(var k3 in ACCS[a].p) setP(k3,ACCS[a].p[k3]) } }
+    if(R18){ for(var b in cfg.acc18){ if(cfg.acc18[b]===1&&ACCS18[b]){ for(var k4 in ACCS18[b].p) setP(k4,ACCS18[b].p[k4]) } } }
+    setP('hearchange', (HAIRS[cfg.hair]||HAIRS.loose).v);
+  }
+  function fit(){
+    if(!model||!baseW||!baseH) return;
+    var s=Math.min(W/baseW,H/baseH)*0.98;
+    model.scale.set(s);
+    var b=model.getBounds();
+    model.x+=(W-b.width)/2-b.x; model.y+=H-b.y-b.height;
+  }
+  function applySize(){
+    var s=SIZES[cfg.size]||SIZES.l;
+    W=s.w; H=s.h;
+    box.style.width=W+'px'; box.style.height=H+'px';
+    if(app&&app.renderer&&app.renderer.resize) app.renderer.resize(W,H);
+    fit();
+  }
+  function applyOn(){
+    box.style.display=cfg.on?'block':'none';
+    restore.style.display=cfg.on?'none':'block';
+    if(app) { if(cfg.on){ if(document.hidden!==true) app.ticker.start() } else { app.ticker.stop() } }
+  }
+  function setOn(v){ cfg.on=!!v; saveCfg(); applyOn(); if(cfg.on) setTimeout(function(){ say('我又回来啦♡') },400) }
+
+  /* ===== 设置面板 ===== */
+  function chips(host,map,isOn,onPick){
+    host.innerHTML='';
+    for(var k in map){
+      (function(key){
+        var b=document.createElement('button');
+        b.type='button'; b.className='l2d-chip'+(isOn(key)?' on':''); b.textContent=map[key].l;
+        b.addEventListener('click',function(){ onPick(key) });
+        host.appendChild(b);
+      })(k);
+    }
+  }
+  function renderPanel(){
+    onChk.checked=!!cfg.on;
+    chips(document.getElementById('l2d-size'),SIZES,function(k){return cfg.size===k},function(k){ cfg.size=k; saveCfg(); applySize(); renderPanel() });
+    chips(document.getElementById('l2d-outfit'),OUTFITS,function(k){return cfg.outfit===k},function(k){ cfg.outfit=k; saveCfg(); applyLook(); say('这件好看吗？'); renderPanel() });
+    document.getElementById('l2d-outfit18-wrap').style.display=R18?'block':'none';
+    if(R18) chips(document.getElementById('l2d-outfit18'),OUTFITS18,function(k){return cfg.outfit===k},function(k){ cfg.outfit=k; saveCfg(); applyLook(); renderPanel() });
+    chips(document.getElementById('l2d-hair'),HAIRS,function(k){return cfg.hair===k},function(k){ cfg.hair=k; saveCfg(); applyLook(); say(k==='bun'?'换个发型♪':'嗯…还是这样舒服'); renderPanel() });
+    chips(document.getElementById('l2d-acc'),ACCS,function(k){return cfg.acc[k]===1},function(k){ cfg.acc[k]=(cfg.acc[k]===1?0:1); saveCfg(); applyLook(); renderPanel() });
+    document.getElementById('l2d-acc18-wrap').style.display=R18?'block':'none';
+    if(R18) chips(document.getElementById('l2d-acc18'),ACCS18,function(k){return cfg.acc18[k]===1},function(k){ cfg.acc18[k]=(cfg.acc18[k]===1?0:1); saveCfg(); applyLook(); renderPanel() });
+  }
+  var pClose=document.getElementById('l2d-p-close');
+  var onChk=document.getElementById('l2d-on');
+  gear.addEventListener('click',function(e){ e.stopPropagation(); var open=panel.style.display==='block'; panel.style.display=open?'none':'block'; if(!open) renderPanel() });
+  pClose.addEventListener('click',function(){ panel.style.display='none' });
+  onChk.addEventListener('change',function(){ setOn(this.checked) });
+  hideBtn.addEventListener('click',function(e){ e.stopPropagation(); setOn(false) });
+  restore.addEventListener('click',function(){ setOn(true) });
+  cv.addEventListener('click',function(){ play(pick(CLICK_M),3); say(pick(LINES)) });
+
   function boot(){
     if(!(window.PIXI&&window.PIXI.live2d&&window.Live2DCubismCore)){ setTimeout(boot,400); return }
     try{
       app=new PIXI.Application({view:cv,autoStart:true,width:W,height:H,transparent:true,backgroundAlpha:0,antialias:true});
     }catch(e){ return }
+    applySize();
     fetch(JSD+'model/romasha_talk.model3.json').catch(function(){return fetch(PET+'model/romasha_talk.model3.json')}).then(function(r){return r.json()}).then(function(def){
       var arr=(def.FileReferences&&def.FileReferences.Motions&&def.FileReferences.Motions.BaseMotions)||[];
       motionIndex={};
@@ -1761,21 +1919,27 @@ document.getElementById('detail-download')?.addEventListener('click',async funct
     var loadModel=function(u){ return PIXI.live2d.Live2DModel.from(u) };
     loadModel(JSD+'model/romasha_talk.model3.json').catch(function(){ return loadModel(PET+'model/romasha_talk.model3.json') }).then(function(m){
       model=m; app.stage.addChild(m);
-      var s=Math.min(W/m.width,H/m.height)*0.98; m.scale.set(s);
-      var b=m.getBounds();
-      m.x+=(W-b.width)/2-b.x; m.y+=H-b.y-b.height;
+      baseW=m.width; baseH=m.height;
+      try{ core=m.internalModel.coreModel }catch(e){ core=null }
       m.autoInteract=false; m.interactive=true;
-      cv.addEventListener('click',function(){ play(pick(CLICK_M),3); say(pick(LINES)) });
-      play('Neutral',3); setTimeout(function(){ say(pick(LINES)) },900);
-      setInterval(function(){ if(document.hidden) return; play(pick(IDLE_M),2) },13000);
+      fit(); applyLook();
+      app.ticker.add(function(){ applyLook() });
+      play('Neutral',3);
+      if(cfg.on) setTimeout(function(){ say(pick(LINES)) },900);
+      setInterval(function(){ if(document.hidden||!cfg.on) return; play(pick(IDLE_M),2) },13000);
+      applyOn(); renderPanel();
     }).catch(function(err){ console.warn('看板娘加载失败',err); box.style.display='none' });
     window.addEventListener('pointermove',function(e){
-      if(!model) return;
+      if(!model||!cfg.on) return;
       var r=cv.getBoundingClientRect();
       model.focus(e.clientX-r.left, e.clientY-r.top);
     });
-    document.addEventListener('visibilitychange',function(){ if(!app) return; if(document.hidden){app.ticker.stop()}else{app.ticker.start()} });
+    document.addEventListener('visibilitychange',function(){
+      if(!app) return;
+      if(document.hidden){ app.ticker.stop() } else if(cfg.on){ app.ticker.start() }
+    });
   }
+  applySize(); applyOn(); renderPanel();
   if(document.readyState==='complete') setTimeout(boot,1500);
   else window.addEventListener('load',function(){ setTimeout(boot,1500) });
 })();
