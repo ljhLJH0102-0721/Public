@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');var V='v74';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');var V='v75';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -2411,6 +2411,9 @@ document.getElementById('detail-download')?.addEventListener('click',async funct
       <div class="l2d-p-chips" id="l2d-size"></div>
       <div class="l2d-p-sub">不透明度</div>
       <div class="l2d-p-chips" id="l2d-op"></div>
+      <div class="l2d-p-sub">气泡位置微调</div>
+      <div class="l2d-bub-row"><span>上下</span><input type="range" id="l2d-bubY" min="-300" max="300" step="2" value="0"><span id="l2d-bubYv">0</span></div>
+      <div class="l2d-bub-row"><span>左右</span><input type="range" id="l2d-bubX" min="-220" max="220" step="2" value="0"><span id="l2d-bubXv">0</span></div>
       <div class="l2d-p-sub">服装</div>
       <div class="l2d-p-chips" id="l2d-outfit"></div>
       <div id="l2d-outfit18-wrap" style="display:none">
@@ -2442,7 +2445,7 @@ document.getElementById('detail-download')?.addEventListener('click',async funct
   var PET='pet/';
   var JSD='https://cdn.jsdelivr.net/gh/ljhLJH0102-0721/Public@main/pet/';
   var CFG_KEY='l2d_pet_cfg';
-  var DEF={ on:true, size:(mob?'m':'l'), op:'1', outfit:'uniform_dress', hair:'loose', acc:{}, acc18:{} };
+  var DEF={ on:true, size:(mob?'m':'l'), op:'1', outfit:'uniform_dress', hair:'loose', acc:{}, acc18:{}, bubX:0, bubY:0 };
   var cfg={};
   try{ cfg=JSON.parse(localStorage.getItem(CFG_KEY)||'{}')||{} }catch(e){ cfg={} }
   for(var dk in DEF){ if(!(dk in cfg)) cfg[dk]=DEF[dk] }
@@ -2534,6 +2537,11 @@ document.getElementById('detail-download')?.addEventListener('click',async funct
     +'[data-theme="dark"] .l2d-chip:hover{background:#3a3a35;border-color:#ff8fb8}'
     +'[data-theme="dark"] .l2d-p-tip{color:#8d8177}'
     +'#l2d-restore{position:fixed;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,150,185,.5);background:rgba(255,255,255,.9);backdrop-filter:blur(8px);font-size:15px;line-height:32px;cursor:pointer;z-index:80;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:0;opacity:.8;transition:opacity .2s,transform .2s}'
+    +'.l2d-bub-row{display:flex;align-items:center;gap:8px;margin:7px 0}'
+    +'.l2d-bub-row span{font-size:11px;color:#8d8177;flex:0 0 28px}'
+    +'.l2d-bub-row span:last-child{flex:0 0 34px;text-align:right;font-variant-numeric:tabular-nums}'
+    +'.l2d-bub-row input[type=range]{flex:1;min-width:0;accent-color:#ff8fb8;cursor:pointer}'
+    +'[data-theme="dark"] .l2d-bub-row span{color:#a99a90}'
     +'#l2d-restore:hover{opacity:1;transform:scale(1.06)}';
   var st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
 
@@ -2545,21 +2553,19 @@ document.getElementById('detail-download')?.addEventListener('click',async funct
   function placeBubble(){
     var r=cv.getBoundingClientRect();
     if(!r||!r.width||!r.height) return;
-    /* 默认按画布实际屏幕位置定位（气泡是 fixed，坐标=视口坐标） */
-    var cx=r.left+r.width*0.5;
-    var ty=r.top+r.height*0.26;                       // 头顶附近
-    /* 若模型包围盒换算后确实落在画布范围内，才用它做更精确的对齐 */
-    if(!hitBox) hitBox=computeHitBox();
-    if(hitBox&&isFinite(hitBox.x0)&&isFinite(hitBox.x1)&&isFinite(hitBox.y0)){
-      var hx=(hitBox.x0+hitBox.x1)/2, hy=hitBox.y0;
-      if(hx>-r.width*0.25&&hx<r.width*1.25&&hy>-r.height*0.25&&hy<r.height*1.25){
-        cx=r.left+hx; ty=r.top+hy-6;
-      }
+    /* 用 fit() 的真实布局反推她的头顶位置：
+       fit(): s = min(W/baseW, H/baseH)*0.98，模型按画布底部对齐、水平居中
+       → 渲染高度 = baseH*s，头顶在画布内的 y = H - baseH*s */
+    var ax=r.width*0.5, ay=r.height*0.44;
+    if(baseW&&baseH&&W&&H){
+      var s=Math.min(W/baseW,H/baseH)*0.98;
+      ay=Math.max(4,H-baseH*s);
     }
-    /* 夹进视口：绝不跑到屏幕中间或溢出边缘 */
-    var half=bubble.offsetWidth?bubble.offsetWidth/2:116;
+    var cx=r.left+ax+(+cfg.bubX||0);
+    var ty=r.top+ay+(+cfg.bubY||0)-6;
+    var half=bubble.offsetWidth?bubble.offsetWidth/2:110;
     cx=Math.max(half+8,Math.min(innerWidth-half-8,cx));
-    ty=Math.max(52,ty);
+    ty=Math.max(48,Math.min(innerHeight-6,ty));
     bubble.style.left=Math.round(cx)+'px';
     bubble.style.top=Math.round(ty)+'px';
   }
@@ -2666,7 +2672,19 @@ document.getElementById('detail-download')?.addEventListener('click',async funct
     chips(document.getElementById('l2d-acc'),ACCS,function(k){return cfg.acc[k]===1},function(k){ cfg.acc[k]=(cfg.acc[k]===1?0:1); saveCfg(); applyLook(); renderPanel() });
     document.getElementById('l2d-acc18-wrap').style.display=R18?'block':'none';
     if(R18) chips(document.getElementById('l2d-acc18'),ACCS18,function(k){return cfg.acc18[k]===1},function(k){ cfg.acc18[k]=(cfg.acc18[k]===1?0:1); saveCfg(); applyLook(); renderPanel() });
+    var by=document.getElementById('l2d-bubY'), bx=document.getElementById('l2d-bubX');
+    if(by){ by.value=(+cfg.bubY||0); document.getElementById('l2d-bubYv').textContent=by.value }
+    if(bx){ bx.value=(+cfg.bubX||0); document.getElementById('l2d-bubXv').textContent=bx.value }
   }
+  (function(){
+    var by=document.getElementById('l2d-bubY'), bx=document.getElementById('l2d-bubX');
+    if(by) by.addEventListener('input',function(){ cfg.bubY=+this.value; document.getElementById('l2d-bubYv').textContent=this.value; saveCfg(); placeBubble() });
+    if(bx) bx.addEventListener('input',function(){ cfg.bubX=+this.value; document.getElementById('l2d-bubXv').textContent=this.value; saveCfg(); placeBubble() });
+    ['change'].forEach(function(ev){
+      if(by) by.addEventListener(ev,function(){ placeBubble(); say('这样位置合适吗？') });
+      if(bx) bx.addEventListener(ev,function(){ placeBubble(); say('这样位置合适吗？') });
+    });
+  })();
   gear.addEventListener('click',function(e){ e.stopPropagation(); var open=panel.style.display==='block'; panel.style.display=open?'none':'block'; if(!open) renderPanel() });
   pClose.addEventListener('click',function(){ panel.style.display='none' });
   restore.addEventListener('click',function(){ setOn(true) });
