@@ -223,15 +223,17 @@ const camera = new THREE.PerspectiveCamera(70, 1, 0.5, 30000);
 /* 星空：点精灵（自定义着色器，按星等给尺寸与亮度，按 B-V 给颜色） */
 const starGeo = new THREE.BufferGeometry();
 const starMat = new THREE.ShaderMaterial({
-  uniforms: { uOpacity: { value: 1 } },
+  uniforms: { uOpacity: { value: 1 }, uZoom: { value: 1 } },
   vertexShader: `
     attribute float aSize; attribute vec3 aColor;
+    uniform float uZoom;
     varying vec3 vC; varying float vA;
     void main(){
       vC = aColor;
-      vA = clamp(aSize / 3.2, 0.25, 1.0);
+      vA = clamp(aSize / 3.4, 0.30, 1.0);
       vec4 mv = modelViewMatrix * vec4(position, 1.0);
-      gl_PointSize = aSize * (260.0 / max(1.0, -mv.z));
+      /* 恒星都在同一半径的天球面上：字号与距离无关，只随视场缩放 */
+      gl_PointSize = max(1.7, aSize * uZoom);
       gl_Position = projectionMatrix * mv;
     }`,
   fragmentShader: `
@@ -570,6 +572,7 @@ let dragging = false, lx = 0, ly = 0, moved = 0;
 function applyCam(){
   pitch = Math.max(-85*DEG, Math.min(95*DEG, pitch));
   camera.fov = fov; camera.updateProjectionMatrix();
+  starMat.uniforms.uZoom.value = (70 / fov) * Math.min(devicePixelRatio || 1, 2);
   const cp = Math.cos(pitch);
   camera.position.set(0,0,0);
   camera.lookAt(Math.sin(yaw)*cp*R, Math.sin(pitch)*R, -Math.cos(yaw)*cp*R);

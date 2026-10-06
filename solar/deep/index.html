@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>深空 · 星云与星系</title>
+<style>
+  :root{ --panel:rgba(8,10,20,.80); --line:rgba(150,180,255,.22); --text:#e6ecff; --dim:#8f9fc4; --accent:#8fc0ff; }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;overflow:hidden;background:#000;color:var(--text);
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    -webkit-user-select:none;user-select:none}
+  #scene{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab}
+  #scene.dragging{cursor:grabbing}
+  #labels{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+  .nlbl{position:absolute;transform:translate(-50%,-50%);font-size:12px;white-space:nowrap;
+    color:#dbe7ff;text-shadow:0 0 8px #000,0 0 3px #000;opacity:0;transition:opacity .3s;pointer-events:none}
+  .nlbl i{display:block;font-style:normal;font-size:10px;color:#8fb0e8;margin-top:2px}
+
+  #hud{position:fixed;left:16px;top:14px;pointer-events:none;text-shadow:0 1px 5px #000}
+  #hud h1{margin:0;font-size:16px;font-weight:600;letter-spacing:.26em}
+  #hud p{margin:6px 0 0;font-size:11.5px;color:var(--dim);line-height:1.75}
+  #hud .src{margin-top:6px;font-size:10.5px;color:#6b7a9c;line-height:1.6}
+  #hud .src a{color:#8fb6ff;text-decoration:none;border-bottom:1px dotted rgba(143,182,255,.4)}
+
+  #list{position:fixed;right:14px;top:14px;z-index:70;width:212px;max-height:calc(100vh - 190px);
+    overflow-y:auto;padding:10px 10px 12px;border-radius:15px;background:var(--panel);
+    border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    box-shadow:0 14px 36px rgba(0,0,0,.55)}
+  #list::-webkit-scrollbar{width:6px}
+  #list::-webkit-scrollbar-thumb{background:rgba(140,180,255,.3);border-radius:3px}
+  #list .lt{font-size:11px;font-weight:700;color:#9fb6e0;letter-spacing:.1em;margin:2px 0 8px;padding-left:2px}
+  .item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:9px;cursor:pointer;
+    font-size:12px;color:#cfdcf5;transition:background .15s,transform .15s}
+  .item:hover{background:rgba(110,160,255,.16);transform:translateX(-2px)}
+  .item.on{background:rgba(110,160,255,.26);color:#fff}
+  .item .dot{width:7px;height:7px;border-radius:50%;background:#7fb2ff;flex-shrink:0;box-shadow:0 0 8px #7fb2ff}
+  .item .en{margin-left:auto;font-size:10px;color:#7f90b4}
+
+  #panel{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:70;
+    display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:16px;
+    background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    box-shadow:0 12px 34px rgba(0,0,0,.5);font-size:12px}
+  #panel button{background:rgba(255,255,255,.1);color:#dce8ff;border:1px solid rgba(255,255,255,.18);
+    border-radius:9px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;transition:background .15s}
+  #panel button:hover{background:rgba(120,170,255,.3)}
+  #panel label{display:inline-flex;align-items:center;gap:5px;color:#a9bcdd}
+  #panel input[type=range]{width:96px;accent-color:#6cc4ff}
+
+  #card{position:fixed;left:50%;transform:translateX(-50%) translateY(16px);bottom:76px;z-index:80;
+    width:min(620px,92vw);padding:16px 20px;border-radius:16px;background:rgba(10,13,24,.94);
+    border:1px solid rgba(150,180,255,.3);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    box-shadow:0 20px 50px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .28s,transform .28s}
+  #card.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+  #card h2{margin:0 0 4px;font-size:17px;font-weight:700;color:#fff;letter-spacing:.02em}
+  #card .meta{font-size:11.5px;color:#8fb0e8;margin-bottom:10px;letter-spacing:.04em}
+  #card .meta span{margin-right:12px}
+  #card .desc{font-size:13px;line-height:1.85;color:#cdd9f0}
+  #card .x{position:absolute;right:12px;top:10px;width:26px;height:26px;line-height:24px;text-align:center;
+    border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;font-size:13px}
+
+  #loading{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:#000;z-index:200;gap:14px;transition:opacity .6s}
+  #loading.done{opacity:0;pointer-events:none}
+  #loading .bar{width:230px;height:3px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+  #loading .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4a9dff,#c9e2ff);transition:width .3s}
+  #loading span{font-size:12.5px;color:#9fb0d0;letter-spacing:.08em}
+  #err{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:300;display:none;
+    padding:18px 22px;border-radius:14px;background:rgba(40,10,14,.95);border:1px solid rgba(255,120,120,.4);
+    color:#ffd9d9;font-size:13px;line-height:1.8;max-width:80vw}
+  @media(max-width:768px){
+    #list{display:none}
+    #hud h1{font-size:14px}
+    #card{bottom:70px;padding:13px 15px}
+    #card .desc{font-size:12px}
+  }
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="labels"></div>
+
+<div id="hud">
+  <h1>深 空</h1>
+  <p>拖动环视 · 滚轮缩放 · 点击星云看资料<br>15 个真实天体：星云 · 星系 · 星团 · 银心</p>
+  <div class="src">影像来源：<a href="https://images.nasa.gov/" target="_blank" rel="noreferrer">NASA Image Library</a>（公有领域）
+    · Hubble / JWST · three.js</div>
+</div>
+
+<div id="list">
+  <div class="lt">天 体 目 录</div>
+  <div id="items"></div>
+</div>
+
+<div id="panel">
+  <button id="tour">⏸ 自动漫游</button>
+  <button id="reset">重置视角</button>
+  <label>星点亮度<input id="starBright" type="range" min="20" max="160" value="100"></label>
+</div>
+
+<div id="card">
+  <div class="x" id="cardX">✕</div>
+  <h2 id="cName"></h2>
+  <div class="meta" id="cMeta"></div>
+  <div class="desc" id="cDesc"></div>
+</div>
+
+<div id="loading"><div class="bar"><i id="loadBar"></i></div><span id="loadTxt">正在加载深空影像…</span></div>
+<div id="err"></div>
+
+<script type="importmap">
+{ "imports": { "three": "../vendor/three.module.js" } }
+</script>
+<script type="module">
+const DEG = Math.PI / 180, RAD = 180 / Math.PI;
+const errEl = document.getElementById('err');
+const loadBar = document.getElementById('loadBar'), loadTxt = document.getElementById('loadTxt');
+function fail(m){ errEl.style.display='block'; errEl.innerHTML=m; document.getElementById('loading').classList.add('done'); }
+let THREE;
+try { THREE = await import('three'); } catch(e){ fail('无法加载 three.js（vendor 文件缺失）。'); throw e; }
+
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, powerPreference:'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio||1, 2));
+renderer.setClearColor(0x000000, 1);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(65, 1, 1, 40000);
+
+/* ---------- 背景星空 ---------- */
+let rnd = 1234567;
+const rand = () => { rnd = (rnd * 1103515245 + 12345) & 0x7fffffff; return rnd / 0x7fffffff; };
+const SN = 26000, R_BG = 16000;
+{
+  const g = new THREE.BufferGeometry();
+  const pos = new Float32Array(SN*3), col = new Float32Array(SN*3), sz = new Float32Array(SN);
+  for(let i=0;i<SN;i++){
+    const u = rand()*2-1, th = rand()*Math.PI*2, r = Math.sqrt(Math.max(0,1-u*u));
+    const R = R_BG * (0.85 + rand()*0.3);
+    pos[i*3] = r*Math.cos(th)*R; pos[i*3+1] = u*R; pos[i*3+2] = r*Math.sin(th)*R;
+    const t = rand();
+    const warm = rand() < 0.35;
+    col[i*3]   = warm ? 1.0 : 0.82 + t*0.18;
+    col[i*3+1] = warm ? 0.86 + t*0.1 : 0.88 + t*0.12;
+    col[i*3+2] = warm ? 0.72 + t*0.15 : 1.0;
+    sz[i] = 0.7 + Math.pow(rand(), 3.2) * 7.5;
+  }
+  g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  g.setAttribute('aColor', new THREE.BufferAttribute(col,3));
+  g.setAttribute('aSize', new THREE.BufferAttribute(sz,1));
+  window.__starGeo = g;
+}
+const starMat = new THREE.ShaderMaterial({
+  uniforms:{ uZoom:{value:1}, uBright:{value:1} },
+  vertexShader:`
+    attribute float aSize; attribute vec3 aColor;
+    uniform float uZoom; uniform float uBright;
+    varying vec3 vC; varying float vA;
+    void main(){
+      vC = aColor; vA = clamp(aSize/3.0,0.22,1.0) * uBright;
+      vec4 mv = modelViewMatrix * vec4(position,1.0);
+      gl_PointSize = max(1.4, aSize * uZoom);
+      gl_Position = projectionMatrix * mv;
+    }`,
+  fragmentShader:`
+    varying vec3 vC; varying float vA;
+    void main(){
+      vec2 d = gl_PointCoord - vec2(0.5);
+      float r = length(d)*2.0;
+      if(r > 1.0) discard;
+      float core = smoothstep(1.0, 0.08, r);
+      gl_FragColor = vec4(vC, core * vA);
+    }`,
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending
+});
+const stars = new THREE.Points(window.__starGeo, starMat);
+stars.frustumCulled = false;
+scene.add(stars);
+
+/* ---------- 银河带（复用太阳系的 2K 全天图，做极淡背景） ---------- */
+fetch('../tex/2k_stars_milky_way.jpg').then(r => r.ok ? r.blob() : null).then(b => {
+  if(!b) return;
+  const url = URL.createObjectURL(b);
+  new THREE.TextureLoader().load(url, tex => {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const dome = new THREE.Mesh(
+      new THREE.SphereGeometry(R_BG*0.98, 64, 32),
+      new THREE.MeshBasicMaterial({ map:tex, side:THREE.BackSide, transparent:true, opacity:0.32,
+        blending:THREE.AdditiveBlending, depthWrite:false })
+    );
+    dome.rotation.y = 0.7;
+    scene.add(dome);
+    window.__dome = dome;
+  });
+}).catch(()=>{});
+
+/* ---------- 星云：加性混合 + 边缘淡出 ---------- */
+const nebulaMat = (tex) => new THREE.ShaderMaterial({
+  uniforms:{ uMap:{value:tex}, uOpacity:{value:1} },
+  vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+  fragmentShader:`
+    uniform sampler2D uMap; uniform float uOpacity; varying vec2 vUv;
+    void main(){
+      vec4 c = texture2D(uMap, vUv);
+      vec2 d = vUv - 0.5;
+      float m = 1.0 - smoothstep(0.30, 0.5, max(abs(d.x), abs(d.y)));
+      gl_FragColor = vec4(c.rgb, c.a * m * uOpacity);
+    }`,
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, side:THREE.DoubleSide
+});
+
+let OBJ = [];
+const nodes = [];
+const labelBox = document.getElementById('labels');
+let loading = 0;
+
+function place(i, total){
+  /* 球面黄金角螺旋分布 + 深度错落，保证 360° 都有东西 */
+  const y = 1 - (i + 0.5) * 2 / total;
+  const r = Math.sqrt(Math.max(0, 1 - y*y));
+  const phi = i * 2.399963229728653;
+  const R = 1200 + (i % 3) * 430 + (i % 5) * 90;
+  return new THREE.Vector3(Math.cos(phi)*r, y*0.78, Math.sin(phi)*r).normalize().multiplyScalar(R);
+}
+
+async function boot(){
+  const objs = await (await fetch('objects.json')).json();
+  OBJ = objs;
+  const listBox = document.getElementById('items');
+  for(let i=0;i<objs.length;i++){
+    const o = objs[i];
+    const pos = place(i, objs.length);
+    const R = pos.length();
+    const size = 2 * R * Math.tan((o.ang||22) * DEG / 2) * 0.5;
+    const tex = await new Promise(res => {
+      new THREE.TextureLoader().load(o.slug + '.jpg',
+        t => { t.colorSpace = THREE.SRGBColorSpace; res(t); },
+        undefined, () => res(null));
+    });
+    if(!tex) continue;
+    const aspect = (tex.image && tex.image.height) ? tex.image.width / tex.image.height : 1;
+    let pw = size, ph = size / aspect;
+    if(ph > size){ ph = size; pw = size * aspect; }            // 竖图按高度限制
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), nebulaMat(tex));
+    mesh.position.copy(pos);
+    mesh.userData.obj = o;
+    mesh.userData.home = pos.clone();
+    mesh.rotation.z = (i % 5) * 0.22 - 0.44;                  // 轻微旋转，避免呆板
+    scene.add(mesh);
+    const el = document.createElement('div');
+    el.className = 'nlbl'; el.innerHTML = o.n + '<i>' + o.en + '</i>';
+    labelBox.appendChild(el);
+    nodes.push({ mesh, o, el, R });
+    loading++;
+    loadBar.style.width = Math.round(loading / objs.length * 100) + '%';
+    loadTxt.textContent = '正在加载 ' + o.n + '…';
+
+    const item = document.createElement('div');
+    item.className = 'item';
+    item.innerHTML = '<span class="dot"></span><span>' + o.n + '</span><span class="en">' + o.en + '</span>';
+    item.addEventListener('click', () => focusNode(nodes.length-1, true));
+    listBox.appendChild(item);
+    nodes[nodes.length-1].item = item;
+  }
+}
+
+/* ---------- 视角 ---------- */
+let yaw = 0, pitch = 10*DEG, fov = 65, tour = true, focusIdx = -1;
+let dragging = false, lx = 0, ly = 0, moved = 0;
+function applyCam(){
+  pitch = Math.max(-88*DEG, Math.min(88*DEG, pitch));
+  camera.fov = fov; camera.updateProjectionMatrix();
+  starMat.uniforms.uZoom.value = (65 / fov) * Math.min(devicePixelRatio||1, 2);
+  const cp = Math.cos(pitch);
+  camera.position.set(0,0,0);
+  camera.lookAt(Math.sin(yaw)*cp, Math.sin(pitch), -Math.cos(yaw)*cp);
+}
+canvas.addEventListener('pointerdown', e => { dragging = true; lx = e.clientX; ly = e.clientY; moved = 0; canvas.classList.add('dragging'); canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', e => {
+  if(!dragging) return;
+  const dx = e.clientX - lx, dy = e.clientY - ly;
+  lx = e.clientX; ly = e.clientY; moved += Math.abs(dx)+Math.abs(dy);
+  const k = fov/65*0.0022;
+  yaw -= dx*k; pitch += dy*k; tour = false; document.getElementById('tour').textContent = '▶ 自动漫游';
+  applyCam();
+});
+canvas.addEventListener('pointerup', e => { dragging = false; canvas.classList.remove('dragging'); });
+canvas.addEventListener('wheel', e => { e.preventDefault(); fov = Math.max(14, Math.min(100, fov + Math.sign(e.deltaY)*3)); applyCam(); }, { passive:false });
+document.getElementById('reset').addEventListener('click', () => { yaw = 0; pitch = 10*DEG; fov = 65; focusIdx = -1; applyCam(); markItem(-1); hideCard(); });
+document.getElementById('tour').addEventListener('click', function(){ tour = !tour; this.textContent = tour ? '⏸ 自动漫游' : '▶ 自动漫游'; });
+document.getElementById('starBright').addEventListener('input', function(){ starMat.uniforms.uBright.value = (+this.value)/100; });
+document.getElementById('cardX').addEventListener('click', hideCard);
+
+function markItem(i){
+  nodes.forEach((n,k) => n.item && n.item.classList.toggle('on', k === i));
+}
+function hideCard(){ document.getElementById('card').classList.remove('show'); }
+function focusNode(i, showInfo){
+  const n = nodes[i]; if(!n) return;
+  focusIdx = i; markItem(i);
+  const p = n.mesh.position.clone().normalize();
+  const ty = Math.atan2(p.x, -p.z), tp = Math.asin(p.y);
+  const sy = yaw, sp = pitch, sf = fov;
+  const targetFov = Math.max(20, Math.min(46, (n.o.ang||22) * 1.15));
+  const t0 = performance.now(), dur = 900;
+  tour = false; document.getElementById('tour').textContent = '▶ 自动漫游';
+  (function anim(){
+    const k = Math.min(1, (performance.now()-t0)/dur);
+    const e = 1 - Math.pow(1-k, 3);
+    let dy = (ty - sy) % (2*Math.PI);
+    if(dy > Math.PI) dy -= 2*Math.PI;
+    if(dy < -Math.PI) dy += 2*Math.PI;
+    yaw = sy + dy*e; pitch = sp + (tp-sp)*e; fov = sf + (targetFov-sf)*e;
+    applyCam();
+    if(k < 1) requestAnimationFrame(anim);
+  })();
+  if(showInfo !== false) showCard(n.o);
+}
+function showCard(o){
+  document.getElementById('cName').textContent = o.n + '　' + o.en;
+  document.getElementById('cMeta').innerHTML = '<span>' + o.type + '</span><span>距离 ' + o.dist + '</span><span>尺度 ' + o.size + '</span>';
+  document.getElementById('cDesc').textContent = o.desc;
+  document.getElementById('card').classList.add('show');
+}
+
+/* ---------- 拾取 ---------- */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+canvas.addEventListener('click', e => {
+  if(moved > 5) return;
+  ndc.x = (e.clientX/innerWidth)*2 - 1; ndc.y = -(e.clientY/innerHeight)*2 + 1;
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects(nodes.map(n => n.mesh), false)[0];
+  if(hit){
+    const i = nodes.findIndex(n => n.mesh === hit.object);
+    focusNode(i, true);
+  } else hideCard();
+});
+
+function onResize(){
+  renderer.setSize(innerWidth, innerHeight, false);
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+}
+addEventListener('resize', onResize);
+
+/* ---------- 标签 ---------- */
+const tmp = new THREE.Vector3();
+let lastT = 0;
+renderer.setAnimationLoop(now => {
+  const t = now*0.001, dt = lastT ? Math.min(0.1, t-lastT) : 0; lastT = t;
+  if(tour){ yaw += dt*0.012; applyCam(); }
+  if(window.__dome) window.__dome.rotation.y += dt*0.002;
+  const w = innerWidth, h = innerHeight;
+  for(const n of nodes){
+    n.mesh.lookAt(0,0,0);                                   // 星云始终朝向相机
+    tmp.copy(n.mesh.position).project(camera);
+    const inFront = tmp.z < 1 && Math.abs(tmp.x) < 1.35 && Math.abs(tmp.y) < 1.35;
+    if(inFront){
+      n.el.style.left = ((tmp.x*0.5+0.5)*w).toFixed(1) + 'px';
+      n.el.style.top  = ((-tmp.y*0.5+0.5)*h + (n.o.ang||22)*2.2).toFixed(1) + 'px';
+      n.el.style.opacity = 0.92;
+    } else n.el.style.opacity = 0;
+  }
+  renderer.render(scene, camera);
+});
+
+try{
+  onResize();
+  await boot();
+  applyCam();
+  document.getElementById('loading').classList.add('done');
+  setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 700);
+  if(nodes.length) setTimeout(() => focusNode(0, false), 300);
+}catch(e){
+  fail('加载失败：' + (e && e.message ? e.message : e) + '<br>请检查网络后刷新。');
+  throw e;
+}
+</script>
+</body>
+</html>
