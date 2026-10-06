@@ -83,7 +83,7 @@
 
 <div id="hud">
   <h1>深 空</h1>
-  <p>拖动环视 · 滚轮缩放 · 点击星云看资料<br>15 个真实天体：星云 · 星系 · 星团 · 银心</p>
+  <p>拖动环视 · <b>滚轮前后飞行</b>（Ctrl/Shift+滚轮 调视场）· 点击星云看资料<br>15 个真实天体：星云 · 星系 · 星团 · 银心 — 影像来自 NASA/哈勃/韦布</p>
   <div class="src">影像来源：<a href="https://images.nasa.gov/" target="_blank" rel="noreferrer">NASA Image Library</a>（公有领域）
     · Hubble / JWST · three.js</div>
 </div>
@@ -194,20 +194,42 @@ fetch('../tex/2k_stars_milky_way.jpg').then(r => r.ok ? r.blob() : null).then(b 
   });
 }).catch(()=>{});
 
-/* ---------- 星云：加性混合 + 边缘淡出 ---------- */
-const nebulaMat = (tex) => new THREE.ShaderMaterial({
-  uniforms:{ uMap:{value:tex}, uOpacity:{value:1} },
-  vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-  fragmentShader:`
-    uniform sampler2D uMap; uniform float uOpacity; varying vec2 vUv;
-    void main(){
-      vec4 c = texture2D(uMap, vUv);
-      vec2 d = vUv - 0.5;
-      float m = 1.0 - smoothstep(0.30, 0.5, max(abs(d.x), abs(d.y)));
-      gl_FragColor = vec4(c.rgb, c.a * m * uOpacity);
-    }`,
-  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, side:THREE.DoubleSide
-});
+/* ---------- 星云：加性混合 + 亮度抠除 + 边缘淡出（消除矩形边界） ---------- */
+function nebulaMat(tex, opacity){
+  return new THREE.ShaderMaterial({
+    uniforms:{ uMap:{value:tex}, uOpacity:{value:opacity==null?1:opacity} },
+    vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader:`
+      uniform sampler2D uMap; uniform float uOpacity; varying vec2 vUv;
+      void main(){
+        vec4 c = texture2D(uMap, vUv);
+        vec2 d = vUv - 0.5;
+        /* 边缘淡出：矩形四边彻底消失 */
+        float vig = 1.0 - smoothstep(0.26, 0.50, max(abs(d.x), abs(d.y)));
+        /* 亮度抠除：照片里的黑底、暗边、噪点全部变透明，只留真正发光的部分 */
+        float lum = dot(c.rgb, vec3(0.299, 0.587, 0.114));
+        float mask = smoothstep(0.012, 0.095, lum);
+        float a = c.a * vig * mask * uOpacity;
+        /* 越亮的部分稍微提亮，增强"发光"感 */
+        gl_FragColor = vec4(c.rgb * (0.80 + 0.75 * lum), a);
+      }`,
+    transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, side:THREE.DoubleSide
+  });
+}
+/* 用 canvas 模糊出一张光晕贴图，给星云加体积感 */
+function blurTex(img, px){
+  try{
+    const w = Math.min(900, img.width || 512), h = Math.round(w * (img.height || 512) / (img.width || 512));
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.filter = 'blur(' + px + 'px)';
+    x.globalAlpha = 0.95;
+    x.drawImage(img, 0, 0, w, h);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }catch(e){ return null; }
+}
 
 let OBJ = [];
 const nodes = [];
@@ -241,16 +263,26 @@ async function boot(){
     const aspect = (tex.image && tex.image.height) ? tex.image.width / tex.image.height : 1;
     let pw = size, ph = size / aspect;
     if(ph > size){ ph = size; pw = size * aspect; }            // 竖图按高度限制
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), nebulaMat(tex));
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), nebulaMat(tex, 1.0));
     mesh.position.copy(pos);
     mesh.userData.obj = o;
     mesh.userData.home = pos.clone();
     mesh.rotation.z = (i % 5) * 0.22 - 0.44;                  // 轻微旋转，避免呆板
     scene.add(mesh);
+
+    /* 光晕层：模糊放大一圈，让星云有体积、并柔和融入太空 */
+    let halo = null;
+    const bt = tex.image ? blurTex(tex.image, 20) : null;
+    if(bt){
+      halo = new THREE.Mesh(new THREE.PlaneGeometry(pw*1.9, ph*1.9), nebulaMat(bt, 0.5));
+      halo.position.copy(pos);
+      halo.rotation.z = mesh.rotation.z + 0.15;
+      scene.add(halo);
+    }
     const el = document.createElement('div');
     el.className = 'nlbl'; el.innerHTML = o.n + '<i>' + o.en + '</i>';
     labelBox.appendChild(el);
-    nodes.push({ mesh, o, el, R });
+    nodes.push({ mesh, halo, o, el, R });
     loading++;
     loadBar.style.width = Math.round(loading / objs.length * 100) + '%';
     loadTxt.textContent = '正在加载 ' + o.n + '…';
@@ -265,15 +297,18 @@ async function boot(){
 }
 
 /* ---------- 视角 ---------- */
-let yaw = 0, pitch = 10*DEG, fov = 65, tour = true, focusIdx = -1;
+let yaw = 0, pitch = 10*DEG, fov = 65, camR = 0, tour = true, focusIdx = -1;
 let dragging = false, lx = 0, ly = 0, moved = 0;
+const _dir = new THREE.Vector3();
 function applyCam(){
   pitch = Math.max(-88*DEG, Math.min(88*DEG, pitch));
   camera.fov = fov; camera.updateProjectionMatrix();
   starMat.uniforms.uZoom.value = (65 / fov) * Math.min(devicePixelRatio||1, 2);
   const cp = Math.cos(pitch);
-  camera.position.set(0,0,0);
-  camera.lookAt(Math.sin(yaw)*cp, Math.sin(pitch), -Math.cos(yaw)*cp);
+  _dir.set(Math.sin(yaw)*cp, Math.sin(pitch), -Math.cos(yaw)*cp);
+  /* 相机沿视线方向自由飞行：产生视差，天体才有"在太空里"的纵深 */
+  camera.position.copy(_dir).multiplyScalar(camR);
+  camera.lookAt(_dir.x*(camR+1200), _dir.y*(camR+1200), _dir.z*(camR+1200));
 }
 canvas.addEventListener('pointerdown', e => { dragging = true; lx = e.clientX; ly = e.clientY; moved = 0; canvas.classList.add('dragging'); canvas.setPointerCapture(e.pointerId); });
 canvas.addEventListener('pointermove', e => {
@@ -285,8 +320,17 @@ canvas.addEventListener('pointermove', e => {
   applyCam();
 });
 canvas.addEventListener('pointerup', e => { dragging = false; canvas.classList.remove('dragging'); });
-canvas.addEventListener('wheel', e => { e.preventDefault(); fov = Math.max(14, Math.min(100, fov + Math.sign(e.deltaY)*3)); applyCam(); }, { passive:false });
-document.getElementById('reset').addEventListener('click', () => { yaw = 0; pitch = 10*DEG; fov = 65; focusIdx = -1; applyCam(); markItem(-1); hideCard(); });
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  if(e.ctrlKey || e.shiftKey){
+    fov = Math.max(14, Math.min(100, fov + Math.sign(e.deltaY)*3));
+  } else {
+    camR = Math.max(-700, Math.min(4300, camR + Math.sign(e.deltaY) * (70 + Math.abs(camR)*0.07)));
+    document.getElementById('tour').textContent = '▶ 自动漫游'; tour = false;
+  }
+  applyCam();
+}, { passive:false });
+document.getElementById('reset').addEventListener('click', () => { yaw = 0; pitch = 10*DEG; fov = 65; camR = 0; focusIdx = -1; applyCam(); markItem(-1); hideCard(); });
 document.getElementById('tour').addEventListener('click', function(){ tour = !tour; this.textContent = tour ? '⏸ 自动漫游' : '▶ 自动漫游'; });
 document.getElementById('starBright').addEventListener('input', function(){ starMat.uniforms.uBright.value = (+this.value)/100; });
 document.getElementById('cardX').addEventListener('click', hideCard);
@@ -300,9 +344,10 @@ function focusNode(i, showInfo){
   focusIdx = i; markItem(i);
   const p = n.mesh.position.clone().normalize();
   const ty = Math.atan2(p.x, -p.z), tp = Math.asin(p.y);
-  const sy = yaw, sp = pitch, sf = fov;
-  const targetFov = Math.max(20, Math.min(46, (n.o.ang||22) * 1.15));
-  const t0 = performance.now(), dur = 900;
+  const sy = yaw, sp = pitch, sf = fov, sr = camR;
+  const targetFov = Math.max(20, Math.min(52, (n.o.ang||22) * 1.2));
+  const targetR = Math.max(0, n.R - n.R * 0.55);              // 飞近到该天体前
+  const t0 = performance.now(), dur = 1000;
   tour = false; document.getElementById('tour').textContent = '▶ 自动漫游';
   (function anim(){
     const k = Math.min(1, (performance.now()-t0)/dur);
@@ -310,7 +355,7 @@ function focusNode(i, showInfo){
     let dy = (ty - sy) % (2*Math.PI);
     if(dy > Math.PI) dy -= 2*Math.PI;
     if(dy < -Math.PI) dy += 2*Math.PI;
-    yaw = sy + dy*e; pitch = sp + (tp-sp)*e; fov = sf + (targetFov-sf)*e;
+    yaw = sy + dy*e; pitch = sp + (tp-sp)*e; fov = sf + (targetFov-sf)*e; camR = sr + (targetR-sr)*e;
     applyCam();
     if(k < 1) requestAnimationFrame(anim);
   })();
@@ -347,17 +392,28 @@ const tmp = new THREE.Vector3();
 let lastT = 0;
 renderer.setAnimationLoop(now => {
   const t = now*0.001, dt = lastT ? Math.min(0.1, t-lastT) : 0; lastT = t;
-  if(tour){ yaw += dt*0.012; applyCam(); }
+  if(tour){
+    yaw += dt*0.012;
+    camR += Math.sin(t*0.13) * dt * 55;                       // 缓慢前后漂浮，带出视差
+    camR = Math.max(-700, Math.min(4300, camR));
+    applyCam();
+  }
   if(window.__dome) window.__dome.rotation.y += dt*0.002;
   const w = innerWidth, h = innerHeight;
   for(const n of nodes){
-    n.mesh.lookAt(0,0,0);                                   // 星云始终朝向相机
+    n.mesh.lookAt(camera.position);                           // 面向相机
+    if(n.halo) n.halo.lookAt(camera.position);
+    /* 空气透视：越远越暗越淡，近处明亮 */
+    const dist = n.mesh.position.distanceTo(camera.position);
+    const dim = Math.max(0.12, Math.min(1, 2100 / Math.max(320, dist)));
+    n.mesh.material.uniforms.uOpacity.value = dim;
+    if(n.halo) n.halo.material.uniforms.uOpacity.value = 0.5 * dim * dim;
     tmp.copy(n.mesh.position).project(camera);
     const inFront = tmp.z < 1 && Math.abs(tmp.x) < 1.35 && Math.abs(tmp.y) < 1.35;
     if(inFront){
       n.el.style.left = ((tmp.x*0.5+0.5)*w).toFixed(1) + 'px';
-      n.el.style.top  = ((-tmp.y*0.5+0.5)*h + (n.o.ang||22)*2.2).toFixed(1) + 'px';
-      n.el.style.opacity = 0.92;
+      n.el.style.top  = ((-tmp.y*0.5+0.5)*h + Math.max(26, (n.o.ang||22)*2.0)).toFixed(1) + 'px';
+      n.el.style.opacity = (0.35 + 0.6*dim).toFixed(2);
     } else n.el.style.opacity = 0;
   }
   renderer.render(scene, camera);
