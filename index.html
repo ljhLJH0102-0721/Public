@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');var V='v76';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');var V='v77';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -1720,7 +1720,38 @@
     /* ===== 博文 ===== */
     let postsCache=[],postEditId=null,postImages=[],searchAuthorsResult=[],searchAuthorsQuery='',postReadingId=null;
     function postDate(p){const v=p&&(p.created_at||p.date);const n=typeof v==='number'?v:Date.parse(v);return fmtDate(isNaN(n)?Date.now():n)}
-    async function loadPosts(){try{postsCache=await supa.listPosts()}catch(e){postsCache=null;console.warn('loadPosts:',e)}if(Array.isArray(postsCache)&&postsCache.length)await loadAuthorProfiles(postsCache)}
+    /* ===== 博文存储：站长写 GitHub posts.json（绕开 Supabase RLS），其他用户仍写 Supabase ===== */
+    let ghPosts=[], ghPostsSha=null;
+    async function fetchGhPosts(){
+      const urls=[siteBase()+'posts.json?t='+Date.now(),
+                  'https://gcore.jsdelivr.net/gh/'+CFG.owner+'/'+CFG.repo+'@'+CFG.branch+'/posts.json?t='+Date.now()];
+      for(let i=0;i<urls.length;i++){
+        if(!urls[i])continue;
+        try{const r=await fetch(urls[i],{cache:'no-store'});if(r&&r.ok){const j=await r.json();if(Array.isArray(j))return j}}catch(e){}
+      }
+      return null;
+    }
+    async function saveGhPosts(list,msg){
+      let token;try{token=await ensureR18Token()}catch(err){toast(err.message,'error');throw err}
+      if(!ghPostsSha){try{const f=await ghGetFile('posts.json',token);if(f)ghPostsSha=f.sha}catch(e){}}
+      const json=JSON.stringify(list,null,2);
+      const b64=btoa(unescape(encodeURIComponent(json)));
+      const r=await ghPutFile('posts.json',b64,msg||'update posts.json',ghPostsSha,token);
+      if(r&&r.content)ghPostsSha=r.content.sha;
+    }
+    async function loadPosts(){
+      ghPosts=[];
+      try{const g=await fetchGhPosts();if(Array.isArray(g))ghPosts=g}catch(e){console.warn('loadPosts gh:',e)}
+      let sb=null;
+      try{sb=await supa.listPosts()}catch(e){console.warn('loadPosts:',e)}
+      const merged=ghPosts.map(p=>Object.assign({},p,{_src:'gh',created_at:p.created_at||new Date(p.date||Date.now()).toISOString()}))
+                          .concat(Array.isArray(sb)?sb:[]);
+      const seen={},out=[];
+      merged.forEach(p=>{ if(p&&p.id&&!seen[p.id]){seen[p.id]=1;out.push(p)} });
+      out.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+      postsCache=out.length?out:null;
+      if(postsCache&&postsCache.length)await loadAuthorProfiles(postsCache);
+    }
     /* ===== 翻译 ===== */
     function detectLang(s){const x=String(s||'');if(/[\u3040-\u30ff]/.test(x))return 'ja';if(/[\uac00-\ud7af]/.test(x))return 'ko';if(/[\u4e00-\u9fff]/.test(x))return 'zh-CN';return 'en'}
     function splitChunks(text,max){const parts=String(text).replace(/\r/g,'').split(/\n{2,}/);const out=[];let buf='';
@@ -2083,7 +2114,44 @@
     function pickPostImages(){if(!supa.user){openUserAuthModal();return}if(postImages.length>=6){toast('最多 6 张配图');return}let el=document.getElementById('post-file');if(!el){el=document.createElement('input');el.type='file';el.accept='image/*';el.multiple=true;el.id='post-file';el.style.display='none';document.body.appendChild(el)}el.value='';
       el.onchange=async()=>{const fs=Array.from(el.files||[]).slice(0,6-postImages.length);if(!fs.length)return;const btn=document.getElementById('post-img-add');if(btn){btn.disabled=true;btn.textContent='上传中…'}try{for(const f of fs){const url=await cloudUploadFile(f);postImages.push(url);renderPostImages()}toast('图片已添加','success')}catch(e){toast('上传失败：'+((e&&e.message)||''),'error')}finally{if(btn){btn.disabled=false;btn.textContent='＋ 添加图片'}}};el.click()}
     async function savePost(){if(!supa.user){openUserAuthModal();return}const title=String((document.getElementById('post-title')||{}).value||'').trim();const content=String((document.getElementById('post-content')||{}).value||'').trim();if(!content){toast('正文不能为空');return}const btn=document.getElementById('post-save');if(btn){btn.disabled=true;btn.textContent='发布中…'}
-      try{const body={title:title,content:content,images:postImages};if(postEditId){await supa.updatePost(postEditId,body);const i=(postsCache||[]).findIndex(x=>x.id===postEditId);if(i>-1)postsCache[i]=Object.assign({},postsCache[i],body);closeModal('post-modal');toast('博文已更新','success');openPostView(postEditId)}else{const rows=await supa.addPost(Object.assign({user_id:supa.user.id},body));const row=rows&&rows[0]?rows[0]:Object.assign({id:'tmp-'+Date.now(),user_id:supa.user.id,created_at:new Date().toISOString()},body);postsCache=postsCache||[];postsCache.unshift(row);closeModal('post-modal');toast('博文已发布','success');showPostsArea()}}catch(e){console.error('post save:',e);toast(isTableMissing(e)?'需要先在 Supabase 创建 posts 表（执行对话里给出的 SQL）':'发布失败：'+((e&&e.message)||''),'error')}finally{if(btn){btn.disabled=false;btn.textContent='发布'}}}
+      try{const body={title:title,content:content,images:postImages};
+        if(postEditId){
+          const cur=(postsCache||[]).find(x=>x.id===postEditId);
+          if(cur&&cur._src==='gh'){
+            ghPosts=ghPosts.map(p=>p.id===postEditId?Object.assign({},p,body,{date:Date.now()}):p);
+            await saveGhPosts(ghPosts,'post: update '+title);
+            const i=postsCache.findIndex(x=>x.id===postEditId);
+            if(i>-1)postsCache[i]=Object.assign({},postsCache[i],body,{date:Date.now()});
+          }else{
+            try{await supa.updatePost(postEditId,body)}catch(e1){
+              /* Supabase 被 RLS 挡住 → 退回 GitHub 存储 */
+              if(isOwner()&&/row-level security|permission|policy|denied/i.test((e1&&e1.message)||'')){
+                ghPosts=ghPosts.map(p=>p.id===postEditId?Object.assign({},p,body,{date:Date.now()}):p);
+                await saveGhPosts(ghPosts,'post: update '+title);
+              }else throw e1;
+            }
+            const i=(postsCache||[]).findIndex(x=>x.id===postEditId);
+            if(i>-1)postsCache[i]=Object.assign({},postsCache[i],body);
+          }
+          closeModal('post-modal');toast('博文已更新','success');openPostView(postEditId);
+        }else if(isOwner()){
+          /* 站长：直接写仓库 posts.json，不受 Supabase RLS 影响 */
+          const row=Object.assign({id:'gh-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+            user_id:(supa.user&&supa.user.id)||'owner',author:'站长',
+            created_at:new Date().toISOString(),date:Date.now()},body);
+          ghPosts.unshift(row);
+          await saveGhPosts(ghPosts,'post: add '+title);
+          postsCache=postsCache||[];
+          postsCache.unshift(Object.assign({},row,{_src:'gh'}));
+          closeModal('post-modal');toast('博文已发布','success');showPostsArea();
+        }else{
+          const rows=await supa.addPost(Object.assign({user_id:supa.user.id},body));
+          const row=rows&&rows[0]?rows[0]:Object.assign({id:'tmp-'+Date.now(),user_id:supa.user.id,created_at:new Date().toISOString()},body);
+          postsCache=postsCache||[];postsCache.unshift(row);
+          closeModal('post-modal');toast('博文已发布','success');showPostsArea();
+        }}catch(e){console.error('post save:',e);
+        const m=(e&&e.message)||'';
+        toast(isTableMissing(e)?'需要先在 Supabase 创建 posts 表（执行对话里给出的 SQL）':(/row-level security|policy|permission|denied/i.test(m)?'发布失败：Supabase 权限被 RLS 挡住（站长请确认已登录并允许 GitHub Token）':'发布失败：'+m),'error')}finally{if(btn){btn.disabled=false;btn.textContent='发布'}}}
     /* ===== 搜索结果里的用户卡片 ===== */
     function renderSearchAuthors(){const wrap=document.getElementById('user-result-wrap');if(!wrap)return;if(!searchQuery||!(searchAuthorsResult||[]).length){wrap.innerHTML='';wrap.style.display='none';return}
       wrap.style.display='block';wrap.innerHTML='<div class="sp-title" style="font-size:.95rem;margin:2px 2px 10px">👤 匹配的用户 · '+searchAuthorsResult.length+'</div><div class="user-result-grid">'+searchAuthorsResult.map(u=>{const cnt=artworks.filter(a=>a&&a.user_id===u.id&&(showR18||!a.r18)).length;const on=myFollowing.has(u.id);return '<div class="ucard" data-uid="'+u.id+'"><div class="ucard-top">'+avatarHtml(u.id,u,44)+'<div style="min-width:0"><div class="ucard-name">'+escHtml(u.nickname||'用户')+'</div><div class="ucard-sub">'+cnt+' 作品 · '+String(u.id).slice(0,8)+'</div></div></div><button class="btn '+(on?'btn-outline':'btn-primary')+' ucard-follow" data-uid="'+u.id+'">'+(on?'已关注':'+ 关注')+'</button></div>'}).join('')+'</div>';
