@@ -92,6 +92,41 @@
     #speed{width:86px}
     #panel{gap:8px;padding:8px 10px}
   }
+  /* ---------- 科学区：科普事件抽屉 ---------- */
+  #edu{position:fixed;right:16px;top:64px;bottom:80px;width:400px;max-width:92vw;
+    background:rgba(13,17,28,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(140,180,255,.28);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.55);
+    transform:translateX(112%);transition:transform .32s cubic-bezier(.2,.8,.3,1);z-index:400;
+    display:flex;flex-direction:column;overflow:hidden}
+  #edu.open{transform:none}
+  #edu .edu-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;
+    font-size:14px;font-weight:700;color:#d9e6ff;letter-spacing:.04em;
+    background:linear-gradient(90deg,rgba(80,140,255,.22),rgba(80,140,255,.05));
+    border-bottom:1px solid rgba(140,180,255,.22)}
+  #edu .edu-sub{padding:9px 15px;font-size:11.5px;color:#8ba0c8;line-height:1.6;
+    border-bottom:1px solid rgba(140,180,255,.12)}
+  #edu .edu-list{flex:1;overflow-y:auto;padding:10px 12px 16px}
+  #edu .edu-list::-webkit-scrollbar{width:7px}
+  #edu .edu-list::-webkit-scrollbar-thumb{background:rgba(140,180,255,.3);border-radius:4px}
+  .edu-item{padding:10px 12px;border-radius:10px;border:1px solid transparent;cursor:pointer;
+    transition:background .15s,border-color .15s,transform .15s;margin-bottom:6px}
+  .edu-item:hover{background:rgba(90,150,255,.12);border-color:rgba(140,180,255,.35);transform:translateX(-2px)}
+  .edu-item.on{background:rgba(90,150,255,.2);border-color:rgba(140,180,255,.6)}
+  .edu-top{display:flex;align-items:baseline;gap:9px;margin-bottom:3px}
+  .edu-date{font-size:11px;font-weight:700;color:#7fb2ff;font-variant-numeric:tabular-nums;flex-shrink:0}
+  .edu-t{font-size:13px;font-weight:700;color:#e6efff}
+  .edu-x{font-size:11.5px;color:#93a7c9;line-height:1.65}
+  #edu-note{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(14px);
+    max-width:min(620px,88vw);padding:14px 20px;border-radius:14px;
+    background:rgba(13,17,28,.94);border:1px solid rgba(140,180,255,.34);
+    color:#dbe7ff;font-size:13px;line-height:1.75;box-shadow:0 16px 40px rgba(0,0,0,.55);
+    opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:390;backdrop-filter:blur(10px)}
+  #edu-note.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #edu-note b{color:#9fd0ff}
+  @media(max-width:768px){
+    #edu{right:8px;left:8px;width:auto;top:56px;bottom:96px}
+    #edu-note{bottom:104px;font-size:12px;padding:11px 14px}
+  }
 </style>
 </head>
 <body>
@@ -121,6 +156,7 @@
   <div class="sep"></div>
   <select id="focus" title="聚焦天体"><option value="">自由视角</option></select>
   <button id="reset" title="回到全景">重置视角</button>
+  <button id="eduBtn" title="天文事件科普">📖 科普</button>
   <div class="sep"></div>
   <label><input type="checkbox" id="tOrbits" checked>轨道</label>
   <label><input type="checkbox" id="tLabels" checked>标签</label>
@@ -137,6 +173,13 @@
   <div class="bar"><i id="loadBar"></i></div>
   <span id="loadTxt">正在加载真实行星贴图…</span>
 </div>
+  <div id="edu-note"></div>
+  <div id="edu">
+    <div class="edu-head"><span>📖 科学区 · 天文事件科普</span><button id="eduClose" style="width:26px;height:26px;line-height:24px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;cursor:pointer;font-size:13px">✕</button></div>
+    <div class="edu-sub">点击任意事件 → 时间跳到那一天并聚焦对应天体（可继续拖动旋转、缩放观察）</div>
+    <div class="edu-list" id="eduList"></div>
+  </div>
+
 
 <div id="boot"></div>
 
@@ -904,7 +947,7 @@ function elements(p){
   let el = elCache[p.key];
   if(el) return el;
   el = elCache[p.key] = {
-    a:p.a, e:p.e, i:p.i*DEG, w:p.w*DEG, O:p.O*DEG,
+    a:p.a, e:p.e, i:p.i*DEG, w:(p.w-p.O)*DEG, O:p.O*DEG,
     M0:(p.L - p.w)*DEG,
     n: TWO_PI / (Math.pow(p.a, 1.5) * 365.256)
   };
@@ -918,6 +961,41 @@ function elements(p){
   ];
   return el;
 }
+
+/* ============================================================
+   轨道线随时间更新：JPL 要素含长期变化率（水星近日点每世纪进动 1.56°），
+   只用 J2000 静态要素画轨道线的话，跳到几十年/几百年后行星就会离开轨道线。
+   ============================================================ */
+function elementsAt(p, tDays){
+  const T = tDays / 36525;                     // 世纪数
+  const r = RATES[p.key] || ZERO_RATES;
+  const I = (p.i + r.di * T) * DEG;
+  const O = (p.O + r.dO * T) * DEG;
+  const wbar = (p.w + r.dw * T) * DEG;
+  const w = wbar - O;                          // ω = ϖ − Ω（关键：ϖ 不能直接当 ω）
+  const a = p.a + r.da * T;
+  const e = p.e + r.de * T;
+  const cw=Math.cos(w), sw=Math.sin(w), ci=Math.cos(I), si=Math.sin(I), cO=Math.cos(O), sO=Math.sin(O);
+  return { a:a, e:e, m:[
+    cO*cw - sO*ci*sw, -cO*sw - sO*ci*cw,  sO*si,
+    sO*cw + cO*ci*sw, -sO*sw + cO*ci*cw, -cO*si,
+    si*sw,             si*cw,              ci ] };
+}
+let _orbitT = null;
+function refreshOrbits(t){
+  if(_orbitT !== null && Math.abs(t - _orbitT) < 3650) return;   // 每 10 年重算一次即可
+  _orbitT = t;
+  for(const o of orbitLines){
+    const b = o.body, p = b.def;
+    if(!p) continue;                            // 彗星等自定义轨道不在此重算
+    const el = elementsAt(p, t);
+    const N = 512, pts = [];
+    for(let k=0;k<N;k++) pts.push(orbitPoint(el, k/N*TWO_PI, new THREE.Vector3()));
+    o.line.geometry.dispose();
+    o.line.geometry = new THREE.BufferGeometry().setFromPoints(pts);
+  }
+}
+
 const _v = new THREE.Vector3();
 function orbitPoint(el, E, out){
   const e = el.e;
@@ -959,7 +1037,7 @@ function planetPos(p, tDays, out){
 }
 for(const p of PLANETS){
   const b = planetById[p.key];
-  b.el = elements(p);
+  b.el = elements(p); b.def = p;
   const N = 512, pts = [];
   for(let k=0;k<N;k++) pts.push(orbitPoint(b.el, k/N*TWO_PI, new THREE.Vector3()));
   const geo = new THREE.BufferGeometry().setFromPoints(pts);
@@ -970,8 +1048,70 @@ for(const p of PLANETS){
   const line = new THREE.LineLoop(geo, mat);
   line.frustumCulled = false;
   scene.add(line);
-  orbitLines.push({ body:b, line:line, base: mat.opacity });
+  b.orbitLine = line; orbitLines.push({ body:b, line:line, base: mat.opacity });
 }
+
+
+/* ============================================================
+   哈雷彗星：真实轨道要素 1P/Halley + 彗发与背日彗尾
+   a=17.834 AU, e=0.96714, i=162.26°, Ω=58.42°, ω=111.33°
+   近日点：1986-02-09（自 J2000 起 −5074.5 天），周期 75.3 年
+   ============================================================ */
+const HALLEY = { a:17.834, e:0.96714, i:162.262, O:58.42, w:111.33, Tp:-5074.5, P:27510.0 };
+const halleyEl = (function(){
+  const I=HALLEY.i*DEG, O=HALLEY.O*DEG, w=HALLEY.w*DEG;
+  const cw=Math.cos(w), sw=Math.sin(w), ci=Math.cos(I), si=Math.sin(I), cO=Math.cos(O), sO=Math.sin(O);
+  return { a:HALLEY.a, e:HALLEY.e, m:[
+    cO*cw - sO*ci*sw, -cO*sw - sO*ci*cw,  sO*si,
+    sO*cw + cO*ci*sw, -sO*sw + cO*ci*cw, -cO*si,
+    si*sw,             si*cw,              ci ] };
+})();
+function halleyPos(t, out){
+  const e = HALLEY.e;
+  let M = TWO_PI * (t - HALLEY.Tp) / HALLEY.P;
+  M = M - TWO_PI * Math.floor(M / TWO_PI);
+  let E = M + e * Math.sin(M) * (1 + e * Math.cos(M));
+  for(let k=0;k<12;k++){ const f = E - e*Math.sin(E) - M; E -= f/(1 - e*Math.cos(E)); }
+  return orbitPoint(halleyEl, E, out);
+}
+const _UP_Y = new THREE.Vector3(0,1,0);
+const _halleyDir = new THREE.Vector3();
+const halleyNode = new THREE.Object3D();
+scene.add(halleyNode);
+const halleyNucleus = new THREE.Mesh(
+  new THREE.SphereGeometry(0.22, 16, 12),
+  new THREE.MeshStandardMaterial({ color:0xe6f0fa, roughness:0.95, metalness:0, emissive:0x2a3c50, emissiveIntensity:1 })
+);
+halleyNode.add(halleyNucleus);
+const halleyComa = new THREE.Sprite(new THREE.SpriteMaterial({
+  map:T.glow, color:0xaad8ff, transparent:true, opacity:0.35,
+  blending:THREE.AdditiveBlending, depthWrite:false
+}));
+halleyComa.scale.setScalar(5);
+halleyNode.add(halleyComa);
+const halleyTail = new THREE.Mesh(
+  new THREE.ConeGeometry(1, 10, 20, 1, true),
+  new THREE.MeshBasicMaterial({ color:0x9ccdf5, transparent:true, opacity:0.16,
+    blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide })
+);
+halleyTail.frustumCulled = false;
+scene.add(halleyTail);
+const halleyBody = { key:'halley', name:'哈雷彗星', radius:0.22, mesh:halleyNucleus, node:halleyNode,
+                     pos:new THREE.Vector3(), isComet:true };
+halleyNucleus.userData.body = halleyBody;
+bodies.push(halleyBody); byKey['halley'] = halleyBody; pickables.push(halleyNucleus);
+addLabel(halleyBody, false);
+(function(){
+  const pts = [];
+  for(let k=0;k<640;k++) pts.push(orbitPoint(halleyEl, k/640*TWO_PI, new THREE.Vector3()));
+  const line = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({ color:0x9ec6f0, transparent:true, opacity:0.34 }));
+  line.frustumCulled = false;
+  scene.add(line);
+  orbitLines.push({ body:halleyBody, line:line, base:0.34 });
+  const o = document.createElement('option'); o.value = 'halley'; o.textContent = '☄ 哈雷彗星';
+  if(focusSel) focusSel.appendChild(o);
+})();
 
 /* 星空背景 */
 let starDome = null, starPoints = null;
@@ -1293,6 +1433,7 @@ function updateOccArrays(){
 }
 
 function updateBodies(t){
+      refreshOrbits(t);
   /* 太阳：同样使用 IAU 自转要素（自转轴相对黄道倾 7.25°） */
   const spo = POLE.sun;
   sunBody.pos.set(0, 0, 0);
@@ -1325,6 +1466,21 @@ function updateBodies(t){
     b.mesh.rotation.z = ang;          // 潮汐锁定：永远同一面朝向母星
   }
 
+/* 哈雷彗星：位置 / 彗发大小 / 背日彗尾（近日点附近活跃） */
+halleyPos(t, halleyBody.pos);
+halleyNode.position.copy(halleyBody.pos);
+const hR = Math.max(0.55, halleyBody.pos.length() / AU);
+const act = Math.max(0, Math.min(1, 1.9 / hR));
+halleyComa.scale.setScalar(2.4 + 16 * act);
+halleyComa.material.opacity = 0.10 + 0.55 * act;
+const tailLen = 5 + 46 * act;
+halleyTail.scale.set(0.7 + 2.6 * act, tailLen, 0.7 + 2.6 * act);
+_halleyDir.copy(halleyBody.pos);
+if(_halleyDir.lengthSq() < 1e-6) _halleyDir.set(0, 1, 0); else _halleyDir.normalize();
+halleyTail.quaternion.setFromUnitVectors(_UP_Y, _halleyDir);
+halleyTail.position.copy(halleyBody.pos).addScaledVector(_halleyDir, tailLen * 0.5);
+halleyTail.material.opacity = 0.03 + 0.30 * act;
+halleyNucleus.material.emissiveIntensity = 0.5 + 2.6 * act;
   updateOccArrays();
 }
 function updateBelt(t){
@@ -1381,6 +1537,103 @@ function animate(now){
   if(useBloom && composer) composer.render();
   else renderer.render(scene, camera);
 }
+
+
+/* ============================================================
+   科学区 · 天文事件科普（近代以来 → 未来）
+   点击事件 → 跳到那一天、聚焦对应天体、弹出说明
+   ============================================================ */
+const EDU = [
+  {d:'1705', t:'哈雷预言彗星回归', x:'爱德蒙·哈雷用牛顿引力算出这颗彗星会在 1758 年回来——人类第一次"预言"一颗天体的回归。', f:'halley'},
+  {d:'1758-12-25', t:'哈雷彗星如期回归', x:'预言成真，牛顿力学从此确立了在天体运动上的统治地位，这颗彗星也因此得名"哈雷"。', f:'halley'},
+  {d:'1761-06-06', t:'金星凌日 · 全球联合观测', x:'各国天文学家分赴世界各地计时，第一次用天文方法算出日地距离约 1.5 亿公里。', f:'venus'},
+  {d:'1769-06-03', t:'第二次金星凌日', x:'库克船长远航塔希提观测，顺路"发现"了新西兰与澳洲东岸。', f:'venus'},
+  {d:'1781-03-13', t:'发现天王星', x:'赫歇尔用自制望远镜发现天王星——人类第一次发现"新行星"，太阳系边界翻倍。', f:'uranus'},
+  {d:'1835-11-16', t:'哈雷彗星回归', x:'马克·吐温在这年出生，他后来说自己"随彗星而来，也将随彗星而去"——1910 年彗星回归次日他去世。', f:'halley'},
+  {d:'1846-09-23', t:'发现海王星', x:'人们先用笔算出它的位置、再用望远镜找到它，被称为"笔尖上发现的行星"。', f:'neptune'},
+  {d:'1877-08-12', t:'火星大冲', x:'火星运行到 15 年来最近的位置，斯基亚帕雷利观测并画下"运河"，点燃了火星人的想象。', f:'mars'},
+  {d:'1908-06-30', t:'通古斯大爆炸', x:'一颗小天体在西伯利亚上空解体，摧毁 2000 平方公里森林——近代最著名的撞击事件。'},
+  {d:'1910-05-19', t:'地球穿过哈雷彗星尾巴', x:'彗尾扫过地球，报纸渲染"毒气末日"，实际只是极稀薄的尘埃气体，什么也没发生。', f:'halley'},
+  {d:'1919-05-29', t:'日全食验证广义相对论', x:'爱丁顿在非洲观测星光被太阳偏折，广义相对论一举成名。'},
+  {d:'1930-02-18', t:'发现冥王星', x:'汤博在洛厄尔天文台比对照片找到它，成为"第九大行星"。', f:'pluto'},
+  {d:'1957-10-04', t:'斯普特尼克 1 号升空', x:'人类第一颗人造卫星，太空时代正式开始。'},
+  {d:'1961-04-12', t:'加加林进入太空', x:'东方一号绕地球一圈，人类第一次从太空回望地球。'},
+  {d:'1969-07-20', t:'阿波罗 11 号登月', x:'"这是我个人的一小步，却是人类的一大步。"', f:'earth'},
+  {d:'1977-09-05', t:'旅行者 1 号发射', x:'此行将飞掠木星、土星，并带着金唱片飞出太阳系。', f:'jupiter'},
+  {d:'1979-03-05', t:'旅行者 1 号飞掠木星', x:'首次近距离拍到木星大红斑与木卫一的火山喷发。', f:'jupiter'},
+  {d:'1980-11-12', t:'旅行者 1 号飞掠土星', x:'确认土星环由成千上万条细环组成。', f:'saturn'},
+  {d:'1986-02-09', t:'哈雷彗星过近日点', x:'人类派出"哈雷舰队"（乔托号、织女星号等）迎头拦截，第一次拍到彗核照片。', f:'halley'},
+  {d:'1989-08-25', t:'旅行者 2 号飞掠海王星', x:'人类至今唯一一次近距离看海王星，发现大黑斑与冰火山。', f:'neptune'},
+  {d:'1994-07-16', t:'苏梅克-列维 9 号撞击木星', x:'21 块彗星碎片连续撞上木星，撞痕比地球还大，全程全球直播。', f:'jupiter'},
+  {d:'1995-12-07', t:'伽利略号进入木星轨道', x:'并释放子探测器直接冲进木星大气，传回第一份大气剖面数据。', f:'jupiter'},
+  {d:'1997-04-01', t:'海尔-波普彗星过近日点', x:'20 世纪最壮观的彗星之一，肉眼可见长达 18 个月。'},
+  {d:'2004-06-08', t:'金星凌日', x:'上上次金星凌日（再上一次是 1882 年），开启 8 年一组的"凌日对"。', f:'venus'},
+  {d:'2005-01-14', t:'惠更斯号登陆土卫六', x:'人类第一次在另一颗行星的卫星上着陆，看到河道与甲烷湖。', f:'saturn'},
+  {d:'2006-08-24', t:'冥王星被划为矮行星', x:'国际天文联合会重新定义行星，太阳系"九大行星"就此成为历史。', f:'pluto'},
+  {d:'2012-06-06', t:'本世纪最后一次金星凌日', x:'下一次要等到 2117 年——那天许多人拍下"小黑点走过太阳"。', f:'venus'},
+  {d:'2012-08-06', t:'好奇号登陆火星', x:'空中吊车着陆，开始在盖尔撞击坑寻找火星曾经宜居的证据。', f:'mars'},
+  {d:'2014-11-12', t:'菲莱登陆 67P 彗星', x:'罗塞塔号伴随彗星飞行，探测器第一次落在彗核表面。'},
+  {d:'2015-07-14', t:'新视野号飞掠冥王星', x:'人类第一次看清冥王星：氮冰平原、冰山与蓝色雾霭。', f:'pluto'},
+  {d:'2017-08-21', t:'横贯美国的日全食', x:'"大美国日食"，数千万人抬头观看。'},
+  {d:'2019-01-03', t:'嫦娥四号登陆月背', x:'人类探测器第一次着陆月球背面，玉兔二号开始巡视。', f:'earth'},
+  {d:'2019-04-10', t:'首张黑洞照片公布', x:'事件视界望远镜以地球尺度的干涉阵列，拍到 M87 中心的黑洞阴影。'},
+  {d:'2021-02-10', t:'天问一号进入火星轨道', x:'祝融号随后着陆乌托邦平原，中国首次火星探测一次成功。', f:'mars'},
+  {d:'2021-12-25', t:'詹姆斯·韦布空间望远镜发射', x:'人类最强的红外之眼，正在回望宇宙最早的星系。'},
+  {d:'2024-04-08', t:'北美日全食', x:'横跨墨西哥、美国、加拿大；下一次北美日全食要等 2044 年。', f:'earth'},
+  {d:'2029-04-13', t:'小行星阿波菲斯掠过地球（未来）', x:'直径约 340 米的小行星距地面仅 3.1 万公里——比同步卫星更近，肉眼可见。'},
+  {d:'2061-07-28', t:'哈雷彗星再次回归（未来）', x:'下一次哈雷彗星过近日点。如果那时你还记得打开过这个页面，替我们再看一眼。', f:'halley'}
+];
+function eduEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+const eduListEl = document.getElementById('eduList');
+const eduNoteEl = document.getElementById('edu-note');
+const eduPanelEl = document.getElementById('edu');
+function eduJump(d, f, noteHtml){
+  const m = String(d).match(/^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?/);
+  if(m){
+    const ts = Date.UTC(+m[1], (m[2] ? +m[2] : 1) - 1, m[3] ? +m[3] : 1, 12, 0, 0);
+    if(!isNaN(ts)){
+      simDays = (ts - J2000) / 86400000;
+      paused = true;
+      if(playBtn) playBtn.textContent = '▶';
+      updateBodies(simDays);
+      updateLabels();
+    }
+  }
+  if(f){ const b = byKey[f] || planetById[f]; if(b) focusOn(b); }
+  if(eduNoteEl && noteHtml){
+    eduNoteEl.innerHTML = noteHtml;
+    eduNoteEl.classList.add('show');
+    if(eduNoteEl._t) clearTimeout(eduNoteEl._t);
+    eduNoteEl._t = setTimeout(function(){ eduNoteEl.classList.remove('show'); }, 11000);
+  }
+}
+function renderEdu(){
+  if(!eduListEl || eduListEl.dataset.done) return;
+  eduListEl.dataset.done = '1';
+  eduListEl.innerHTML = EDU.map(function(e, i){
+    return '<div class="edu-item" data-i="'+i+'">'
+      + '<div class="edu-top"><span class="edu-date">'+eduEsc(e.d)+'</span><span class="edu-t">'+eduEsc(e.t)+'</span></div>'
+      + '<div class="edu-x">'+eduEsc(e.x)+'</div></div>';
+  }).join('');
+  Array.prototype.forEach.call(eduListEl.querySelectorAll('.edu-item'), function(el){
+    el.addEventListener('click', function(){
+      const e = EDU[+el.dataset.i];
+      Array.prototype.forEach.call(eduListEl.querySelectorAll('.edu-item'), function(x){ x.classList.remove('on'); });
+      el.classList.add('on');
+      eduJump(e.d, e.f, '<b>'+eduEsc(e.d)+' · '+eduEsc(e.t)+'</b><br>'+eduEsc(e.x));
+    });
+  });
+}
+(function(){
+  const b = document.getElementById('eduBtn');
+  const c = document.getElementById('eduClose');
+  if(b && eduPanelEl) b.addEventListener('click', function(){
+    eduPanelEl.classList.toggle('open');
+    if(eduPanelEl.classList.contains('open')) renderEdu();
+  });
+  if(c && eduPanelEl) c.addEventListener('click', function(){ eduPanelEl.classList.remove('open'); });
+  renderEdu();
+})();
 
 /* ---------- 13. 启动 ---------- */
 onResize();
