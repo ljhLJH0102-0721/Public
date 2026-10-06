@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');var V='v79';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');var V='v80';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -212,6 +212,9 @@
     .conv-item button{flex-shrink:0}
     .conv-foot{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
     .conv-sum{font-size:.79rem;color:var(--text3)}
+    #vg-bar{height:7px;border-radius:7px;background:var(--surface-2);overflow:hidden;border:1px solid var(--border);margin:14px 0}
+    #vg-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#9fd0ff);transition:width .18s ease}
+    #vg-bar i:after{content:""}
     #pg-view{display:none;min-height:100vh;background:var(--bg-grad)}
     #pg-view.open{display:block}
     .pg-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
@@ -1259,6 +1262,53 @@
           </div>
         </div>
       </div>
+
+      <div class="ws-panel" data-wspanel="gif">
+        <div class="conv-area">
+          <div class="conv-head">
+            <div class="conv-title">🎞️ 视频转 GIF</div>
+            <div class="conv-opts">
+              <label>宽度<select class="trans-select" id="vg-w">
+                <option value="240">240 小</option><option value="320">320</option>
+                <option value="480" selected>480 推荐</option><option value="640">640 大</option>
+              </select></label>
+              <label>帧率<select class="trans-select" id="vg-fps">
+                <option value="8">8</option><option value="10" selected>10</option>
+                <option value="12">12</option><option value="15">15</option><option value="20">20</option>
+              </select></label>
+              <label>颜色<select class="trans-select" id="vg-colors">
+                <option value="64">64 色</option><option value="128">128 色</option><option value="256" selected>256 色</option>
+              </select></label>
+              <label>起始 <input type="number" id="vg-start" value="0" min="0" step="0.1"></label>
+              <label>时长 <input type="number" id="vg-dur" value="3" min="0.2" step="0.5"></label>
+            </div>
+          </div>
+          <div class="conv-drop" id="vg-drop">
+            <input type="file" id="vg-file" accept="video/*" multiple hidden>
+            <div class="conv-ico">🎞️</div>
+            <div class="conv-drop-t">把视频拖到这里，或 <button type="button" class="btn btn-outline" id="vg-pick">选择视频</button></div>
+            <div class="conv-hint">支持 MP4 / WebM / MOV（浏览器能播放的都能转）· <b>全部本地编码，视频不会上传到任何服务器</b><br>
+              建议：宽 480、10 帧、时长 3~6 秒；GIF 天生很大，越长越宽文件越大</div>
+          </div>
+          <div id="vg-stage" style="display:none">
+            <video id="vg-video" playsinline muted preload="auto" style="max-width:100%;max-height:340px;border-radius:12px;background:#000"></video>
+            <div class="conv-hint" id="vg-meta" style="margin-top:8px"></div>
+            <div class="conv-foot">
+              <button class="btn btn-primary" id="vg-go">开始转换</button>
+              <button class="btn btn-ghost" id="vg-reset">换一个视频</button>
+              <span class="conv-sum" id="vg-status"></span>
+            </div>
+            <div id="vg-bar" style="display:none"><i id="vg-bar-i"></i></div>
+            <div id="vg-out" style="display:none;margin-top:14px">
+              <img id="vg-preview" alt="GIF 预览" style="max-width:100%;border-radius:12px;border:1px solid var(--border);background:#000">
+              <div class="conv-foot">
+                <a class="btn btn-primary" id="vg-download" download="animation.gif">下载 GIF</a>
+                <span class="conv-sum" id="vg-size"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div id="sci-view">
@@ -1893,6 +1943,7 @@
       deep:'<path d="M12 3.2l1.75 4.55L18.3 9.5l-4.55 1.75L12 15.8l-1.75-4.55L5.7 9.5l4.55-1.75z"/><path d="M18.6 15.2l.8 2.05 2.05.8-2.05.8-.8 2.05-.8-2.05-2.05-.8 2.05-.8z"/>',
       edu:'<path d="M3 5.6A2.6 2.6 0 0 1 5.6 3H10a2 2 0 0 1 2 2v14.5a2.2 2.2 0 0 0-2.2-2.2H5.6A2.6 2.6 0 0 1 3 14.7z"/><path d="M21 5.6A2.6 2.6 0 0 0 18.4 3H14a2 2 0 0 0-2 2v14.5a2.2 2.2 0 0 1 2.2-2.2h4.2A2.6 2.6 0 0 0 21 14.7z"/>',
       swap:'<path d="M4 8h13l-3-3"/><path d="M20 16H7l3 3"/><rect x="3" y="4" width="18" height="16" rx="3"/>',
+      film:'<rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M7 4.5v15M17 4.5v15M2.5 9.5h4.5M2.5 14.5h4.5M17 9.5h4.5M17 14.5h4.5"/>',
       panel:'<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>',
     };
     function navIco(n){return '<svg class="sn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+(NAV_ICONS[n]||'')+'</svg>'}
@@ -1900,7 +1951,7 @@
       {t:'',items:[{k:'home',i:'home',l:'主页'}]},
       {t:'娱乐区',items:[{k:'image',i:'image',l:'插图'},{k:'comic',i:'comic',l:'漫画'},{k:'post',i:'post',l:'博文'}]},
       {t:'科学区',items:[{k:'solar',i:'orbit',l:'太阳系'},{k:'deep',i:'deep',l:'深空星云'},{k:'edu',i:'edu',l:'天文事件'}]},
-      {t:'工作区',items:[{k:'translate',i:'translate',l:'文本翻译'},{k:'convert',i:'swap',l:'图片转格式'}]},
+      {t:'工作区',items:[{k:'translate',i:'translate',l:'文本翻译'},{k:'convert',i:'swap',l:'图片转格式'},{k:'gif',i:'film',l:'视频转 GIF'}]},
       {t:'我的',items:[{k:'liked',i:'heart',l:'我喜欢的'},{k:'history',i:'clock',l:'历史浏览'},{k:'space',i:'user',l:'我的空间'},{k:'upload',i:'upload',l:'上传作品'}]},
       {t:'更多',items:[{k:'announce',i:'bell',l:'公告'},{k:'settings',i:'settings',l:'设置'},{k:'theme',i:'moon',l:'夜间模式'},supa.user?{k:'logout',i:'logout',l:'退出登录'}:{k:'account',i:'key',l:'登录 / 注册'}]},
     ]}
@@ -2003,9 +2054,9 @@
       resetToHome();
       try{navActiveKey='image';syncNavActive()}catch(e){}
     }
-    const WS_TITLE={ translate:'🌐 文本翻译', convert:'🔄 图片转格式' };
+    const WS_TITLE={ translate:'🌐 文本翻译', convert:'🔄 图片转格式', gif:'🎞️ 视频转 GIF' };
     function wsActivate(v){
-      v=(v==='convert')?'convert':'translate';
+      v=(v==='convert'||v==='gif')?v:'translate';
       document.querySelectorAll('#ws-view .ws-tab').forEach(function(x){x.classList.toggle('active',x.dataset.wstab===v)});
       document.querySelectorAll('#ws-view .ws-panel').forEach(function(p){p.classList.toggle('active',p.dataset.wspanel===v)});
       const tt=document.getElementById('ws-title');if(tt&&WS_TITLE[v])tt.textContent=WS_TITLE[v];
@@ -2051,7 +2102,7 @@
         navActiveKey=k;
         if(k==='theme'){toggleTheme();return}
         if(k==='workspace'){openWorkspace('translate');return}
-        if(k==='translate'||k==='convert'){openWorkspace(k);return}
+        if(k==='translate'||k==='convert'||k==='gif'){openWorkspace(k);return}
         if(k==='solar'||k==='deep'||k==='edu'){openScience(k);return}
         if(k==='home'){goHome();return}
         if(k.indexOf('page:')===0){openPage(k.slice(5));return}
@@ -3041,6 +3092,222 @@ document.getElementById('detail-download')?.addEventListener('click',async funct
     toast&&toast('正在下载 '+ok.length+' 个文件…','success');
   });
   syncOpts();
+})();
+</script>
+<script>
+/* ===== 工作区 · 视频转 GIF（自写 GIF89a 编码器：中位切分调色板 + LZW，全程本地） ===== */
+(function(){
+  var fileEl=document.getElementById('vg-file'),pickEl=document.getElementById('vg-pick'),dropEl=document.getElementById('vg-drop'),
+      stageEl=document.getElementById('vg-stage'),videoEl=document.getElementById('vg-video'),metaEl=document.getElementById('vg-meta'),
+      goEl=document.getElementById('vg-go'),resetEl=document.getElementById('vg-reset'),statusEl=document.getElementById('vg-status'),
+      barWrap=document.getElementById('vg-bar'),barEl=document.getElementById('vg-bar-i'),
+      outEl=document.getElementById('vg-out'),prevEl=document.getElementById('vg-preview'),dlEl=document.getElementById('vg-download'),sizeEl=document.getElementById('vg-size'),
+      wEl=document.getElementById('vg-w'),fpsEl=document.getElementById('vg-fps'),colEl=document.getElementById('vg-colors'),
+      startEl=document.getElementById('vg-start'),durEl=document.getElementById('vg-dur');
+  if(!fileEl||!videoEl) return;
+  var srcUrl=null,outUrl=null,busy=false;
+  function fmtSize(b){b=+b||0;if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(2)+' MB'}
+  function say(t){ if(statusEl) statusEl.textContent=t }
+  function prog(p){ if(barWrap) barWrap.style.display=''; if(barEl) barEl.style.width=Math.max(0,Math.min(100,p))+'%' }
+  function toast2(m,k){ try{ if(window.toast) toast(m,k||'success') }catch(e){} }
+
+  /* ---------- LZW（用代次标记复用大数组，避免每帧重建字典） ---------- */
+  var LZW_KEY=new Int32Array(4096*256), LZW_GEN=new Int32Array(4096*256), LZW_CUR=0;
+  function lzwEncode(idx,minCode){
+    var clear=1<<minCode, eoi=clear+1, codeSize=minCode+1, next=eoi+1;
+    LZW_CUR++;
+    var out=[],bitBuf=0,bitCnt=0;
+    function emit(c){ bitBuf|=c<<bitCnt; bitCnt+=codeSize; while(bitCnt>=8){ out.push(bitBuf&255); bitBuf>>>=8; bitCnt-=8 } }
+    emit(clear);
+    var cur=idx[0],i,k,key,code;
+    for(i=1;i<idx.length;i++){
+      k=idx[i]; key=cur*256+k; code=-1;
+      if(LZW_GEN[key]===LZW_CUR) code=LZW_KEY[key];
+      if(code>=0){ cur=code; continue }
+      emit(cur);
+      if(next<4096){
+        LZW_GEN[key]=LZW_CUR; LZW_KEY[key]=next; next++;
+        /* GIF 的 LZW 码宽提升要比直觉晚一个码（经典 off-by-one），已用标准解码器验证 */
+        if(next===(1<<codeSize)+1&&codeSize<12) codeSize++;
+      }else{ emit(clear); LZW_CUR++; next=eoi+1; codeSize=minCode+1 }
+      cur=k;
+    }
+    emit(cur); emit(eoi);
+    if(bitCnt>0) out.push(bitBuf&255);
+    return out;
+  }
+
+  /* ---------- 调色板：中位切分 ---------- */
+  function medianCut(px,maxColors){
+    var boxes=[px],i;
+    function axis(box){
+      var mn=[255,255,255],mx=[0,0,0];
+      for(var j=0;j<box.length;j++){var p=box[j];for(var c=0;c<3;c++){if(p[c]<mn[c])mn[c]=p[c];if(p[c]>mx[c])mx[c]=p[c]}}
+      var r=[mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]];
+      var a=r[0]>=r[1]?(r[0]>=r[2]?0:2):(r[1]>=r[2]?1:2);
+      return {a:a,size:r[a]};
+    }
+    while(boxes.length<maxColors){
+      var bi=-1,best=0;
+      for(i=0;i<boxes.length;i++){ if(boxes[i].length<2)continue; var r=axis(boxes[i]); if(r.size>best){best=r.size;bi=i} }
+      if(bi<0||best<=0) break;
+      var box=boxes[bi],ax=axis(box).a;
+      box.sort(function(a,b){return a[ax]-b[ax]});
+      var mid=box.length>>1;
+      boxes.splice(bi,1,box.slice(0,mid),box.slice(mid));
+    }
+    var pal=[];
+    for(i=0;i<boxes.length;i++){
+      var b=boxes[i],s=[0,0,0];
+      for(var j=0;j<b.length;j++){s[0]+=b[j][0];s[1]+=b[j][1];s[2]+=b[j][2]}
+      var n=b.length||1;
+      pal.push([Math.round(s[0]/n),Math.round(s[1]/n),Math.round(s[2]/n)]);
+    }
+    while(pal.length<2) pal.push([0,0,0]);
+    return pal;
+  }
+  function makeMapper(pal){
+    var cache=new Map();
+    return function(r,g,b){
+      var k=(r<<16)|(g<<8)|b, v=cache.get(k);
+      if(v!==undefined) return v;
+      var best=0,bd=1e18;
+      for(var i=0;i<pal.length;i++){
+        var dr=r-pal[i][0],dg=g-pal[i][1],db=b-pal[i][2];
+        var d=dr*dr*0.299+dg*dg*0.587+db*db*0.114;
+        if(d<bd){bd=d;best=i}
+      }
+      if(cache.size<400000) cache.set(k,best);
+      return best;
+    };
+  }
+
+  /* ---------- GIF 组装 ---------- */
+  var GIF_HEAD='GIF89a';
+  function u16(a,v){ a.push(v&255,(v>>8)&255) }
+  function subBlocks(a,arr){ for(var i=0;i<arr.length;i+=255){ var n=Math.min(255,arr.length-i); a.push(n); for(var j=0;j<n;j++) a.push(arr[i+j]) } a.push(0) }
+  function buildGif(W,H,pal,minCode,frames,delayCs){
+    var colors=1<<minCode, a=[];
+    for(var i=0;i<GIF_HEAD.length;i++) a.push(GIF_HEAD.charCodeAt(i));
+    u16(a,W); u16(a,H);
+    a.push(0xF0|((minCode-1)&7));      // 全局色表 + 色深
+    a.push(0);                          // 背景色索引
+    a.push(0);                          // 像素宽高比
+    for(var c=0;c<colors;c++){ var p=pal[c]||[0,0,0]; a.push(p[0],p[1],p[2]) }
+    a.push(0x21,0xFF,0x0B); for(var s=0;s<11;s++) a.push('NETSCAPE2.0'.charCodeAt(s));
+    a.push(0x03,0x01,0x00,0x00,0x00);   // 无限循环
+    for(var f=0;f<frames.length;f++){
+      a.push(0x21,0xF9,0x04,0x04); u16(a,delayCs); a.push(0x00,0x00);   // 图形控制扩展
+      a.push(0x2C); u16(a,0); u16(a,0); u16(a,W); u16(a,H); a.push(0x00); // 图像描述符
+      a.push(minCode);
+      subBlocks(a,frames[f]);
+    }
+    a.push(0x3B);
+    return new Uint8Array(a);
+  }
+
+  /* ---------- 视频帧抓取 ---------- */
+  function seekTo(t){
+    return new Promise(function(res){
+      var done=false;
+      function fin(){ if(done)return; done=true; videoEl.removeEventListener('seeked',fin); requestAnimationFrame(function(){ setTimeout(res,20) }) }
+      videoEl.addEventListener('seeked',fin);
+      try{ videoEl.currentTime=t }catch(e){ fin() }
+      setTimeout(fin,1500);
+    });
+  }
+  function nextTick(){ return new Promise(function(r){ setTimeout(r,0) }) }
+
+  async function convert(){
+    if(busy) return;
+    var W=parseInt(wEl.value,10)||480, fps=parseInt(fpsEl.value,10)||10, colors=parseInt(colEl.value,10)||256;
+    var start=Math.max(0,parseFloat(startEl.value)||0);
+    var dur=Math.max(0.2,parseFloat(durEl.value)||3);
+    var vd=videoEl.duration||0, vw=videoEl.videoWidth||0, vh=videoEl.videoHeight||0;
+    if(!vw||!vh){ toast2('视频还没准备好','error'); return }
+    if(start>vd) start=0;
+    if(start+dur>vd) dur=Math.max(0.2,vd-start);
+    var total=Math.max(1,Math.floor(dur*fps));
+    if(total>400){ toast2('帧数太多（'+total+' 帧），请缩短时长或降低帧率','error'); return }
+    var H=Math.max(2,Math.round(W*vh/vw/2)*2);
+    var minCode=colors>=256?8:(colors>=128?7:6);
+    busy=true; goEl.disabled=true; outEl.style.display='none'; barWrap.style.display=''; prog(0);
+    try{
+      var cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+      var ctx=cv.getContext('2d',{willReadFrequently:true});
+      /* 第一遍：采样建调色板 */
+      say('分析画面配色…');
+      var samples=[], picks=Math.min(12,total);
+      for(var pi=0;pi<picks;pi++){
+        await seekTo(start+dur*(pi/Math.max(1,picks-1))*(1-0.001));
+        ctx.drawImage(videoEl,0,0,W,H);
+        var d=ctx.getImageData(0,0,W,H).data;
+        var step=Math.max(4,Math.floor(d.length/4/1400)*4);
+        for(var q=0;q<d.length;q+=step*4){ if(samples.length>=20000) break; samples.push([d[q],d[q+1],d[q+2]]) }
+        prog((pi+1)/picks*12);
+        await nextTick();
+      }
+      if(!samples.length){ toast2('没能读取到画面','error'); throw new Error('no samples') }
+      var pal=medianCut(samples,colors);
+      var map=makeMapper(pal);
+      /* 第二遍：逐帧编码 */
+      var frames=[],delayCs=Math.max(2,Math.round(100/fps));
+      for(var i=0;i<total;i++){
+        await seekTo(start+i/fps);
+        ctx.drawImage(videoEl,0,0,W,H);
+        var fd=ctx.getImageData(0,0,W,H).data;
+        var idx=new Uint8Array(W*H);
+        for(var k=0,j=0;k<fd.length;k+=4,j++) idx[j]=map(fd[k],fd[k+1],fd[k+2]);
+        frames.push(lzwEncode(idx,minCode));
+        prog(12+((i+1)/total)*88);
+        say('编码中… '+(i+1)+' / '+total+' 帧');
+        if(i%3===2) await nextTick();
+      }
+      say('打包 GIF…');
+      await nextTick();
+      var bytes=buildGif(W,H,pal,minCode,frames,delayCs);
+      var blob=new Blob([bytes],{type:'image/gif'});
+      if(outUrl) try{URL.revokeObjectURL(outUrl)}catch(e){}
+      outUrl=URL.createObjectURL(blob);
+      prevEl.src=outUrl;
+      var name='animation-'+W+'w-'+fps+'fps.gif';
+      dlEl.href=outUrl; dlEl.download=name;
+      sizeEl.innerHTML='　'+W+'×'+H+' · '+total+' 帧 · '+fps+'fps · '+colors+' 色 · <b style="color:var(--accent)">'+fmtSize(blob.size)+'</b>'+(blob.size>8*1048576?'　<span style="color:#d9534f">偏大，建议降到 480 宽 / 10 帧 / 更短时长</span>':'');
+      outEl.style.display='';
+      say('完成 ✓');
+      toast2('GIF 生成成功（'+fmtSize(blob.size)+'）');
+    }catch(e){
+      if(e&&e.message!=='no samples'){ console.warn('video2gif:',e); toast2('转换失败：'+((e&&e.message)||e),'error') }
+      say('转换失败');
+    }finally{ busy=false; goEl.disabled=false }
+  }
+
+  /* ---------- 交互 ---------- */
+  function load(f){
+    if(!f) return;
+    if(!/^video\//.test(f.type||'')){ toast2('请选择视频文件','error'); return }
+    if(srcUrl) try{URL.revokeObjectURL(srcUrl)}catch(e){}
+    srcUrl=URL.createObjectURL(f);
+    videoEl.src=srcUrl;
+    stageEl.style.display='';
+    outEl.style.display='none'; barWrap.style.display='none';
+    metaEl.textContent='正在读取视频…'; say('');
+  }
+  videoEl.addEventListener('loadedmetadata',function(){
+    var d=videoEl.duration||0;
+    startEl.value='0'; startEl.max=d.toFixed(2);
+    durEl.value=Math.min(d,3).toFixed(1); durEl.max=d.toFixed(2);
+    metaEl.innerHTML='已载入：'+videoEl.videoWidth+'×'+videoEl.videoHeight+' · 片长 '+d.toFixed(2)+' 秒　（点「开始转换」前可先设起始时间与时长）';
+  });
+  videoEl.addEventListener('error',function(){ metaEl.textContent='这个视频浏览器打不开（可能是 H.265/HEVC 或特殊编码），换个 MP4/WebM 试试' });
+  goEl.addEventListener('click',convert);
+  resetEl.addEventListener('click',function(){ fileEl.click() });
+  pickEl.addEventListener('click',function(e){ e.stopPropagation(); fileEl.click() });
+  fileEl.addEventListener('change',function(){ load(this.files&&this.files[0]); this.value='' });
+  dropEl.addEventListener('click',function(){ fileEl.click() });
+  ['dragenter','dragover'].forEach(function(ev){ dropEl.addEventListener(ev,function(e){e.preventDefault();dropEl.classList.add('over')}) });
+  ['dragleave','drop'].forEach(function(ev){ dropEl.addEventListener(ev,function(e){e.preventDefault();dropEl.classList.remove('over')}) });
+  dropEl.addEventListener('drop',function(e){ var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f)load(f) });
 })();
 </script>
 </body>
