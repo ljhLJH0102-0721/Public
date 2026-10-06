@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){var V='v71';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');var V='v72';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -824,6 +824,13 @@
       --bg-grad:radial-gradient(1200px 620px at 10% -10%,rgba(204,120,92,.10),transparent 60%),linear-gradient(180deg,#1c1b19,#1b1b19 45%,#171614);
     }
     /* ---------- 基础质感 ---------- */
+    /* ---------- 启动遮罩：确定初始视图前，绝不让插图区闪一下 ---------- */
+    html.boot #main-view{visibility:hidden!important}
+    #boot{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--bg-grad);transition:opacity .4s ease}
+    html:not(.boot) #boot{opacity:0;pointer-events:none;visibility:hidden}
+    #boot .boot-flower{font-size:34px;animation:bootSpin 2.4s ease-in-out infinite}
+    #boot .boot-txt{font-size:.84rem;color:var(--text3);letter-spacing:.16em}
+    @keyframes bootSpin{0%,100%{transform:rotate(-12deg) scale(1)}50%{transform:rotate(12deg) scale(1.1)}}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
     ::selection{background:rgba(var(--accent-rgb),.20);color:var(--text)}
     :focus{outline:none}
@@ -902,6 +909,7 @@
 </style>
 </head>
 <body>
+<div id="boot"><div class="boot-flower">🌷</div><div class="boot-txt">正在进入鸾尾花论坛…</div></div>
 <aside id="side-nav" aria-label="主导航"></aside>
   <div id="nav-mask"></div>
   <div id="announcement-bar">
@@ -991,7 +999,7 @@
       </div>
       <div class="search-wrap" id="search-wrap">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" id="search-input" name="site-search" placeholder="搜索标题、标签，或作者ID/昵称…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" />
+        <input type="search" id="search-input" name="site-search" placeholder="搜索标题、标签，或作者ID/昵称…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" readonly />
         <div id="suggestions"></div>
       </div>
       <div class="header-actions">
@@ -1466,7 +1474,12 @@
       const urls=[siteBase()+'pages.json?t='+Date.now(),'https://gcore.jsdelivr.net/gh/'+CFG.owner+'/'+CFG.repo+'@'+CFG.branch+'/pages.json?t='+Date.now()];
       for(let i=0;i<urls.length;i++){
         if(!urls[i])continue;
-        try{const r=await fetch(urls[i],{cache:'no-store'});if(r&&r.ok){const j=await r.json();if(Array.isArray(j)){pages=j;loaded=true;break}}}catch(e){}
+        try{
+          const ac=new AbortController();const tm=setTimeout(function(){ac.abort()},3000);
+          const r=await fetch(urls[i],{cache:'no-store',signal:ac.signal});
+          clearTimeout(tm);
+          if(r&&r.ok){const j=await r.json();if(Array.isArray(j)){pages=j;loaded=true;break}}
+        }catch(e){}
       }
       if(!loaded){try{const f=await ghGetFile('pages.json',null);if(f){pgSha=f.sha||null;const bin=atob(String(f.content||'').replace(/\s/g,''));pages=JSON.parse(decodeURIComponent(escape(bin)))}else{pages=[]}}catch(e){pages=[]}}
       if(!Array.isArray(pages)||!pages.length){
@@ -1479,8 +1492,11 @@
         const qp=new URLSearchParams(location.search);
         const deep=qp.has('login')||qp.has('u')||qp.has('logout')||(location.hash&&location.hash.length>1);
         const hp=homePage();
-        if(hp&&!deep)setTimeout(function(){openPage(hp.id,'home')},80);
+        if(hp&&!deep){ openPage(hp.id,'home'); }
+        else if(!deep){ resetToHome(); }
       }catch(e){}
+      /* 初始视图已确定 → 撤掉启动遮罩，这时才让主视图出现 */
+      try{ document.documentElement.classList.remove('boot'); }catch(e){}
     }
     function visPages(){return (pages||[]).filter(function(p){return p&&p.id&&!p.hidden&&!p.home})}
     function homePage(){const h=(pages||[]).filter(function(p){return p&&p.id&&p.home&&!p.hidden});return h.length?h[0]:null}
@@ -1637,8 +1653,8 @@
     let _skelPending=0;
     function showSkeletons(n=8){
       const mv=document.getElementById('main-view');
-      /* 不在主页面（主页/设置/科学区等）时不画骨架屏，等用户切回插图再画 */
-      if(mv&&mv.classList.contains('hidden')){_skelPending=n;return}
+      /* 不在主页面（启动遮罩期间 / 主页 / 设置 / 科学区等）时不画骨架屏，等切回插图再画 */
+      if(document.documentElement.classList.contains('boot')||(mv&&mv.classList.contains('hidden'))){_skelPending=n;return}
       _skelPending=0;
       const g=document.getElementById('gallery');if(!g)return;
       g.innerHTML=Array.from({length:n},()=>'<div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>').join('');
@@ -2344,6 +2360,10 @@ document.getElementById('detail-download')?.addEventListener('click',async funct
       (async()=>{try{const _qp=new URLSearchParams(location.search);if(_qp.has('logout')){try{await supa.signOut()}catch(e){}userLikedSet=new Set();showR18=false;localStorage.setItem('show_r18','0');updateUserUI();toast('已退出登录','success')}}catch(e){}if(supa.loadSession()){try{await onUserLoggedIn()}catch{supa.saveSession(null);updateUserUI()}}else{updateUserUI()}loadBg();setupSearchSuggestions();fetchArtworks();fetchAnnouncements();fetchPages();loadPosts();try{if(localStorage.getItem('nav_collapsed')==='1')document.body.classList.add('nav-collapsed');renderSideNav()}catch(e){}try{localStorage.removeItem('bg_color');document.body.style.background=''}catch(e){}try{applySiteTheme(localStorage.getItem('site_theme')||'light')}catch(e){}(function(){try{
         const si=document.getElementById('search-input');
         if(!si)return;
+        /* readonly 的输入框浏览器不会自动填充；用户一碰就解除只读 */
+        const unlock=function(){ if(si.hasAttribute('readonly')) si.removeAttribute('readonly') };
+        ['pointerdown','touchstart','mousedown','focus','keydown'].forEach(function(ev){si.addEventListener(ev,unlock,{passive:true})});
+        setTimeout(unlock,4000);                                   // 4 秒后无论如何都解除，避免影响使用
         /* 浏览器自动填充（常把登录邮箱塞进搜索框）不会触发键盘事件，
            所以只用键盘/粘贴事件判断"是不是用户真的在输入"。 */
         let touched=false;
