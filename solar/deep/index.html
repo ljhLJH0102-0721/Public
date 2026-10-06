@@ -282,7 +282,7 @@ async function boot(){
     const el = document.createElement('div');
     el.className = 'nlbl'; el.innerHTML = o.n + '<i>' + o.en + '</i>';
     labelBox.appendChild(el);
-    nodes.push({ mesh, halo, o, el, R });
+    nodes.push({ mesh, halo, o, el, R, size: Math.max(pw, ph) });
     loading++;
     loadBar.style.width = Math.round(loading / objs.length * 100) + '%';
     loadTxt.textContent = '正在加载 ' + o.n + '…';
@@ -339,17 +339,21 @@ function markItem(i){
   nodes.forEach((n,k) => n.item && n.item.classList.toggle('on', k === i));
 }
 function hideCard(){ document.getElementById('card').classList.remove('show'); }
+let focusToken = 0;
 function focusNode(i, showInfo){
   const n = nodes[i]; if(!n) return;
   focusIdx = i; markItem(i);
   const p = n.mesh.position.clone().normalize();
   const ty = Math.atan2(p.x, -p.z), tp = Math.asin(p.y);
   const sy = yaw, sp = pitch, sf = fov, sr = camR;
-  const targetFov = Math.max(20, Math.min(52, (n.o.ang||22) * 1.2));
-  const targetR = Math.max(0, n.R - n.R * 0.55);              // 飞近到该天体前
+  const targetFov = Math.max(24, Math.min(52, (n.o.ang||22) * 1.15));
+  /* 停在天体前方足够远的位置：避免贴到脸上把屏幕刷白 */
+  const targetR = Math.max(-200, n.R - n.size * 2.4);
   const t0 = performance.now(), dur = 1000;
+  const my = ++focusToken;                                     // 只让最新一次动画生效
   tour = false; document.getElementById('tour').textContent = '▶ 自动漫游';
   (function anim(){
+    if(my !== focusToken) return;                              // 被后一次点击取代，直接退出
     const k = Math.min(1, (performance.now()-t0)/dur);
     const e = 1 - Math.pow(1-k, 3);
     let dy = (ty - sy) % (2*Math.PI);
@@ -403,9 +407,10 @@ renderer.setAnimationLoop(now => {
   for(const n of nodes){
     n.mesh.lookAt(camera.position);                           // 面向相机
     if(n.halo) n.halo.lookAt(camera.position);
-    /* 空气透视：越远越暗越淡，近处明亮 */
+    /* 空气透视：越远越暗越淡；贴太近则主动淡出，避免加性混合刷白屏幕 */
     const dist = n.mesh.position.distanceTo(camera.position);
-    const dim = Math.max(0.12, Math.min(1, 2100 / Math.max(320, dist)));
+    const near = Math.max(0.10, Math.min(1, (dist - n.size * 0.55) / (n.size * 0.75)));
+    const dim = Math.max(0.12, Math.min(0.95, 2100 / Math.max(320, dist))) * near;
     n.mesh.material.uniforms.uOpacity.value = dim;
     if(n.halo) n.halo.material.uniforms.uOpacity.value = 0.5 * dim * dim;
     tmp.copy(n.mesh.position).project(camera);
