@@ -6,11 +6,15 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="icon" type="image/png" sizes="32x32" href="logo-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="logo.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="mask-icon" href="logo-32.png" color="#6c5ce7" />
   <title>鸾尾花论坛</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');var V='v82';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');var V='v83';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -66,6 +70,10 @@
     header.hidden{transform:translateY(-100%);pointer-events:none;height:0;padding:0;overflow:hidden}
     .logo{font-size:1.15rem;font-weight:700;color:var(--accent);white-space:nowrap;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;transition:opacity .2s}
     .logo:active{opacity:.6}
+    .logo img{flex-shrink:0;width:30px;height:30px;border-radius:50%;object-fit:contain;display:block;
+      filter:drop-shadow(0 1px 3px rgba(90,60,140,.28))}
+    .logo:hover img{transform:rotate(-6deg) scale(1.06)}
+    .logo img{transition:transform .25s var(--ease-spring)}
     .logo svg{flex-shrink:0;width:28px;height:28px}
     .search-wrap{flex:1;max-width:420px;min-width:0;display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border);border-radius:24px;padding:0 14px;gap:6px;transition:border-color .2s;position:relative}
     .search-wrap:focus-within{border-color:var(--accent);background:var(--surface)}
@@ -559,8 +567,8 @@
     .progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
     .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .3s}
     .progress-text{font-size:.75rem;color:var(--text3);text-align:center;margin-top:4px}
-    @media(max-width:720px){body{overflow-x:hidden}header{height:52px;padding:0 10px;gap:8px}.logo{font-size:.95rem;min-width:0}.logo span{overflow:hidden;text-overflow:ellipsis}.logo svg{width:24px;height:24px}.search-wrap{max-width:none;padding:0 12px}.header-actions{gap:6px}.btn{padding:5px 11px}.kind-bar{padding:8px 10px}.sp-header{padding:12px 16px}.detail-header{padding:12px 14px}.detail-body{padding:14px}.detail-heart-btn{font-size:1.35rem}.set-body{padding:16px 14px 80px}.user-dropdown{width:86vw;height:100vh;height:100dvh}.user-dropdown-item{padding:16px 18px;font-size:.98rem}.user-dropdown-item.danger{min-height:52px}.modal{width:min(92vw,420px);padding:20px 16px}#gallery{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px}#gallery-wrap{padding:12px}}
-    @media(max-width:480px){body{overflow-x:hidden}.header-right .btn span{display:none}.header-actions .hot-btn span{display:none}.hot-btn{padding:4px 9px}.logo span{max-width:30vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#gallery{grid-template-columns:repeat(2,1fr);gap:8px}#gallery-wrap{padding:8px}.artwork-card .card-tag{font-size:.55rem;padding:1px 6px;top:6px;left:6px}.artwork-card .r18-badge{font-size:.55rem;padding:1px 6px;top:6px;right:6px}.card-info{padding:7px 8px 9px}.card-title{font-size:.78rem}.card-meta{font-size:.64rem}.heart-btn{font-size:1.05rem;padding:3px}.heart-count{font-size:.66rem}.kind-bar{padding:7px 8px;gap:6px}.kind-pill{flex:1;justify-content:center;padding:7px 4px;font-size:.82rem;gap:4px}.tags-bar{padding:0 8px;height:42px}.tag-pill{padding:4px 10px;font-size:.72rem}.sort-select{font-size:.7rem;padding:3px 6px}.detail-body{padding:10px}.detail-title-text{font-size:1.1rem}.detail-actions{gap:10px}.detail-download{margin-left:8px;font-size:.72rem;padding:4px 10px}.detail-delete{font-size:.72rem;padding:4px 10px}.sp-list{padding:12px 8px 70px}.sp-card-img{width:110px;height:110px}.sp-card-title{font-size:.95rem}.sp-header{padding:10px 12px;gap:10px}.sp-back{font-size:.9rem;padding:5px 10px}#announcement-bar{font-size:.75rem;padding:4px 10px}.announce-text span{max-width:52vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.announce-actions input{width:150px}.set-body{padding:12px 10px 70px}.set-section{padding:13px 12px}.set-item-label{font-size:.88rem}.kind-opt{padding:8px 6px;font-size:.84rem}.logo span{font-size:.85rem}.logo svg{width:22px;height:22px}}
+    @media(max-width:720px){body{overflow-x:hidden}header{height:52px;padding:0 10px;gap:8px}.logo{font-size:.95rem;min-width:0}.logo span{overflow:hidden;text-overflow:ellipsis}.logo svg,.logo img{width:24px;height:24px}.search-wrap{max-width:none;padding:0 12px}.header-actions{gap:6px}.btn{padding:5px 11px}.kind-bar{padding:8px 10px}.sp-header{padding:12px 16px}.detail-header{padding:12px 14px}.detail-body{padding:14px}.detail-heart-btn{font-size:1.35rem}.set-body{padding:16px 14px 80px}.user-dropdown{width:86vw;height:100vh;height:100dvh}.user-dropdown-item{padding:16px 18px;font-size:.98rem}.user-dropdown-item.danger{min-height:52px}.modal{width:min(92vw,420px);padding:20px 16px}#gallery{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px}#gallery-wrap{padding:12px}}
+    @media(max-width:480px){body{overflow-x:hidden}.header-right .btn span{display:none}.header-actions .hot-btn span{display:none}.hot-btn{padding:4px 9px}.logo span{max-width:30vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#gallery{grid-template-columns:repeat(2,1fr);gap:8px}#gallery-wrap{padding:8px}.artwork-card .card-tag{font-size:.55rem;padding:1px 6px;top:6px;left:6px}.artwork-card .r18-badge{font-size:.55rem;padding:1px 6px;top:6px;right:6px}.card-info{padding:7px 8px 9px}.card-title{font-size:.78rem}.card-meta{font-size:.64rem}.heart-btn{font-size:1.05rem;padding:3px}.heart-count{font-size:.66rem}.kind-bar{padding:7px 8px;gap:6px}.kind-pill{flex:1;justify-content:center;padding:7px 4px;font-size:.82rem;gap:4px}.tags-bar{padding:0 8px;height:42px}.tag-pill{padding:4px 10px;font-size:.72rem}.sort-select{font-size:.7rem;padding:3px 6px}.detail-body{padding:10px}.detail-title-text{font-size:1.1rem}.detail-actions{gap:10px}.detail-download{margin-left:8px;font-size:.72rem;padding:4px 10px}.detail-delete{font-size:.72rem;padding:4px 10px}.sp-list{padding:12px 8px 70px}.sp-card-img{width:110px;height:110px}.sp-card-title{font-size:.95rem}.sp-header{padding:10px 12px;gap:10px}.sp-back{font-size:.9rem;padding:5px 10px}#announcement-bar{font-size:.75rem;padding:4px 10px}.announce-text span{max-width:52vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.announce-actions input{width:150px}.set-body{padding:12px 10px 70px}.set-section{padding:13px 12px}.set-item-label{font-size:.88rem}.kind-opt{padding:8px 6px;font-size:.84rem}.logo span{font-size:.85rem}.logo svg,.logo img{width:24px;height:24px}}
   
     /* ===== Refined visual system ===== */
     /* quiet, premium-feeling backdrop instead of a loud gradient */
@@ -959,7 +967,7 @@
 </style>
 </head>
 <body>
-<div id="boot"><div class="boot-flower">🌷</div><div class="boot-txt">正在进入鸾尾花论坛…</div></div>
+<div id="boot"><div class="boot-flower"><img src="logo.png" alt="" style="width:76px;height:76px;display:block"></div><div class="boot-txt">正在进入鸾尾花论坛…</div></div>
 <aside id="side-nav" aria-label="主导航"></aside>
   <div id="nav-mask"></div>
   <div id="announcement-bar">
@@ -1037,14 +1045,7 @@
         <span></span><span></span><span></span>
       </button>
       <div class="logo" id="logo">
-        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M32 8 C24 16, 12 22, 16 36 C18 44, 28 48, 32 42 C36 48, 46 44, 48 36 C52 22, 40 16, 32 8Z" style="fill:var(--accent);stroke:var(--accent-h);stroke-width:1.5"/>
-          <path d="M32 8 C32 8, 28 28, 28 42" style="stroke:var(--accent-bg);stroke-width:2" stroke-linecap="round"/>
-          <path d="M32 8 C32 8, 36 28, 36 42" style="stroke:var(--accent-bg);stroke-width:2" stroke-linecap="round"/>
-          <circle cx="32" cy="44" r="4" style="fill:var(--accent-bg);stroke:var(--accent-h);stroke-width:1"/>
-          <path d="M24 32 C22 26, 18 22, 14 22" style="stroke:var(--accent-h);stroke-width:2" stroke-linecap="round"/>
-          <path d="M40 32 C42 26, 46 22, 50 22" style="stroke:var(--accent-h);stroke-width:2" stroke-linecap="round"/>
-        </svg>
+        <img src="logo.png" alt="鸾尾花论坛" width="30" height="30" />
         <span>鸾尾花论坛</span>
       </div>
       <div class="search-wrap" id="search-wrap">
