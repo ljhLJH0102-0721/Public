@@ -10,7 +10,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){var V='v66';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
+  <script>(function(){var V='v67';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){}})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -193,6 +193,22 @@
     .sci-body{max-width:1240px;margin:0 auto;padding:14px 16px 28px}
     .sci-frame{height:min(80vh,860px);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(var(--accent-rgb),.14);box-shadow:var(--shadow-md);background:#05070d}
     .sci-frame iframe{width:100%;height:100%;border:0;display:block}
+    .sci-edu-tip{font-size:.8rem;color:var(--text2);margin:0 0 12px;padding:10px 14px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.14);border-radius:var(--radius-s);line-height:1.6}
+    .sci-edu{display:flex;flex-direction:column;gap:8px;padding-bottom:30px}
+    .sci-era{margin:16px 0 4px;font-size:.78rem;font-weight:800;letter-spacing:.1em;color:var(--text3);display:flex;align-items:center;gap:10px}
+    .sci-era:before{content:"";width:14px;height:2px;border-radius:2px;background:var(--accent);opacity:.75}
+    .sci-era:after{content:"";flex:1;height:1px;background:var(--border)}
+    .sci-ev{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:var(--surface);border:1px solid rgba(var(--accent-rgb),.10);border-radius:var(--radius);box-shadow:var(--shadow-xs);cursor:pointer;transition:transform var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out),border-color var(--dur) var(--ease)}
+    .sci-ev:hover{transform:translateX(3px);border-color:rgba(var(--accent-rgb),.28);box-shadow:var(--shadow-sm)}
+    .sci-ev.on{border-color:var(--accent);box-shadow:0 0 0 2px rgba(var(--accent-rgb),.14),var(--shadow-sm)}
+    .sci-ev-d{flex-shrink:0;min-width:78px;font-size:.76rem;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;padding-top:3px}
+    .sci-ev-b{flex:1;min-width:0}
+    .sci-ev-t{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:3px}
+    .sci-ev-x{font-size:.79rem;color:var(--text2);line-height:1.65}
+    .sci-ev-go{flex-shrink:0;align-self:center;font-size:.74rem;font-weight:700;color:var(--accent);opacity:0;transition:opacity var(--dur) var(--ease)}
+    .sci-ev:hover .sci-ev-go{opacity:1}
+    .sci-edu-empty{padding:34px;text-align:center;color:var(--text3);font-size:.85rem}
+    @media(max-width:768px){.sci-ev-d{min-width:64px;font-size:.7rem}.sci-ev-go{display:none}.sci-ev{padding:10px 11px}}
     @media(max-width:768px){.sci-frame{height:68vh}.sci-body{padding:10px 10px 20px}}
     @media(max-width:768px){.pg-frame{height:64vh}.pg-body{padding:16px 14px 80px}}
     /* ---------- 博客：标签 / 归档 / 阅读进度 ---------- */
@@ -1167,12 +1183,22 @@
   </div>
   <div id="sci-view">
     <div class="sp-header">
-      <div class="sp-title">🪐 科学区 · 太阳系</div>
+      <div class="sp-title">🪐 科学区</div>
       <div class="pg-actions"><a class="btn btn-outline" href="solar/solar-system-hd.html?v=3" target="_blank" rel="noreferrer">全屏打开 ↗</a></div>
     </div>
     <div class="sci-body">
-      <div class="sci-frame">
-        <iframe id="solar-frame" data-src="solar/solar-system-hd.html?v=3" title="3D 太阳系" loading="lazy" allow="fullscreen"></iframe>
+      <div class="ws-tabs" id="sci-tabs">
+        <button class="ws-tab active" data-scitab="scene">🪐 太阳系</button>
+        <button class="ws-tab" data-scitab="edu">📖 天文科普<span id="sci-edu-count"></span></button>
+      </div>
+      <div class="ws-panel active" data-scipanel="scene">
+        <div class="sci-frame">
+          <iframe id="solar-frame" data-src="solar/solar-system-hd.html?v=3" title="3D 太阳系" loading="lazy" allow="fullscreen"></iframe>
+        </div>
+      </div>
+      <div class="ws-panel" data-scipanel="edu">
+        <div class="sci-edu-tip">点击任意事件 → 自动切到「太阳系」并把时间跳到那一天、聚焦对应天体</div>
+        <div class="sci-edu" id="sci-edu"></div>
       </div>
     </div>
   </div>
@@ -1742,14 +1768,72 @@
       }
       h+='<button class="sn-item sn-collapse" data-nav="collapse" title="收起侧栏">'+navIco('panel')+'<span class="sn-label">收起侧栏</span></button>';
       nav.innerHTML=h;syncNavActive()}
+    /* ===== 科学区：3D 场景 / 天文科普 两个标签页 ===== */
+    let solarEvents=[];
+    let sciEduReady=false;
+    function ensureSolarFrame(){
+      const fr=document.getElementById('solar-frame');
+      if(fr&&!fr.getAttribute('src')&&fr.getAttribute('data-src'))fr.setAttribute('src',fr.getAttribute('data-src'));
+      return fr;
+    }
+    function sciActivate(v){
+      document.querySelectorAll('#sci-view .ws-tab').forEach(function(x){x.classList.toggle('active',x.dataset.scitab===v)});
+      document.querySelectorAll('#sci-view .ws-panel').forEach(function(p){p.classList.toggle('active',p.dataset.scipanel===v)});
+      if(v==='scene')ensureSolarFrame();
+      if(v==='edu')fetchSolarEvents();
+    }
+    async function fetchSolarEvents(){
+      if(sciEduReady)return;
+      const urls=[siteBase()+'solar/events.json?t='+Date.now(),'https://gcore.jsdelivr.net/gh/'+CFG.owner+'/'+CFG.repo+'@'+CFG.branch+'/solar/events.json?t='+Date.now()];
+      for(let i=0;i<urls.length;i++){
+        if(!urls[i])continue;
+        try{const r=await fetch(urls[i],{cache:'no-store'});if(r&&r.ok){const j=await r.json();if(Array.isArray(j)&&j.length){solarEvents=j;sciEduReady=true;break}}}catch(e){}
+      }
+      renderSciEdu();
+    }
+    function sciEra(y){return y<1800?'18 世纪':(y<1900?'19 世纪':(y<2000?'20 世纪':'21 世纪及未来'))}
+    function renderSciEdu(){
+      const box=document.getElementById('sci-edu');if(!box)return;
+      const cnt=document.getElementById('sci-edu-count');
+      if(cnt)cnt.textContent=solarEvents.length?('（'+solarEvents.length+' 条）'):'';
+      if(!solarEvents.length){box.innerHTML='<div class="sci-edu-empty">科普事件加载中…（若一直空白请检查网络）</div>';return}
+      let html='',cur='';
+      solarEvents.forEach(function(e,i){
+        const era=sciEra(parseInt(String(e.d).slice(0,4),10));
+        if(era!==cur){cur=era;html+='<div class="sci-era">'+era+'</div>'}
+        html+='<div class="sci-ev" data-i="'+i+'">'
+          +'<div class="sci-ev-d">'+escHtml(e.d)+'</div>'
+          +'<div class="sci-ev-b"><div class="sci-ev-t">'+escHtml(e.t)+'</div><div class="sci-ev-x">'+escHtml(e.x)+'</div></div>'
+          +'<div class="sci-ev-go">跳到这天 →</div></div>';
+      });
+      box.innerHTML=html;
+      box.querySelectorAll('.sci-ev').forEach(function(el){
+        el.addEventListener('click',function(){jumpSolarEvent(solarEvents[+el.dataset.i],el)});
+      });
+    }
+    function jumpSolarEvent(e,el){
+      if(!e)return;
+      const box=document.getElementById('sci-edu');
+      if(box&&el){box.querySelectorAll('.sci-ev').forEach(function(x){x.classList.remove('on')});el.classList.add('on')}
+      sciActivate('scene');
+      const fr=ensureSolarFrame();
+      if(!fr)return;
+      const payload={type:'solarJump',date:e.d,focus:e.f||'',title:e.t,text:e.x};
+      const send=function(){try{fr.contentWindow.postMessage(payload,'*')}catch(err){}};
+      if(fr.dataset.ready==='1'){send()}
+      else{fr.addEventListener('load',function(){fr.dataset.ready='1';send()},{once:true});setTimeout(send,2600)}
+    }
+    (function(){
+      const tabs=document.getElementById('sci-tabs');
+      if(tabs)tabs.addEventListener('click',function(ev){const b=ev.target.closest('.ws-tab');if(!b)return;sciActivate(b.dataset.scitab)});
+    })();
     function openScience(){
       setViewFlags(null);
       ['sp-view','set-view','coll-view','detail-view','ws-view','pg-view'].forEach(function(x){const el=document.getElementById(x);if(el)el.classList.remove('open')});
       const pv=document.getElementById('post-view');if(pv)pv.style.display='none';
       const mv=document.getElementById('main-view');if(mv)mv.classList.add('hidden');
       const v=document.getElementById('sci-view');if(v)v.classList.add('open');
-      const fr=document.getElementById('solar-frame');
-      if(fr&&!fr.getAttribute('src')&&fr.getAttribute('data-src'))fr.setAttribute('src',fr.getAttribute('data-src'));
+      sciActivate('scene');
       try{navActiveKey='solar';syncNavActive()}catch(e){}
       window.scrollTo(0,0);
     }

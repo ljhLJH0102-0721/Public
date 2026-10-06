@@ -1635,6 +1635,20 @@ function renderEdu(){
   renderEdu();
 })();
 
+/* 接收论坛「科学区 · 天文科普」标签页发来的跳转指令 */
+window.addEventListener('message', function(e){
+  const d = e && e.data;
+  if(!d || d.type !== 'solarJump' || !d.date) return;
+  eduJump(d.date, d.focus, '<b>' + eduEsc(d.date) + ' · ' + eduEsc(d.title || '') + '</b><br>' + eduEsc(d.text || ''));
+});
+/* 优先使用仓库里的 events.json（与论坛科普列表同源），失败则沿用页内数据 */
+fetch('events.json?t=' + Date.now()).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+  if(Array.isArray(j) && j.length){
+    EDU.length = 0;
+    j.forEach(function(e){ EDU.push(e); });
+    if(eduListEl){ eduListEl.dataset.done = ''; renderEdu(); }
+  }
+}).catch(function(){});
 /* ---------- 13. 启动 ---------- */
 onResize();
 applySpeed();
