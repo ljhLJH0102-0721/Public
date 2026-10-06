@@ -127,6 +127,14 @@
     #edu{right:8px;left:8px;width:auto;top:56px;bottom:96px}
     #edu-note{bottom:104px;font-size:12px;padding:11px 14px}
   }
+  /* ---------- 事件跳转：大标题 + 时间轴推进提示 ---------- */
+  #edu-cap{position:fixed;left:50%;top:76px;transform:translateX(-50%) translateY(-12px);z-index:380;
+    padding:10px 24px;border-radius:14px;background:rgba(11,15,27,.88);border:1px solid rgba(150,190,255,.34);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);text-align:center;opacity:0;pointer-events:none;
+    transition:opacity .32s ease,transform .32s cubic-bezier(.2,.8,.3,1);box-shadow:0 16px 38px rgba(0,0,0,.55)}
+  #edu-cap.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #edu-cap b{display:block;font-size:15.5px;letter-spacing:.08em;color:#9fd6ff;font-variant-numeric:tabular-nums}
+  #edu-cap span{display:block;font-size:13.5px;margin-top:4px;color:#eaf2ff;font-weight:600}
 </style>
 </head>
 <body>
@@ -142,7 +150,7 @@
     <a href="https://www.planetpixelemporium.com/" target="_blank" rel="noreferrer">planetpixelemporium</a><br>
     轨道：JPL 近似星历（含每世纪长期变化率）· 自转与极轴：IAU/WGCCRE 2015<br>
     季节、昼夜正午、日月食、土星环张角均与真实日期对应<br>
-    天体半径放大约 150–600 倍，卫星轨道放大约 25–50 倍，<b>距离比例真实</b><br><span style="color:#7fb2ff">🆕 版本 3 · 行星轨道已按真实 ω 修正 · 新增哈雷彗星（含彗尾） · 天文事件科普 38 条</span>
+    天体半径放大约 150–600 倍，卫星轨道放大约 25–50 倍，<b>距离比例真实</b><br><span style="color:#7fb2ff">🆕 版本 4 · 新增奥尔特云、奥陌陌/鲍里索夫等星际天体 · 事件跳转现在会推进时间轴并高亮目标 · 科普 99 条</span>
   </div>
 </div>
 
@@ -161,6 +169,7 @@
   <label><input type="checkbox" id="tOrbits" checked>轨道</label>
   <label><input type="checkbox" id="tLabels" checked>标签</label>
   <label><input type="checkbox" id="tBelt" checked>小行星带</label>
+  <label title="真实范围约 2,000–100,000 AU；为看清结构，画面已压缩距离"><input type="checkbox" id="tOort">奥尔特云</label>
   <label><input type="checkbox" id="tBloom" checked>泛光</label>
   <div class="sep"></div>
   <label title="按物理 1/r² 衰减：水星金星被烤亮，天王星海王星几乎全黑（真实但不好看）">
@@ -174,6 +183,7 @@
   <span id="loadTxt">正在加载真实行星贴图…</span>
 </div>
   <div id="edu-note"></div>
+  <div id="edu-cap"></div>
   <div id="edu">
     <div class="edu-head"><span>📖 科学区 · 天文事件科普</span><button id="eduClose" style="width:26px;height:26px;line-height:24px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;cursor:pointer;font-size:13px">✕</button></div>
     <div class="edu-sub">点击任意事件 → 时间跳到那一天并聚焦对应天体（可继续拖动旋转、缩放观察）</div>
@@ -1113,6 +1123,192 @@ addLabel(halleyBody, false);
   if(focusSel) focusSel.appendChild(o);
 })();
 
+/* ============================================================
+   奥尔特云（真实 2,000–100,000 AU，此处压缩显示）
+   + 星际天体 1I/奥陌陌、2I/鲍里索夫（双曲线轨道）
+   + 著名彗星 海尔-波普、67P（椭圆轨道）
+   ============================================================ */
+const MU_SUN = 0.0002959122082855911;                 // 太阳引力常数 AU³/日²
+function daysFromYMD(s){ const p = String(s).split('-').map(Number); return (Date.UTC(p[0], (p[1]||1)-1, (p[2]||1), 12) - J2000)/86400000; }
+
+/* ---------- 奥尔特云 ---------- */
+const OORT_IN = 13000, OORT_OUT = 36000;
+const oortGroup = new THREE.Group();
+(function(){
+  const N = 4200;
+  const pos = new Float32Array(N*3), col = new Float32Array(N*3);
+  for(let i=0;i<N;i++){
+    const u = Math.random()*2-1, th = Math.random()*Math.PI*2, rr = Math.sqrt(Math.max(0,1-u*u));
+    const R = OORT_IN + (OORT_OUT-OORT_IN)*Math.cbrt(Math.random());     // 按体积均匀
+    pos[i*3] = rr*Math.cos(th)*R; pos[i*3+1] = u*R; pos[i*3+2] = rr*Math.sin(th)*R;
+    const t = 0.5 + Math.random()*0.5;
+    col[i*3] = 0.58*t; col[i*3+1] = 0.74*t; col[i*3+2] = 1.0*t;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  g.setAttribute('color', new THREE.BufferAttribute(col,3));
+  const pts = new THREE.Points(g, new THREE.PointsMaterial({ size: 2.4, vertexColors: true,
+    transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: false }));
+  pts.frustumCulled = false;
+  oortGroup.add(pts);
+  [OORT_IN, OORT_OUT].forEach(function(R, k){
+    const shell = new THREE.Mesh(new THREE.SphereGeometry(R, 40, 20),
+      new THREE.MeshBasicMaterial({ color:0x6b8fd6, transparent:true, opacity: k?0.05:0.028, wireframe:true, depthWrite:false }));
+    oortGroup.add(shell);
+  });
+  oortGroup.visible = false;
+  scene.add(oortGroup);
+})();
+const oortBody = { key:'oort', name:'奥尔特云', radius: 2600, isOort:true, pos:new THREE.Vector3(0,0,0), mesh:null, node:oortGroup };
+byKey['oort'] = oortBody;
+(function(){ if(focusSel){ const o = document.createElement('option'); o.value='oort'; o.textContent='☁ 奥尔特云'; focusSel.appendChild(o) } })();
+
+/* ---------- 通用彗星 / 星际天体（椭圆 + 双曲线） ---------- */
+const COMETS = [
+  { key:'halebopp', name:'海尔-波普彗星', q:0.91414, e:0.99511, i:89.43, O:282.47, w:130.59, tp:'1997-04-01', size:0.42, tailK:5.5, tailMax:70, color:0xbfe0ff },
+  { key:'oumuamua', name:'奥陌陌 1I',    q:0.25591, e:1.19951, i:122.74, O:24.60,  w:241.81, tp:'2017-09-09', size:0.26, tailK:0,   tailMax:0,  color:0xffc9a0, cigar:true },
+  { key:'borisov',  name:'鲍里索夫 2I',  q:2.00660, e:3.35620, i:44.05,  O:308.15, w:209.12, tp:'2019-12-08', size:0.38, tailK:2.4, tailMax:40, color:0xa9ffd9 },
+  { key:'p67',      name:'67P 彗星',     q:1.24320, e:0.64100, i:7.04,   O:50.14,  w:12.78,  tp:'2015-08-13', size:0.22, tailK:1.8, tailMax:28, color:0xd8e8ff }
+];
+const _UP_Y2 = new THREE.Vector3(0,1,0);
+const _cdir = new THREE.Vector3();
+function cometPos(c, t, out){
+  const e = c.e, w = c.w*DEG, O = c.O*DEG, i = c.i*DEG;
+  const cw=Math.cos(w), sw=Math.sin(w), ci=Math.cos(i), si=Math.sin(i), cO=Math.cos(O), sO=Math.sin(O);
+  let xv, yv;
+  if(e < 1){
+    const a = c.q/(1-e), n = Math.sqrt(MU_SUN/(a*a*a));
+    let M = n*(t - c.Tp); M -= TWO_PI*Math.floor(M/TWO_PI);
+    let E = M + e*Math.sin(M);
+    for(let k=0;k<12;k++){ const f = E - e*Math.sin(E) - M; E -= f/(1 - e*Math.cos(E)) }
+    xv = a*(Math.cos(E)-e); yv = a*Math.sqrt(1-e*e)*Math.sin(E);
+  }else{
+    const a = c.q/(e-1), n = Math.sqrt(MU_SUN/(a*a*a));
+    const M = n*(t - c.Tp);
+    let H = (Math.abs(M) > 1e-6) ? Math.asinh(M/e) : Math.sign(M||1)*0.1;
+    if(!isFinite(H)) H = Math.sign(M||1)*3;
+    for(let k=0;k<60;k++){ const f = e*Math.sinh(H) - H - M, fp = e*Math.cosh(H) - 1;
+      if(Math.abs(fp) < 1e-12) break; const d = f/fp; H -= d; if(Math.abs(d) < 1e-12) break }
+    const r = a*(e*Math.cosh(H)-1);
+    const nu = 2*Math.atan2(Math.sqrt((e+1)/(e-1))*Math.tanh(H/2), 1);
+    xv = r*Math.cos(nu); yv = r*Math.sin(nu);
+  }
+  const X = (cO*cw - sO*ci*sw)*xv + (-cO*sw - sO*ci*cw)*yv;
+  const Y = (sO*cw + cO*ci*sw)*xv + (-sO*sw + cO*ci*cw)*yv;
+  const Z = (si*sw)*xv + (si*cw)*yv;
+  return out.set(X*AU, Z*AU, -Y*AU);
+}
+COMETS.forEach(function(c){
+  c.Tp = daysFromYMD(c.tp);
+  const node = new THREE.Object3D(); scene.add(node);
+  const mat = new THREE.MeshStandardMaterial({ color: c.color, roughness: 0.95, metalness: 0,
+    emissive: new THREE.Color(c.color).multiplyScalar(0.16), emissiveIntensity: 1 });
+  let mesh;
+  if(c.cigar){
+    mesh = new THREE.Mesh(new THREE.CapsuleGeometry(c.size*0.55, c.size*2.6, 4, 10), mat);
+    mesh.rotation.z = 0.5;
+  }else{
+    mesh = new THREE.Mesh(new THREE.SphereGeometry(c.size, 16, 12), mat);
+  }
+  node.add(mesh);
+  const coma = new THREE.Sprite(new THREE.SpriteMaterial({ map:T.glow, color:c.color, transparent:true,
+    opacity:0.3, blending:THREE.AdditiveBlending, depthWrite:false }));
+  coma.scale.setScalar(3);
+  node.add(coma);
+  let tail = null;
+  if(c.tailK > 0){
+    tail = new THREE.Mesh(new THREE.ConeGeometry(1, 10, 18, 1, true),
+      new THREE.MeshBasicMaterial({ color:c.color, transparent:true, opacity:0.14,
+        blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide }));
+    tail.frustumCulled = false;
+    scene.add(tail);
+  }
+  const body = { key:c.key, name:c.name, radius:Math.max(0.2, c.size*1.4), mesh:mesh, node:node,
+                 pos:new THREE.Vector3(), isComet:true };
+  mesh.userData.body = body;
+  bodies.push(body); byKey[c.key] = body; pickables.push(mesh);
+  addLabel(body, false);
+  /* 轨道线：椭圆整圈；双曲线只画 r ≤ 70 AU 的一段 */
+  (function(){
+    const pts = [];
+    if(c.e < 1){
+      const N = 720, a = c.q/(1-c.e);
+      for(let k=0;k<N;k++){
+        const E = k/N*TWO_PI;
+        pts.push(cometPos(c, c.Tp + Math.sqrt(a*a*a/MU_SUN)*(E - c.e*Math.sin(E)), new THREE.Vector3()));
+      }
+      const line = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({ color:c.color, transparent:true, opacity:0.28 }));
+      line.frustumCulled = false; scene.add(line);
+      orbitLines.push({ body:body, line:line, base:0.28 });
+    }else{
+      const a = c.q/(c.e-1), RMAX = 70;
+      const coshMax = (RMAX/a + 1)/c.e, Hmax = Math.acosh(Math.max(1.0001, coshMax));
+      const N = 420, n = Math.sqrt(MU_SUN/(a*a*a));
+      for(let k=0;k<=N;k++){
+        const H = -Hmax + (2*Hmax)*(k/N);
+        const M = c.e*Math.sinh(H) - H;
+        pts.push(cometPos(c, c.Tp + M/n, new THREE.Vector3()));
+      }
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({ color:c.color, transparent:true, opacity:0.34 }));
+      line.frustumCulled = false; scene.add(line);
+      orbitLines.push({ body:body, line:line, base:0.34 });
+    }
+  })();
+  (function(){ if(focusSel){ const o = document.createElement('option'); o.value = c.key;
+    o.textContent = (c.cigar ? '🛸 ' : '☄ ') + c.name; focusSel.appendChild(o) } })();
+  c._visual = { mesh: mesh, coma: coma, tail: tail, body: body };
+});
+function updateComets(t){
+  for(const c of COMETS){
+    const v = c._visual;
+    cometPos(c, t, v.body.pos);
+    v.body.node.position.copy(v.body.pos);
+    const R = Math.max(0.35, v.body.pos.length()/AU);
+    const act = Math.max(0, Math.min(1, 1.7/R));
+    v.coma.scale.setScalar(1.6 + 14*act);
+    v.coma.material.opacity = 0.08 + 0.5*act;
+    v.mesh.material.emissiveIntensity = 0.5 + 2.2*act;
+    if(v.tail){
+      const len = c.tailK*6 + c.tailMax*act;
+      v.tail.scale.set(0.5 + 2.0*act, len, 0.5 + 2.0*act);
+      _cdir.copy(v.body.pos);
+      if(_cdir.lengthSq() < 1e-6) _cdir.set(0,1,0); else _cdir.normalize();
+      v.tail.quaternion.setFromUnitVectors(_UP_Y2, _cdir);
+      v.tail.position.copy(v.body.pos).addScaledVector(_cdir, len*0.5);
+      v.tail.material.opacity = 0.02 + 0.24*act;
+      v.tail.visible = act > 0.02;
+    }
+  }
+}
+
+/* ---------- 事件跳转时的视觉高亮：扩散光环 + 大标题 ---------- */
+let flashRing = null, flashT = 0, flashBodyRef = null;
+function flashAt(b){
+  if(!flashRing){
+    flashRing = new THREE.Mesh(new THREE.RingGeometry(0.86, 1.0, 72),
+      new THREE.MeshBasicMaterial({ color:0x9fd6ff, transparent:true, opacity:0.9, side:THREE.DoubleSide,
+        depthWrite:false, blending:THREE.AdditiveBlending }));
+    flashRing.frustumCulled = false;
+    scene.add(flashRing);
+  }
+  flashBodyRef = b || null; flashT = 0; flashRing.visible = !!b;
+}
+function updateFlash(dt){
+  if(!flashRing || !flashRing.visible) return;
+  flashT += dt;
+  const k = Math.min(1, flashT/2.2), fade = 1 - k;
+  const base = flashBodyRef ? Math.max(0.6, flashBodyRef.radius*4) : 3;
+  const s = base * (1 + k*7);
+  flashRing.scale.set(s, s, s);
+  flashRing.material.opacity = 0.85 * fade * fade;
+  if(flashBodyRef) flashRing.position.copy(flashBodyRef.pos);
+  else flashRing.position.set(0,0,0);
+  flashRing.quaternion.copy(camera.quaternion);
+  if(k >= 1) flashRing.visible = false;
+}
+
 /* 星空背景 */
 let starDome = null, starPoints = null;
 if(T.stars){
@@ -1502,16 +1698,25 @@ function updateBelt(t){
   beltMesh.instanceMatrix.needsUpdate = true;
 }
 
+let scrubbing = false, scrubFrom = 0, scrubTo = 0, scrubT0 = 0;
 function animate(now){
   const t = now * 0.001;
   let dt = lastT ? (t - lastT) : 0;
   lastT = t;
   if(dt > 0.1) dt = 0.1;
 
-  if(!paused) simDays += dt * daysPerSecond;
+  /* 事件跳转的时间轴推进动画 */
+  if(scrubbing){
+    const k = Math.min(1, (now - scrubT0) / 1500);
+    const e2 = 1 - Math.pow(1 - k, 3);
+    simDays = scrubFrom + (scrubTo - scrubFrom) * e2;
+    if(k >= 1) scrubbing = false;
+  } else if(!paused) simDays += dt * daysPerSecond;
 
   updateBodies(simDays);
   updateBelt(simDays);
+  updateComets(simDays);
+  updateFlash(dt);
 
   /* 聚焦跟随：把相机与目标同时平移，保持相对视角 */
   if(follow.active && follow.body){
@@ -1544,62 +1749,140 @@ function animate(now){
    点击事件 → 跳到那一天、聚焦对应天体、弹出说明
    ============================================================ */
 const EDU = [
-  {d:'1705', t:'哈雷预言彗星回归', x:'爱德蒙·哈雷用牛顿引力算出这颗彗星会在 1758 年回来——人类第一次"预言"一颗天体的回归。', f:'halley'},
-  {d:'1758-12-25', t:'哈雷彗星如期回归', x:'预言成真，牛顿力学从此确立了在天体运动上的统治地位，这颗彗星也因此得名"哈雷"。', f:'halley'},
-  {d:'1761-06-06', t:'金星凌日 · 全球联合观测', x:'各国天文学家分赴世界各地计时，第一次用天文方法算出日地距离约 1.5 亿公里。', f:'venus'},
-  {d:'1769-06-03', t:'第二次金星凌日', x:'库克船长远航塔希提观测，顺路"发现"了新西兰与澳洲东岸。', f:'venus'},
-  {d:'1781-03-13', t:'发现天王星', x:'赫歇尔用自制望远镜发现天王星——人类第一次发现"新行星"，太阳系边界翻倍。', f:'uranus'},
-  {d:'1835-11-16', t:'哈雷彗星回归', x:'马克·吐温在这年出生，他后来说自己"随彗星而来，也将随彗星而去"——1910 年彗星回归次日他去世。', f:'halley'},
-  {d:'1846-09-23', t:'发现海王星', x:'人们先用笔算出它的位置、再用望远镜找到它，被称为"笔尖上发现的行星"。', f:'neptune'},
-  {d:'1877-08-12', t:'火星大冲', x:'火星运行到 15 年来最近的位置，斯基亚帕雷利观测并画下"运河"，点燃了火星人的想象。', f:'mars'},
-  {d:'1908-06-30', t:'通古斯大爆炸', x:'一颗小天体在西伯利亚上空解体，摧毁 2000 平方公里森林——近代最著名的撞击事件。'},
-  {d:'1910-05-19', t:'地球穿过哈雷彗星尾巴', x:'彗尾扫过地球，报纸渲染"毒气末日"，实际只是极稀薄的尘埃气体，什么也没发生。', f:'halley'},
-  {d:'1919-05-29', t:'日全食验证广义相对论', x:'爱丁顿在非洲观测星光被太阳偏折，广义相对论一举成名。'},
-  {d:'1930-02-18', t:'发现冥王星', x:'汤博在洛厄尔天文台比对照片找到它，成为"第九大行星"。', f:'pluto'},
-  {d:'1957-10-04', t:'斯普特尼克 1 号升空', x:'人类第一颗人造卫星，太空时代正式开始。'},
-  {d:'1961-04-12', t:'加加林进入太空', x:'东方一号绕地球一圈，人类第一次从太空回望地球。'},
-  {d:'1969-07-20', t:'阿波罗 11 号登月', x:'"这是我个人的一小步，却是人类的一大步。"', f:'earth'},
-  {d:'1977-09-05', t:'旅行者 1 号发射', x:'此行将飞掠木星、土星，并带着金唱片飞出太阳系。', f:'jupiter'},
-  {d:'1979-03-05', t:'旅行者 1 号飞掠木星', x:'首次近距离拍到木星大红斑与木卫一的火山喷发。', f:'jupiter'},
-  {d:'1980-11-12', t:'旅行者 1 号飞掠土星', x:'确认土星环由成千上万条细环组成。', f:'saturn'},
-  {d:'1986-02-09', t:'哈雷彗星过近日点', x:'人类派出"哈雷舰队"（乔托号、织女星号等）迎头拦截，第一次拍到彗核照片。', f:'halley'},
-  {d:'1989-08-25', t:'旅行者 2 号飞掠海王星', x:'人类至今唯一一次近距离看海王星，发现大黑斑与冰火山。', f:'neptune'},
-  {d:'1994-07-16', t:'苏梅克-列维 9 号撞击木星', x:'21 块彗星碎片连续撞上木星，撞痕比地球还大，全程全球直播。', f:'jupiter'},
-  {d:'1995-12-07', t:'伽利略号进入木星轨道', x:'并释放子探测器直接冲进木星大气，传回第一份大气剖面数据。', f:'jupiter'},
-  {d:'1997-04-01', t:'海尔-波普彗星过近日点', x:'20 世纪最壮观的彗星之一，肉眼可见长达 18 个月。'},
-  {d:'2004-06-08', t:'金星凌日', x:'上上次金星凌日（再上一次是 1882 年），开启 8 年一组的"凌日对"。', f:'venus'},
-  {d:'2005-01-14', t:'惠更斯号登陆土卫六', x:'人类第一次在另一颗行星的卫星上着陆，看到河道与甲烷湖。', f:'saturn'},
-  {d:'2006-08-24', t:'冥王星被划为矮行星', x:'国际天文联合会重新定义行星，太阳系"九大行星"就此成为历史。', f:'pluto'},
-  {d:'2012-06-06', t:'本世纪最后一次金星凌日', x:'下一次要等到 2117 年——那天许多人拍下"小黑点走过太阳"。', f:'venus'},
-  {d:'2012-08-06', t:'好奇号登陆火星', x:'空中吊车着陆，开始在盖尔撞击坑寻找火星曾经宜居的证据。', f:'mars'},
-  {d:'2014-11-12', t:'菲莱登陆 67P 彗星', x:'罗塞塔号伴随彗星飞行，探测器第一次落在彗核表面。'},
-  {d:'2015-07-14', t:'新视野号飞掠冥王星', x:'人类第一次看清冥王星：氮冰平原、冰山与蓝色雾霭。', f:'pluto'},
-  {d:'2017-08-21', t:'横贯美国的日全食', x:'"大美国日食"，数千万人抬头观看。'},
-  {d:'2019-01-03', t:'嫦娥四号登陆月背', x:'人类探测器第一次着陆月球背面，玉兔二号开始巡视。', f:'earth'},
-  {d:'2019-04-10', t:'首张黑洞照片公布', x:'事件视界望远镜以地球尺度的干涉阵列，拍到 M87 中心的黑洞阴影。'},
-  {d:'2021-02-10', t:'天问一号进入火星轨道', x:'祝融号随后着陆乌托邦平原，中国首次火星探测一次成功。', f:'mars'},
-  {d:'2021-12-25', t:'詹姆斯·韦布空间望远镜发射', x:'人类最强的红外之眼，正在回望宇宙最早的星系。'},
-  {d:'2024-04-08', t:'北美日全食', x:'横跨墨西哥、美国、加拿大；下一次北美日全食要等 2044 年。', f:'earth'},
-  {d:'2029-04-13', t:'小行星阿波菲斯掠过地球（未来）', x:'直径约 340 米的小行星距地面仅 3.1 万公里——比同步卫星更近，肉眼可见。'},
-  {d:'2061-07-28', t:'哈雷彗星再次回归（未来）', x:'下一次哈雷彗星过近日点。如果那时你还记得打开过这个页面，替我们再看一眼。', f:'halley'}
-];
+  { "d":"1610-01-07", "t":"伽利略发现木星四大卫星", "f":"jupiter", "x":"伽利略用自制望远镜看到木星旁边有四颗小星在移动——木卫一至四。这是第一次证明天体不都绕着地球转，成了日心说的关键证据。" },
+  { "d":"1610-12-11", "t":"伽利略观测到金星相位", "f":"venus", "x":"金星像月亮一样有盈亏，说明它绕太阳而非地球运行——哥白尼体系的直接观测证据。" },
+  { "d":"1655-03-25", "t":"惠更斯发现土卫六", "f":"saturn", "x":"惠更斯发现土星身边最大的卫星泰坦，并认出「土星耳朵」其实是环。" },
+  { "d":"1675-08-25", "t":"卡西尼发现土星环缝", "f":"saturn", "x":"卡西尼发现土星环被一道暗缝分成内外两环，这道缝后来就叫「卡西尼缝」。" },
+  { "d":"1687-07-05", "t":"牛顿《自然哲学的数学原理》出版", "x":"牛顿给出万有引力与三大运动定律，天体运动第一次可以用公式算出来——现代天体力学的起点。" },
+  { "d":"1705-01-25", "t":"哈雷预言彗星回归", "f":"halley", "x":"爱德蒙·哈雷用牛顿引力算出这颗彗星会在 1758 年回来——人类第一次「预言」一颗天体的回归。" },
+  { "d":"1758-12-25", "t":"哈雷彗星如期回归", "f":"halley", "x":"预言成真，牛顿力学从此确立了在天体运动上的统治地位，这颗彗星也因此得名「哈雷」。" },
+  { "d":"1761-06-06", "t":"金星凌日 · 全球联合观测", "f":"venus", "x":"各国天文学家分赴世界各地计时，第一次用天文方法算出日地距离约 1.5 亿公里。" },
+  { "d":"1769-06-03", "t":"第二次金星凌日", "f":"venus", "x":"库克船长远航塔希提观测，顺路「发现」了新西兰与澳洲东岸。" },
+  { "d":"1781-03-13", "t":"发现天王星", "f":"uranus", "x":"赫歇尔用自制望远镜发现天王星——人类第一次发现「新行星」，太阳系边界翻倍。" },
+  { "d":"1801-01-01", "t":"皮亚齐发现谷神星", "x":"皮亚齐在元旦夜发现谷神星，它是小行星带里最大的天体，也是第一颗被发现的小行星（现归类为矮行星）。" },
+  { "d":"1835-11-16", "t":"哈雷彗星回归", "f":"halley", "x":"马克·吐温在这年出生，他后来说自己「随彗星而来，也将随彗星而去」——1910 年彗星回归次日他去世。" },
+  { "d":"1846-09-23", "t":"发现海王星", "f":"neptune", "x":"人们先用笔算出它的位置、再用望远镜找到它，被称为「笔尖上发现的行星」。" },
+  { "d":"1877-08-12", "t":"火星大冲 · 发现两颗火卫", "f":"mars", "x":"火星运行到 15 年来最近的位置，斯基亚帕雷利画下「运河」点燃火星人想象；霍尔同时发现了火卫一与火卫二。" },
+  { "d":"1898-08-13", "t":"发现爱神星", "x":"维特发现爱神星（433 Eros）——第一颗近地小行星，后来成为人类第一个环绕并着陆的小行星。" },
+  { "d":"1908-06-30", "t":"通古斯大爆炸", "x":"一颗小天体在西伯利亚上空解体，摧毁 2000 平方公里森林——近代最著名的撞击事件。" },
+  { "d":"1910-05-19", "t":"地球穿过哈雷彗星尾巴", "f":"halley", "x":"彗尾扫过地球，报纸渲染「毒气末日」，实际只是极稀薄的尘埃气体，什么也没发生。" },
+  { "d":"1919-05-29", "t":"日全食验证广义相对论", "x":"爱丁顿在非洲观测星光被太阳偏折，广义相对论一举成名。" },
+  { "d":"1930-02-18", "t":"发现冥王星", "f":"pluto", "x":"汤博在洛厄尔天文台比对照片找到它，成为「第九大行星」。" },
+  { "d":"1950-01-01", "t":"奥尔特提出奥尔特云假说", "f":"oort", "x":"荷兰天文学家扬·奥尔特提出：太阳系最外层存在一个由万亿颗冰质天体组成的巨大球壳，距离 2,000 至 10 万天文单位，长周期彗星都来自这里。它至今没有被直接拍到，只能靠彗星轨道反推。" },
+  { "d":"1951-06-01", "t":"柯伊伯带假说提出", "f":"pluto", "x":"柯伊伯等人提出海王星之外还存在一圈小天体带——40 年后被观测证实，冥王星只是其中一员。" },
+  { "d":"1957-10-04", "t":"斯普特尼克 1 号升空", "x":"人类第一颗人造卫星，太空时代正式开始。" },
+  { "d":"1959-09-13", "t":"月球 2 号首次撞击月球", "x":"苏联月球 2 号成为第一个抵达另一个天体的探测器，撞在月球「澄海」附近。" },
+  { "d":"1959-10-07", "t":"月球 3 号拍到月球背面", "x":"人类第一次看到月球背面——那里几乎没有月海，与正面截然不同。" },
+  { "d":"1961-04-12", "t":"加加林进入太空", "x":"东方一号绕地球一圈，人类第一次从太空回望地球。" },
+  { "d":"1962-08-27", "t":"水手 2 号飞掠金星", "f":"venus", "x":"第一个成功的行星探测器，测出金星表面约 400℃、没有磁场——推翻了「金星是热带天堂」的想象。" },
+  { "d":"1965-07-15", "t":"水手 4 号首次飞掠火星", "f":"mars", "x":"传回 21 张照片，显示火星表面布满陨石坑、大气极稀薄，看起来更像月球。" },
+  { "d":"1966-02-03", "t":"月球 9 号首次月面软着陆", "x":"证明月面能承受着陆器，不会陷入尘埃海——为载人登月扫清了最后疑虑。" },
+  { "d":"1969-07-20", "t":"阿波罗 11 号登月", "f":"earth", "x":"「这是我个人的一小步，却是人类的一大步。」" },
+  { "d":"1970-09-24", "t":"月球 16 号首次无人采样返回", "x":"带回 101 克月壤，证明机器人也能完成采样返回。" },
+  { "d":"1970-12-15", "t":"金星 7 号在金星着陆", "f":"venus", "x":"第一个在另一颗行星表面软着陆并传回数据的探测器：金星地表 475℃、90 个大气压。" },
+  { "d":"1971-11-14", "t":"水手 9 号环绕火星", "f":"mars", "x":"成为第一颗环绕另一行星的探测器，拍下太阳系最大的火山奥林帕斯山与巨大的水手谷。" },
+  { "d":"1972-03-03", "t":"先驱者 10 号发射", "f":"jupiter", "x":"第一个穿越小行星带并飞掠木星的探测器，携带了给外星文明的金属牌。" },
+  { "d":"1973-04-06", "t":"先驱者 11 号发射", "f":"saturn", "x":"继先驱者 10 号之后飞掠木星与土星，第一次拍到土星环的细节。" },
+  { "d":"1974-03-29", "t":"水手 10 号首次飞掠水星", "f":"mercury", "x":"借金星引力弹弓加速，成为唯一造访过水星的探测器长达 30 年，拍下半个水星表面。" },
+  { "d":"1976-07-20", "t":"海盗 1 号登陆火星", "f":"mars", "x":"第一次成功在火星表面着陆并工作，拍下火星地表的彩色照片，并做了寻找微生物的实验。" },
+  { "d":"1977-08-20", "t":"旅行者 2 号发射", "f":"neptune", "x":"唯一造访过天王星与海王星的探测器，也是人类飞行时间最长的探测器之一。" },
+  { "d":"1977-09-05", "t":"旅行者 1 号发射", "f":"jupiter", "x":"此行将飞掠木星、土星，并带着刻有地球声音的「金唱片」飞出太阳系。它现在是离地球最远的人造物体。" },
+  { "d":"1979-03-05", "t":"旅行者 1 号飞掠木星", "f":"jupiter", "x":"首次近距离拍到木星大红斑与木卫一的火山喷发——太阳系里除地球外第一处活火山。" },
+  { "d":"1980-11-12", "t":"旅行者 1 号飞掠土星", "f":"saturn", "x":"确认土星环由成千上万条细环组成，并发现土卫六有浓密大气。" },
+  { "d":"1986-01-24", "t":"旅行者 2 号飞掠天王星", "f":"uranus", "x":"人类至今唯一一次近距离看天王星：发现它的自转轴几乎躺倒，并新增 10 颗卫星。" },
+  { "d":"1986-02-09", "t":"哈雷彗星过近日点", "f":"halley", "x":"人类派出「哈雷舰队」（乔托号、织女星号等）迎头拦截，第一次拍到彗核照片：一颗黑乎乎的「脏雪球」。" },
+  { "d":"1989-08-25", "t":"旅行者 2 号飞掠海王星", "f":"neptune", "x":"人类至今唯一一次近距离看海王星，发现大黑斑与冰火山。" },
+  { "d":"1990-02-14", "t":"「暗淡蓝点」照片", "f":"earth", "x":"旅行者 1 号在 60 亿公里外回望，地球只是一个 0.12 像素的光点。卡尔·萨根说：所有你爱的人、认识的人，都在这个小点上度过一生。" },
+  { "d":"1990-04-24", "t":"哈勃太空望远镜发射", "x":"人类最强的光学之眼升空，此后 30 多年重写了几乎所有天文学分支。" },
+  { "d":"1992-08-30", "t":"发现第一个柯伊伯带天体", "f":"pluto", "x":"1992 QB1 被发现，柯伊伯带从假说变成事实——冥王星不再孤单。" },
+  { "d":"1994-07-16", "t":"苏梅克-列维 9 号撞击木星", "f":"jupiter", "x":"21 块彗星碎片连续撞上木星，撞痕比地球还大，全程全球直播——人类第一次实时观看天体撞击。" },
+  { "d":"1995-07-23", "t":"发现海尔-波普彗星", "f":"halebopp", "x":"两位业余天文学家在同一天独立发现这颗彗星，它后来成为 20 世纪最壮观的彗星之一。" },
+  { "d":"1995-12-07", "t":"伽利略号进入木星轨道", "f":"jupiter", "x":"释放子探测器直接冲进木星大气，传回第一份大气剖面数据；并发现木卫二冰壳下可能存在海洋。" },
+  { "d":"1997-04-01", "t":"海尔-波普彗星过近日点", "f":"halebopp", "x":"20 世纪最壮观的彗星之一，肉眼可见长达 18 个月，彗尾肉眼能看出两条。" },
+  { "d":"1997-10-15", "t":"卡西尼-惠更斯号发射", "f":"saturn", "x":"史上最复杂的行星探测器，将用 13 年时间环绕土星、并把惠更斯号投到土卫六上。" },
+  { "d":"1998-11-20", "t":"国际空间站第一个舱段升空", "x":"「曙光号」功能货舱入轨，人类开始在地球轨道上长期居住。" },
+  { "d":"2000-02-14", "t":"NEAR 号着陆爱神星", "x":"人类第一次环绕并着陆一颗小行星，虽然只是「软撞」，但传回了地表特写。" },
+  { "d":"2003-09-21", "t":"伽利略号坠入木星", "f":"jupiter", "x":"为避免污染可能存在生命的木卫二，科学家让它主动冲进木星大气烧毁——一次为了保护而做的「牺牲」。" },
+  { "d":"2004-06-08", "t":"金星凌日", "f":"venus", "x":"上上次金星凌日（再上一次是 1882 年），开启 8 年一组的「凌日对」。" },
+  { "d":"2004-07-01", "t":"卡西尼号进入土星轨道", "f":"saturn", "x":"开始 13 年的土星之旅，发现了土卫二南极的冰喷泉与土卫六的甲烷湖。" },
+  { "d":"2005-01-14", "t":"惠更斯号登陆土卫六", "f":"saturn", "x":"人类第一次在另一颗行星的卫星上着陆，看到河道、卵石与甲烷湖——像极了地球，但下的是液态甲烷。" },
+  { "d":"2005-07-04", "t":"深度撞击号撞击坦普尔 1 号彗星", "x":"探测器主动撞向彗核，炸出的物质让人类第一次看到彗星内部成分。" },
+  { "d":"2006-01-19", "t":"新视野号发射", "f":"pluto", "x":"以史上最快发射速度离地，目标：9 年半后飞掠冥王星。" },
+  { "d":"2006-08-24", "t":"冥王星被划为矮行星", "f":"pluto", "x":"国际天文联合会重新定义行星，太阳系「九大行星」就此成为历史——引发至今未息的争论。" },
+  { "d":"2007-10-24", "t":"嫦娥一号发射", "x":"中国第一颗探月卫星，实现绕月飞行并绘制全月图。" },
+  { "d":"2009-03-07", "t":"开普勒太空望远镜发射", "x":"专门寻找系外行星，此后确认了数千颗行星，证明行星在银河系里极其普遍。" },
+  { "d":"2010-06-13", "t":"隼鸟号带回小行星样品", "x":"尽管故障重重，它仍把丝川小行星的微粒带回地球——第一次小行星采样返回。" },
+  { "d":"2011-03-18", "t":"信使号进入水星轨道", "f":"mercury", "x":"第一个环绕水星的探测器，证实水星极区永久阴影坑内存在水冰。" },
+  { "d":"2012-06-06", "t":"本世纪最后一次金星凌日", "f":"venus", "x":"下一次要等到 2117 年——那天许多人拍下「小黑点走过太阳」。" },
+  { "d":"2012-08-06", "t":"好奇号登陆火星", "f":"mars", "x":"用「空中吊车」方式着陆，开始在盖尔撞击坑寻找火星曾经宜居的证据，并发现有机分子。" },
+  { "d":"2013-12-14", "t":"嫦娥三号着陆月球", "x":"中国首次地外天体软着陆，玉兔号月球车开始在月面巡视。" },
+  { "d":"2014-08-06", "t":"罗塞塔号抵达 67P 彗星", "f":"p67", "x":"人类第一次环绕一颗彗星飞行，近距离看着它在接近太阳时喷发。" },
+  { "d":"2014-11-12", "t":"菲莱登陆 67P 彗星", "f":"p67", "x":"探测器第一次落在彗核表面——它弹了两下才停住，落在一个阴影坑里，靠太阳能撑了 60 小时。" },
+  { "d":"2015-07-14", "t":"新视野号飞掠冥王星", "f":"pluto", "x":"人类第一次看清冥王星：氮冰平原、3000 米高的水冰山与蓝色雾霭。" },
+  { "d":"2015-08-13", "t":"67P 彗星过近日点", "f":"p67", "x":"罗塞塔号全程观察彗星最活跃的时刻，喷流从彗核各处冲出来。" },
+  { "d":"2016-07-04", "t":"朱诺号进入木星轨道", "f":"jupiter", "x":"贴着木星云顶飞行的探测器，测出木星内部结构与极区巨大的风暴气旋。" },
+  { "d":"2016-09-25", "t":"中国天眼 FAST 落成", "x":"世界最大的单口径射电望远镜在贵州落成，500 米口径，专门搜寻脉冲星与可能的外星信号。" },
+  { "d":"2017-08-21", "t":"横贯美国的日全食", "f":"earth", "x":"「大美国日食」，数千万人抬头观看，横跨全美 14 个州。" },
+  { "d":"2017-09-09", "t":"奥陌陌过近日点", "f":"oumuamua", "x":"这个来自恒星际空间的天体以 87.7 公里/秒掠过太阳，最近时只有 0.256 天文单位（比水星还近）。" },
+  { "d":"2017-09-15", "t":"卡西尼号坠入土星大气", "f":"saturn", "x":"燃料将尽，科学家让它主动坠毁在土星上，以免污染可能孕育生命的土卫二——任务最后一刻仍在传数据。" },
+  { "d":"2017-10-19", "t":"发现首个星际天体「奥陌陌」", "f":"oumuamua", "x":"泛星计划发现一个轨道为双曲线的天体——它不属于太阳系，来自别的恒星系统，是人类确认的第一个「访客」。它形状细长（长约 400 米、宽仅 40 米），至今仍有人猜测它是自然的还是人造的。" },
+  { "d":"2018-08-12", "t":"帕克太阳探测器发射", "x":"人类第一个飞进日冕的探测器，将反复穿越太阳大气最外层。" },
+  { "d":"2019-01-03", "t":"嫦娥四号登陆月背", "f":"earth", "x":"人类探测器第一次着陆月球背面，玉兔二号开始巡视——那里无法与地球直接通信，靠中继星传话。" },
+  { "d":"2019-04-10", "t":"首张黑洞照片公布", "x":"事件视界望远镜以地球尺度的干涉阵列，拍到 M87 中心的黑洞阴影——人类第一次「看见」黑洞。" },
+  { "d":"2019-08-30", "t":"发现第二颗星际天体鲍里索夫", "f":"borisov", "x":"克里米亚业余天文学家鲍里索夫发现一颗彗星轨道偏心率高达 3.36——它是继奥陌陌之后第二颗确认的星际来客，而且带着明显的彗发。" },
+  { "d":"2019-12-08", "t":"鲍里索夫彗星过近日点", "f":"borisov", "x":"它在 2 天文单位处过近日点，哈勃拍到它彗发中的尘埃——成分与太阳系彗星惊人地相似。" },
+  { "d":"2020-12-17", "t":"嫦娥五号月球采样返回", "x":"带回 1731 克月壤，中国成为第三个实现月球采样返回的国家。" },
+  { "d":"2021-02-10", "t":"天问一号进入火星轨道", "f":"mars", "x":"一次任务完成「绕、落、巡」三步，祝融号随后着陆乌托邦平原——中国首次火星探测一次成功。" },
+  { "d":"2021-04-19", "t":"机智号在火星首飞", "f":"mars", "x":"人类第一次在外星球上实现动力飞行，直升机的桨叶在只有地球 1% 的大气密度中转动。" },
+  { "d":"2021-12-14", "t":"帕克太阳探测器穿越日冕", "x":"人类制造的物体第一次「触摸」太阳，飞进日冕内部采样。" },
+  { "d":"2021-12-25", "t":"詹姆斯·韦布空间望远镜发射", "x":"人类最强的红外之眼，在距地球 150 万公里的拉格朗日点展开 6.5 米主镜，正在回望宇宙最早的星系。" },
+  { "d":"2022-07-12", "t":"韦布首张深空照片公布", "x":"一张「星系全在打架」的深场照片，包含数千个星系，其中一些的光走了 130 亿年。" },
+  { "d":"2022-09-26", "t":"DART 撞击小行星", "x":"人类第一次主动撞击小行星以改变其轨道，成功把 Dimorphos 的绕转周期缩短了 32 分钟——行星防御的第一次实战演练。" },
+  { "d":"2023-04-14", "t":"JUICE 发射前往木星冰月", "f":"jupiter", "x":"欧洲的木星冰月探测器上路，目标是木卫二、木卫三、木卫四——它们冰壳下可能藏着比地球还多的液态水。" },
+  { "d":"2024-04-08", "t":"北美日全食", "f":"earth", "x":"横跨墨西哥、美国、加拿大；下一次北美日全食要等 2044 年。" },
+  { "d":"2024-06-25", "t":"嫦娥六号月背采样返回", "x":"人类第一次从月球背面带回样品，共 1935.3 克。" },
+  { "d":"2026-08-12", "t":"欧洲日全食（未来）", "f":"earth", "x":"全食带将经过冰岛与西班牙，欧洲大陆自 1999 年以来最好的一次日全食。" },
+  { "d":"2027-08-02", "t":"北非日全食（未来）", "f":"earth", "x":"全食带横穿北非，卢克索等地的全食时间超过 6 分钟，是本世纪陆地上最长的日全食之一。" },
+  { "d":"2029-04-13", "t":"小行星阿波菲斯掠过地球（未来）", "f":"earth", "x":"直径约 340 米的小行星距地面仅 3.1 万公里——比同步卫星更近，欧洲、非洲部分地区肉眼可见。" },
+  { "d":"2032-11-13", "t":"水星凌日（未来）", "f":"mercury", "x":"水星将以小黑点的形式从太阳圆面前经过，下一次要等到 2039 年。" },
+  { "d":"2044-08-23", "t":"北美日全食（未来）", "f":"earth", "x":"全食带经过加拿大、美国蒙大拿与北达科他州。" },
+  { "d":"2061-07-28", "t":"哈雷彗星再次回归（未来）", "f":"halley", "x":"下一次哈雷彗星过近日点。如果那时你还记得打开过这个页面，替我们再看一眼。" },
+  { "d":"2117-12-11", "t":"下一次金星凌日（未来）", "f":"venus", "x":"本世纪不会再发生金星凌日了——下一次是 2117 年，再下一次 2125 年。" }
+]
+;
 function eduEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 const eduListEl = document.getElementById('eduList');
 const eduNoteEl = document.getElementById('edu-note');
 const eduPanelEl = document.getElementById('edu');
-function eduJump(d, f, noteHtml){
+function eduCaption(dateStr, title){
+  const el = document.getElementById('edu-cap');
+  if(!el) return;
+  el.innerHTML = '<b>' + eduEsc(dateStr) + '</b>' + (title ? ('<span>' + eduEsc(title) + '</span>') : '');
+  el.classList.add('show');
+  if(el._t) clearTimeout(el._t);
+  el._t = setTimeout(function(){ el.classList.remove('show'); }, 5200);
+}
+function eduJump(d, f, noteHtml, title){
   const m = String(d).match(/^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?/);
   if(m){
-    const ts = Date.UTC(+m[1], (m[2] ? +m[2] : 1) - 1, m[3] ? +m[3] : 1, 12, 0, 0);
+    const mm = String(m[2] || 1).padStart(2,'0'), dd = String(m[3] || 1).padStart(2,'0');
+    const ts = Date.UTC(+m[1], +mm - 1, +dd, 12, 0, 0);
     if(!isNaN(ts)){
-      simDays = (ts - J2000) / 86400000;
+      const target = (ts - J2000) / 86400000;
+      /* 时间轴推进：从当前日期平滑滚到目标日期，让"时间跳了"看得见 */
+      scrubFrom = simDays; scrubTo = target; scrubT0 = performance.now(); scrubbing = true;
       paused = true;
       if(playBtn) playBtn.textContent = '▶';
-      updateBodies(simDays);
-      updateLabels();
+      const de = document.getElementById('date');
+      if(de) de.value = m[1] + '-' + mm + '-' + dd;
+      eduCaption(m[1] + '-' + mm + '-' + dd, title || '');
     }
   }
-  if(f){ const b = byKey[f] || planetById[f]; if(b) focusOn(b); }
+  if(f){
+    const b = byKey[f] || planetById[f];
+    if(b){ focusOn(b); flashAt(b); }
+    else flashAt(null);
+  } else flashAt(null);
   if(eduNoteEl && noteHtml){
     eduNoteEl.innerHTML = noteHtml;
     eduNoteEl.classList.add('show');
@@ -1607,6 +1890,7 @@ function eduJump(d, f, noteHtml){
     eduNoteEl._t = setTimeout(function(){ eduNoteEl.classList.remove('show'); }, 11000);
   }
 }
+
 function renderEdu(){
   if(!eduListEl || eduListEl.dataset.done) return;
   eduListEl.dataset.done = '1';
@@ -1620,7 +1904,7 @@ function renderEdu(){
       const e = EDU[+el.dataset.i];
       Array.prototype.forEach.call(eduListEl.querySelectorAll('.edu-item'), function(x){ x.classList.remove('on'); });
       el.classList.add('on');
-      eduJump(e.d, e.f, '<b>'+eduEsc(e.d)+' · '+eduEsc(e.t)+'</b><br>'+eduEsc(e.x));
+      eduJump(e.d, e.f, '<b>'+eduEsc(e.d)+' · '+eduEsc(e.t)+'</b><br>'+eduEsc(e.x), e.t);
     });
   });
 }
@@ -1639,7 +1923,7 @@ function renderEdu(){
 window.addEventListener('message', function(e){
   const d = e && e.data;
   if(!d || d.type !== 'solarJump' || !d.date) return;
-  eduJump(d.date, d.focus, '<b>' + eduEsc(d.date) + ' · ' + eduEsc(d.title || '') + '</b><br>' + eduEsc(d.text || ''));
+  eduJump(d.date, d.focus, '<b>' + eduEsc(d.date) + ' · ' + eduEsc(d.title || '') + '</b><br>' + eduEsc(d.text || ''), d.title || '');
 });
 /* 优先使用仓库里的 events.json（与论坛科普列表同源），失败则沿用页内数据 */
 fetch('events.json?t=' + Date.now()).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
@@ -1659,7 +1943,12 @@ controls.update();
 updateLabels();
 loadingEl.classList.add('done');
 setTimeout(function(){ loadingEl.style.display = 'none'; }, 600);
+(function(){
+  const to = document.getElementById('tOort');
+  if(to) to.addEventListener('change', function(){ oortGroup.visible = this.checked; });
+})();
 renderer.setAnimationLoop(animate);
+try{ if(parent !== window) parent.postMessage({ type:'solarReady' }, '*'); }catch(e){}
 </script>
 </body>
 </html>
