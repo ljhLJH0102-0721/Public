@@ -287,12 +287,13 @@ async function boot(){
     loadBar.style.width = Math.round(loading / objs.length * 100) + '%';
     loadTxt.textContent = '正在加载 ' + o.n + '…';
 
+    const myIdx = nodes.length - 1;                            // 必须在创建时锁定索引
     const item = document.createElement('div');
     item.className = 'item';
     item.innerHTML = '<span class="dot"></span><span>' + o.n + '</span><span class="en">' + o.en + '</span>';
-    item.addEventListener('click', () => focusNode(nodes.length-1, true));
+    item.addEventListener('click', () => focusNode(myIdx, true));
     listBox.appendChild(item);
-    nodes[nodes.length-1].item = item;
+    nodes[myIdx].item = item;
   }
 }
 
