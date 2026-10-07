@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');var V='v84';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');var V='v85';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -1315,12 +1315,12 @@
   <div id="sci-view">
     <div class="sp-header">
       <div class="sp-title" id="sci-title">🪐 太阳系</div>
-      <div class="pg-actions"><a class="btn btn-outline" id="sci-full" href="solar/solar-system-hd.html?v=4" target="_blank" rel="noreferrer">全屏打开 ↗</a></div>
+      <div class="pg-actions"><a class="btn btn-outline" id="sci-full" href="solar/solar-system-hd.html?v=5" target="_blank" rel="noreferrer">全屏打开 ↗</a></div>
     </div>
     <div class="sci-body">
       <div class="ws-panel active" data-scipanel="scene">
         <div class="sci-frame">
-          <iframe id="solar-frame" data-src="solar/solar-system-hd.html?v=4" title="3D 太阳系" loading="lazy" allow="fullscreen"></iframe>
+          <iframe id="solar-frame" data-src="solar/solar-system-hd.html?v=5" title="3D 太阳系" loading="lazy" allow="fullscreen"></iframe>
         </div>
       </div>
       <div class="ws-panel" data-scipanel="deep">
@@ -1977,7 +1977,7 @@
       return fr;
     }
     function ensureSolarFrame(){return ensureFrame('solar-frame')}
-    const SCI_FULL={ scene:'solar/solar-system-hd.html?v=4', deep:'solar/deep/index.html?v=3' };
+    const SCI_FULL={ scene:'solar/solar-system-hd.html?v=5', deep:'solar/deep/index.html?v=3' };
     function sciActivate(v){
       document.querySelectorAll('#sci-view .ws-tab').forEach(function(x){x.classList.toggle('active',x.dataset.scitab===v)});
       document.querySelectorAll('#sci-view .ws-panel').forEach(function(p){p.classList.toggle('active',p.dataset.scipanel===v)});

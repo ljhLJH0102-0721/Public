@@ -1129,7 +1129,9 @@ addLabel(halleyBody, false);
    + 著名彗星 海尔-波普、67P（椭圆轨道）
    ============================================================ */
 const MU_SUN = 0.0002959122082855911;                 // 太阳引力常数 AU³/日²
-function daysFromYMD(s){ const p = String(s).split('-').map(Number); return (Date.UTC(p[0], (p[1]||1)-1, (p[2]||1), 12) - J2000)/86400000; }
+/* 注意：这里不能引用 J2000（它在模块更后面才声明，会触发 TDZ 报错），自行算出纪元 */
+function j2000ms(){ return Date.UTC(2000,0,1,12,0,0) }
+function daysFromYMD(s){ const p = String(s).split('-').map(Number); return (Date.UTC(p[0], (p[1]||1)-1, (p[2]||1), 12) - j2000ms())/86400000; }
 
 /* ---------- 奥尔特云 ---------- */
 const OORT_IN = 13000, OORT_OUT = 36000;
