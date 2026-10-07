@@ -11,7 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 
-const PAGES = ['index.html', 'solar/solar-system-hd.html', 'solar/deep/index.html', 'solar/sky/index.html'];
+const PAGES = process.argv.slice(2).length ? process.argv.slice(2) : ['index.html', 'solar/solar-system-hd.html', 'solar/deep/index.html', 'solar/sky/index.html'];
 let fail = 0, warn = 0;
 const red = (s) => '\x1b[31m' + s + '\x1b[0m';
 const yel = (s) => '\x1b[33m' + s + '\x1b[0m';
@@ -44,7 +44,21 @@ for (const rel of PAGES) {
   while ((m = idRe.exec(html))) declared.add(m[1]);
 
   const blocks = scriptBlocks(html);
-  let syntaxBad = 0, refBad = [], dupBad = [], nakedBad = 0;
+  let syntaxBad = 0, refBad = [], dupBad = [], nakedBad = 0, dangling = [];
+  /* 全文件声明名集合（含结构赋值与参数），用于悬空引用判断 */
+  const allDeclared = new Set();
+  {
+    let d2;
+    const r1 = /(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/g;
+    while ((d2 = r1.exec(html))) allDeclared.add(d2[1]);
+    const r2 = /(?:const|let|var)\s*[[{]([^\]}]*)[\]}]/g;
+    while ((d2 = r2.exec(html))) String(d2[1]).split(',').forEach(s => { const n = s.split(':').pop().trim().split(/[=\s]/)[0]; if (/^[A-Za-z_$][\w$]*$/.test(n)) allDeclared.add(n) });
+    const r3 = /(?:function\s*[A-Za-z_$\w]*\s*\(([^)]*)\)|\(([^)]*)\)\s*=>)/g;
+    while ((d2 = r3.exec(html))) String(d2[1] || d2[2] || '').split(',').forEach(p => { const n = p.trim().split(/[=\s]/)[0]; if (/^[A-Za-z_$][\w$]*$/.test(n)) allDeclared.add(n) });
+    /* 逗号连写声明（let a=1, b=2）、对象键、解构等：一律视为已声明，避免误报 */
+    const r4 = /[,\s({\[]([A-Za-z_$][\w$]*)\s*[=:]/g;
+    while ((d2 = r4.exec(html))) allDeclared.add(d2[1]);
+  }
   const fnSeen = new Map();
 
   for (const b of blocks) {
@@ -62,6 +76,21 @@ for (const rel of PAGES) {
     /* 裸链式 addEventListener（历史踩过的坑） */
     const naked = /getElementById\([^)]*\)\.addEventListener/g;
     nakedBad += (b.code.match(naked) || []).length;
+    /* 悬空引用检查：if(NAME) 里的 NAME 必须在本块里声明过（const/let/var/function/参数）
+       这一类错误不是语法错误，语法检查查不出来，但运行时会 ReferenceError 导致页面缺元素 */
+    const declaredNames = new Set();
+    let d;
+    const declRe = /(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/g;
+    while ((d = declRe.exec(b.code))) declaredNames.add(d[1]);
+    const paramRe = /(?:function\s*[A-Za-z_$\w]*\s*\(([^)]*)\)|\(([^)]*)\)\s*=>)/g;
+    while ((d = paramRe.exec(b.code))) {
+      String(d[1] || d[2] || '').split(',').forEach(p => { const n = p.trim().split(/[=\s]/)[0]; if (/^[A-Za-z_$][\w$]*$/.test(n)) declaredNames.add(n) });
+    }
+    for (const kw of ['this', 'true', 'false', 'null', 'undefined', 'new', 'typeof', 'return', 'if', 'for', 'while', 'catch', 'function', 'await', 'in', 'of', 'do', 'else', 'switch']) declaredNames.add(kw);
+    const guardRe = /if\s*\(\s*([A-Za-z_$][\w$]*)\s*\)/g;
+    while ((d = guardRe.exec(b.code))) {
+      if (!declaredNames.has(d[1]) && !allDeclared.has(d[1])) dangling.push('if(' + d[1] + ')');
+    }
     /* 顶层函数重名（行首无缩进的 function） */
     const fnRe = /^function\s+([A-Za-z_$][\w$]*)\s*\(/gm;
     while ((r = fnRe.exec(b.code))) {
@@ -71,8 +100,11 @@ for (const rel of PAGES) {
     }
   }
   const uniqRef = [...new Set(refBad)];
+  const uniqDangle = [...new Set(dangling)];
   if (syntaxBad) fail++;
-  if (uniqRef.length) { fail++; console.log(red('  ✗ 引用了不存在的 id（' + uniqRef.length + ' 个）: ' + uniqRef.slice(0, 12).join(', '))); }
+  if (uniqDangle.length) { fail++; console.log(red('  ✗ 悬空引用（变量声明已被删除但仍在用 → 运行时会 ReferenceError，导致页面元素缺失）: ' + uniqDangle.slice(0, 10).join(', '))); }
+  else console.log(grn('  ✓ 无悬空变量引用'));
+  if (uniqRef.length) { warn++; console.log(yel('  ! 引用了静态看不到的元素 id（' + uniqRef.length + ' 个，可能由 JS 动态创建，仅作参考，不要贸然删除）: ' + uniqRef.slice(0, 8).join(', '))); }
   else console.log(grn('  ✓ 所有 getElementById / #id 引用都存在'));
   if (dupBad.length) { warn++; console.log(yel('  ! 顶层函数重名（后者覆盖前者）: ' + [...new Set(dupBad)].join(', '))); }
   else console.log(grn('  ✓ 无重名顶层函数'));
