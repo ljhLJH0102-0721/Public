@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');var V='v93';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v94';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -2017,7 +2017,7 @@
       {t:'科学区',items:[{k:'solar',i:'orbit',l:'太阳系'},{k:'deep',i:'deep',l:'深空星云'},{k:'edu',i:'edu',l:'天文事件'}]},
       {t:'工作区',items:[{k:'translate',i:'translate',l:'文本翻译'},{k:'convert',i:'swap',l:'图片转格式'},{k:'gif',i:'film',l:'视频转 GIF'}]},
       {t:'我的',items:[{k:'liked',i:'heart',l:'我喜欢的'},{k:'history',i:'clock',l:'历史浏览'},{k:'space',i:'user',l:'我的空间'},{k:'upload',i:'upload',l:'上传作品'}]},
-      {t:'更多',items:[{k:'announce',i:'bell',l:'公告'},{k:'settings',i:'settings',l:'设置'},{k:'theme',i:'moon',l:'夜间模式'},supa.user?{k:'logout',i:'logout',l:'退出登录'}:{k:'account',i:'key',l:'登录 / 注册'}]},
+      {t:'更多',items:[{k:'announce',i:'bell',l:'公告'},{k:'settings',i:'settings',l:'设置'},supa.user?{k:'logout',i:'logout',l:'退出登录'}:{k:'account',i:'key',l:'登录 / 注册'}]},
     ]}
     function renderSideNav(){const nav=document.getElementById('side-nav');if(!nav)return;
       const collapsed=document.body.classList.contains('nav-collapsed');
@@ -2153,7 +2153,7 @@
       window.scrollTo(0,0);
     }
     function applySiteTheme(th){const d=(th==='dark');const el=document.documentElement;if(d)el.setAttribute('data-theme','dark');else el.removeAttribute('data-theme');document.body.classList.toggle('dark',d);el.style.colorScheme=d?'dark':'light';try{localStorage.setItem('site_theme',d?'dark':'light')}catch(e){}}
-    function toggleTheme(){const cur=document.documentElement.getAttribute('data-theme')==='dark';applySiteTheme(cur?'light':'dark');toast(cur?'已切换为浅色模式':'已开启夜间模式','success');renderSideNav()}
+    function toggleTheme(){applySiteTheme('dark');toast('本站固定夜间模式');renderSideNav()}
     function toggleCollapse(){const c=document.body.classList.toggle('nav-collapsed');try{localStorage.setItem('nav_collapsed',c?'1':'0')}catch(e){}window.dispatchEvent(new Event('resize'))}
     function openNav(){const n=document.getElementById('side-nav');const m=document.getElementById('nav-mask');if(n)n.classList.add('open');if(m)m.classList.add('open');document.body.classList.add('nav-open');document.body.style.overflow='hidden'}
     function closeNav(){const n=document.getElementById('side-nav');const m=document.getElementById('nav-mask');if(n)n.classList.remove('open');if(m)m.classList.remove('open');document.body.classList.remove('nav-open');document.body.style.overflow=''}
@@ -2198,7 +2198,6 @@
         if(k==='collapse'){toggleCollapse();return}
         closeNav();
         navActiveKey=k;
-        if(k==='theme'){toggleTheme();return}
         if(k==='workspace'){openWorkspace('translate');return}
         if(k==='translate'||k==='convert'||k==='gif'){openWorkspace(k);return}
         if(k==='solar'||k==='deep'||k==='edu'){openScience(k);return}
@@ -2739,7 +2738,7 @@ const navBurger=document.getElementById('nav-burger');if(navBurger)navBurger.add
     function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
     function fmtDate(ts){return new Date(ts).toLocaleDateString('zh-CN',{year:'numeric',month:'short',day:'numeric'})}
     document.addEventListener('DOMContentLoaded',function(){
-      (async()=>{try{const _qp=new URLSearchParams(location.search);if(_qp.has('logout')){try{await supa.signOut()}catch(e){}userLikedSet=new Set();showR18=false;localStorage.setItem('show_r18','0');updateUserUI();toast('已退出登录','success')}}catch(e){}if(supa.loadSession()){try{await onUserLoggedIn()}catch{supa.saveSession(null);updateUserUI()}}else{updateUserUI()}loadBg();setupSearchSuggestions();setTimeout(function(){try{attachNavFab()}catch(e){}},60);window.addEventListener('resize',function(){try{attachNavFab()}catch(e){}});fetchArtworks();fetchAnnouncements();fetchPages();loadPosts();try{if(localStorage.getItem('nav_collapsed')==='1')document.body.classList.add('nav-collapsed');renderSideNav()}catch(e){}try{localStorage.removeItem('bg_color');document.body.style.background=''}catch(e){}try{applySiteTheme(localStorage.getItem('site_theme')||'light')}catch(e){}(function(){try{
+      (async()=>{try{const _qp=new URLSearchParams(location.search);if(_qp.has('logout')){try{await supa.signOut()}catch(e){}userLikedSet=new Set();showR18=false;localStorage.setItem('show_r18','0');updateUserUI();toast('已退出登录','success')}}catch(e){}if(supa.loadSession()){try{await onUserLoggedIn()}catch{supa.saveSession(null);updateUserUI()}}else{updateUserUI()}loadBg();setupSearchSuggestions();setTimeout(function(){try{attachNavFab()}catch(e){}},60);window.addEventListener('resize',function(){try{attachNavFab()}catch(e){}});fetchArtworks();fetchAnnouncements();fetchPages();loadPosts();try{if(localStorage.getItem('nav_collapsed')==='1')document.body.classList.add('nav-collapsed');renderSideNav()}catch(e){}try{localStorage.removeItem('bg_color');document.body.style.background=''}catch(e){}try{applySiteTheme('dark')}catch(e){}   /* 站点固定夜间模式 */(function(){try{
         const si=document.getElementById('search-input');
         if(!si)return;
         /* readonly 的输入框浏览器不会自动填充；用户一碰就解除只读 */
