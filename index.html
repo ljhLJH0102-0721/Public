@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');var V='v91';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');var V='v92';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -240,6 +240,22 @@
     #pg-view.open{display:block}
     .pg-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
     .pg-body{max-width:780px;margin:0 auto;padding:22px 18px 90px}
+
+    /* ===== 站内导航卡片（关于本站内嵌） ===== */
+    .site-nav{margin:26px 0 8px}
+    .site-nav-t{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--text3);margin:0 0 12px;display:flex;align-items:center;gap:10px}
+    .site-nav-t:after{content:"";flex:1;height:1px;background:var(--border)}
+    .site-nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+    .site-nav-card{display:flex;align-items:center;gap:12px;padding:13px 14px;text-align:left;width:100%;
+      background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-family:inherit;
+      box-shadow:var(--shadow-xs);transition:transform var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out),border-color var(--dur) var(--ease)}
+    .site-nav-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);border-color:rgba(var(--accent-rgb),.4)}
+    .site-nav-card:active{transform:scale(.985)}
+    .snc-i{font-size:1.35rem;line-height:1;flex-shrink:0;width:26px;text-align:center}
+    .snc-b{display:flex;flex-direction:column;gap:2px;min-width:0}
+    .snc-b b{font-size:.9rem;font-weight:700;color:var(--text)}
+    .snc-b i{font-style:normal;font-size:.72rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    @media(max-width:480px){.site-nav-grid{grid-template-columns:repeat(2,1fr);gap:8px}.site-nav-card{padding:11px 10px;gap:9px}.snc-b b{font-size:.85rem}.snc-b i{font-size:.66rem}}
     .pg-content{font-size:.96rem;line-height:1.9;color:var(--text);word-break:break-word}
     .pg-content h1{font-size:1.5rem;font-weight:800;margin:26px 0 12px;letter-spacing:-.01em}
     .pg-content h2{font-size:1.22rem;font-weight:700;margin:24px 0 10px}
@@ -1655,10 +1671,43 @@
       });
       box.appendChild(e);box.appendChild(d);
     }
+
+    /* ===== 站内导航卡片：嵌在「关于本站」主页里，手机端一进来就能直接进各功能区 ===== */
+    function siteNavCards(){
+      const items=[
+        {k:'image',i:'🖼',n:'插图',d:'浏览全部作品'},
+        {k:'comic',i:'📚',n:'漫画',d:'汉化与翻译'},
+        {k:'post', i:'📝',n:'博文',d:'随笔与长文'},
+        {k:'sci:scene',i:'🪐',n:'太阳系',d:'3D 实时星历'},
+        {k:'sci:deep', i:'🌠',n:'深空星云',d:'星云与星系影像'},
+        {k:'sci:edu',  i:'📖',n:'天文事件',d:'近代天文大事记'},
+        {k:'ws:translate',i:'🌐',n:'文本翻译',d:'中英日韩互译'},
+        {k:'ws:convert',  i:'🔄',n:'图片转格式',d:'JPG / PNG / WebP'},
+        {k:'ws:gif',      i:'🎞',n:'视频转 GIF',d:'本地编码不上传'}
+      ];
+      return '<section class="site-nav"><div class="site-nav-t">站内导航</div><div class="site-nav-grid">'
+        + items.map(function(x){
+            return '<button class="site-nav-card" data-goto="'+x.k+'"><span class="snc-i">'+x.i+'</span>'
+              + '<span class="snc-b"><b>'+x.n+'</b><i>'+x.d+'</i></span></button>';
+          }).join('')
+        + '</div></section>';
+    }
+    document.addEventListener('click',function(e){
+      const b=e.target&&e.target.closest?e.target.closest('[data-goto]'):null; if(!b)return;
+      const k=b.getAttribute('data-goto')||'';
+      try{
+        if(k.indexOf('sci:')===0){ openScience(k.slice(4)); return }
+        if(k.indexOf('ws:')===0){ openWorkspace(k.slice(3)); return }
+        const sn=document.querySelector('#side-nav .sn-item[data-nav="'+k+'"]');
+        if(sn) sn.click();
+      }catch(err){}
+    });
     function renderPageBody(p){
       const body=document.getElementById('pg-body');if(!body)return;
       if(p.type==='embed'&&p.url){body.innerHTML='<div class="pg-frame"><iframe src="'+escHtml(p.url)+'" title="'+escHtml(p.title||'')+'" loading="lazy" allow="fullscreen"></iframe></div>';return}
-      body.innerHTML='<article class="pg-content">'+mdToHtml(p.content||'')+'</article>';
+      var _hp=homePage();
+      var _isHome=!!(_hp&&_hp.id===p.id);
+      body.innerHTML='<article class="pg-content">'+mdToHtml(p.content||'')+'</article>'+(_isHome?siteNavCards():'');
     }
     function openPage(id,navKey){
       const hit=(pages||[]).filter(function(x){return x&&x.id===id});
