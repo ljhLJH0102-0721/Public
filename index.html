@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v96';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v97';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -263,6 +263,19 @@
       color:var(--text2);font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .16s}
     .hist-chip:hover{border-color:var(--accent);color:var(--accent)}
     .hist-chip.active{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+
+    /* ===== 评论回复 + 消息中心 ===== */
+    .comment-reply{margin-left:auto;font-size:.72rem;color:var(--accent);cursor:pointer;font-weight:600;opacity:.85}
+    .comment-reply:hover{opacity:1;text-decoration:underline}
+    .comment-header{gap:8px}
+    .comment-is-reply{margin-left:26px;border-left:2px solid rgba(var(--accent-rgb),.22);padding-left:10px}
+    .comment-reply-bar{display:none;align-items:center;gap:10px;margin:0 0 8px;padding:7px 12px;border-radius:10px;
+      background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.22);font-size:.78rem;color:var(--text2)}
+    .comment-reply-bar b{color:var(--accent)}
+    .comment-reply-cancel{margin-left:auto;background:none;border:0;color:var(--text3);cursor:pointer;font-size:.78rem;font-family:inherit}
+    .comment-reply-cancel:hover{color:var(--accent)}
+    .inbox-card.unread{border-color:rgba(var(--accent-rgb),.45);box-shadow:0 0 0 2px rgba(var(--accent-rgb),.10)}
+    .inbox-card.unread .sp-card-title:before{content:"● ";color:var(--accent);font-size:.7em;vertical-align:middle}
     .pg-content{font-size:.96rem;line-height:1.9;color:var(--text);word-break:break-word}
     .pg-content h1{font-size:1.5rem;font-weight:800;margin:26px 0 12px;letter-spacing:-.01em}
     .pg-content h2{font-size:1.22rem;font-weight:700;margin:24px 0 10px}
@@ -1944,6 +1957,42 @@
         } else if(empty) empty.remove();
       }catch(e){}
     }
+
+    /* ===== 消息中心视图（回复我的评论都在这里） ===== */
+    function showInbox(){
+      try{
+        setViewFlags(null);
+        ['pg-view','sci-view','ws-view','set-view','coll-view','detail-view'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('open')});
+        const pv=document.getElementById('post-view'); if(pv) pv.style.display='none';
+        const mv=document.getElementById('main-view'); if(mv) mv.classList.add('hidden');
+        const sp=document.getElementById('sp-view'); if(sp) sp.classList.add('open');
+        const ttl=document.getElementById('sp-title'); if(ttl) ttl.textContent='📬 消息';
+        const sub=document.getElementById('sp-sub'); if(sub) sub.textContent='有人回复你的评论时会出现在这里';
+        const list=document.getElementById('sp-list'); if(!list) return;
+        const arr=inboxList();
+        if(!arr.length){
+          list.innerHTML='<div class="sp-empty"><div class="sp-empty-icon">📭</div><p>还没有新消息<br><span style="font-size:.8rem;color:var(--text3)">别人回复你的评论后，会在这里看到（打开对应作品页时收集）</span></p></div>';
+        }else{
+          list.innerHTML=arr.map(function(x,i){
+            return '<div class="sp-card inbox-card'+(x.read?'':' unread')+'" data-i="'+i+'">'
+              +'<div class="sp-card-img" style="display:flex;align-items:center;justify-content:center;font-size:1.8rem;background:var(--surface-2)">💬</div>'
+              +'<div class="sp-card-info"><div class="sp-card-title">'+escHtml(x.name||'有人')+' 回复了你</div>'
+              +'<span class="sp-card-tag">'+(x.artTitle?escHtml(x.artTitle):'作品')+'</span>'
+              +'<div class="sp-card-meta">'+escHtml(String(x.text||'').slice(0,80))+'</div>'
+              +'<div class="sp-card-meta">'+fmtDate(x.ts)+'</div></div></div>';
+          }).join('');
+          Array.prototype.forEach.call(list.querySelectorAll('.inbox-card'),function(el){
+            el.addEventListener('click',function(){
+              const x=inboxList()[+el.dataset.i]; if(!x) return;
+              const a=inboxList(); if(a[+el.dataset.i]){a[+el.dataset.i].read=1;inboxSave(a)}
+              try{ const art=artworks.find(function(y){return y.id===x.aid}); if(art) openDetailArt(art); else { toast&&toast('原作品已不可用','error') } }catch(e){}
+            });
+          });
+        }
+        try{ navActiveKey='inbox'; syncNavActive() }catch(e){}
+        window.scrollTo(0,0);
+      }catch(e){}
+    }
     function showHistoryView(){histKind='all';setViewFlags('history');applyFilters();setTimeout(function(){try{renderHistoryExtras()}catch(e){}},0);document.getElementById('main-view').classList.add('hidden');document.getElementById('sp-view').classList.add('open');document.getElementById('sp-title').textContent='📜 历史浏览';window.scrollTo(0,0)}
     function myArtworks(){if(!supa.user)return[];return artworks.filter(a=>a.user_id===supa.user.id&&(showR18||!a.r18))}
     function myCollections(){if(!supa.user)return[];return collections.filter(c=>c.user_id===supa.user.id)}
@@ -2087,7 +2136,7 @@
       {t:'娱乐区',items:[{k:'image',i:'image',l:'插图'},{k:'comic',i:'comic',l:'漫画'},{k:'post',i:'post',l:'博文'}]},
       {t:'科学区',items:[{k:'solar',i:'orbit',l:'太阳系'},{k:'deep',i:'deep',l:'深空星云'},{k:'edu',i:'edu',l:'天文事件'}]},
       {t:'工作区',items:[{k:'translate',i:'translate',l:'文本翻译'},{k:'convert',i:'swap',l:'图片转格式'},{k:'gif',i:'film',l:'视频转 GIF'}]},
-      {t:'我的',items:[{k:'liked',i:'heart',l:'我喜欢的'},{k:'history',i:'clock',l:'历史浏览'},{k:'space',i:'user',l:'我的空间'},{k:'upload',i:'upload',l:'上传作品'}]},
+      {t:'我的',items:[{k:'inbox',i:'bell',l:'消息'+(inboxUnread()?(' '+inboxUnread()):'')},{k:'liked',i:'heart',l:'我喜欢的'},{k:'history',i:'clock',l:'历史浏览'},{k:'space',i:'user',l:'我的空间'},{k:'upload',i:'upload',l:'上传作品'}]},
       {t:'更多',items:[{k:'announce',i:'bell',l:'公告'},{k:'settings',i:'settings',l:'设置'},supa.user?{k:'logout',i:'logout',l:'退出登录'}:{k:'account',i:'key',l:'登录 / 注册'}]},
     ]}
     function renderSideNav(){const nav=document.getElementById('side-nav');if(!nav)return;
@@ -2273,6 +2322,7 @@
         if(k==='translate'||k==='convert'||k==='gif'){openWorkspace(k);return}
         if(k==='solar'||k==='deep'||k==='edu'){openScience(k);return}
         if(k==='home'){goHome();return}
+        if(k==='inbox'){showInbox();return}
         if(k.indexOf('page:')===0){openPage(k.slice(5));return}
         if(k==='pagenew'){openPageEditor(null);return}
         ['sp-view','set-view','coll-view','detail-view','ws-view','pg-view','sci-view'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('open')});
@@ -2507,8 +2557,74 @@
     document.getElementById('detail-heart')?.addEventListener('click',function(){if(!currentDetailArt)return;handleLike(currentDetailArt.id,null);const card=document.querySelector('.heart-btn[data-id="'+currentDetailArt.id+'"]');if(card){const nowLiked=userLikedSet.has(currentDetailArt.id);const count=likeCountsMap[currentDetailArt.id]||0;card.innerHTML=(nowLiked?'❤️':'🤍')+'<span class="heart-count">'+count+'</span>';card.classList.toggle('liked',nowLiked)}});
 document.getElementById('detail-download')?.addEventListener('click',async function(){const art=currentDetailArt;if(!art)return;const btn=this;const original=btn.textContent;btn.disabled=true;btn.textContent='下载中…';try{const url=imgSrc(art.imagePath)||(document.getElementById('detail-image').src);const res=await fetch(url,{mode:'cors'});if(!res.ok)throw new Error('HTTP '+res.status);const blob=await res.blob();const ext=(new URL(url).pathname.split('.').pop()||'jpg').toLowerCase();const name=(String(art.title||'作品').replace(/[\\/:*?"<>|]/g,'_').trim()||'作品');const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'.'+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);toast('下载已开始','success')}catch(e){console.error('download error:',e);toast('下载失败，请重试','error')}finally{btn.disabled=false;btn.textContent=original}});
     document.getElementById('detail-delete')?.addEventListener('click',async function(){const art=currentDetailArt;if(!art)return;const canDelete=isOwner()||(supa.user&&art.user_id===supa.user.id);if(!canDelete){toast('无权删除此作品','error');return}if(!confirm('删除此作品？'))return;try{const paths=[];if(art.imagePath)paths.push(art.imagePath);(art.pages||[]).forEach(p=>{if(p&&paths.indexOf(p)<0)paths.push(p)});const ghPaths=[];paths.forEach(imgPath=>{const isCloud=imgPath&&imgPath.indexOf('res.cloudinary.com')>-1;const rel=!isCloud?(ghPathFromUrl(imgPath)||(imgPath&&imgPath.indexOf('http')!==0?imgPath:null)):null;if(rel&&ghPaths.indexOf(rel)<0)ghPaths.push(rel)});if(ghPaths.length){let token;try{token=await ensureR18Token()}catch(e){toast(e.message,'error');return}try{for(const relPath of ghPaths){const f=await ghGetFile(relPath,token);if(f)await ghDeleteFile(relPath,'delete '+relPath,f.sha,token)}try{const af=await ghGetFile('artworks.json',token);if(af){try{const list=JSON.parse(atob(af.content))||[];const idx=list.findIndex(x=>x&&x.id===art.id);if(idx>-1){list.splice(idx,1);const b64=btoa(unescape(encodeURIComponent(JSON.stringify(list,null,2))));await ghPutFile('artworks.json',b64,'remove artwork '+art.id,af.sha,token)}}catch(e){}}}catch(e){console.warn('sync artworks.json',e)}try{const tf=await ghGetFile('comic-trans.json',token);if(tf){const tm=JSON.parse(atob(tf.content))||{};if(tm[art.id]){delete tm[art.id];const b64=btoa(unescape(encodeURIComponent(JSON.stringify(tm,null,2))));await ghPutFile('comic-trans.json',b64,'remove comic translation '+art.id,tf.sha,token)}}}catch(e){console.warn('sync comic-trans.json',e)}}catch(e){if(isTokenErr(e)){localStorage.removeItem('gh_r18_token');toast('GitHub Token 无效或已失效，请重新输入','error');return}throw e}}try{await supa.deleteArtwork(art.id)}catch(e){console.warn('deleteArtwork no-row?',e)}artworks=artworks.filter(a=>a.id!==art.id);localStorage.removeItem('artworks_cache');localStorage.removeItem('comic_trans_'+art.id);closeDetail();applyFilters();toast('已删除','success')}catch(e){console.error('delete error:',e);toast('删除失败','error')}});
-    function renderCommentSection(artworkId){const inputArea=document.getElementById('comment-input-area');const listEl=document.getElementById('comment-list');const loadingEl=document.getElementById('comment-loading');if(supa.user){inputArea.innerHTML='<div class="comment-input-wrap"><textarea id="new-comment-text" placeholder="写下你的想法…" rows="2" maxlength="1000"></textarea><button class="btn btn-primary submit-comment" id="submit-comment-btn">发送</button></div>';document.getElementById('submit-comment-btn')?.addEventListener('click',async()=>{const ta=document.getElementById('new-comment-text');const content=ta.value.trim();if(!content){toast('请输入评论内容');return}const btn=document.getElementById('submit-comment-btn');btn.disabled=true;btn.textContent='发送中…';try{await supa.addComment(supa.user.id,artworkId,content);ta.value='';toast('评论成功','success');await loadComments(artworkId)}catch(e){if(e.message==='SESSION_EXPIRED'){toast('登录已过期，请重新登录','error');supa.saveSession(null);updateUserUI();renderCommentSection(artworkId)}else{toast('评论失败：'+e.message,'error')}}finally{btn.disabled=false;btn.textContent='发送'}})}else{inputArea.innerHTML='<p class="comment-login-tip"><a id="comment-login-link">登录</a> 后参与评论</p>';document.getElementById('comment-login-link')?.addEventListener('click',openUserAuthModal)}loadComments(artworkId)}
-    async function loadComments(artworkId){const listEl=document.getElementById('comment-list');const loadingEl=document.getElementById('comment-loading');loadingEl.style.display='block';listEl.innerHTML='';try{const comments=await supa.getComments(artworkId);loadingEl.style.display='none';if(!comments.length){listEl.innerHTML='<div class="comment-empty">还没有评论，快来第一个发言吧 😊</div>';return}listEl.innerHTML='';comments.forEach(c=>{const nickname=c.profiles?.nickname||'匿名用户';const initial=[...nickname][0]||'?';const canDel=supa.user&&supa.user.id===c.user_id;const item=document.createElement('div');item.className='comment-item';item.innerHTML='<div class="comment-avatar" style="background:'+strColor(c.user_id)+'">'+escHtml(initial)+'</div><div class="comment-body"><div class="comment-header"><span class="comment-name">'+escHtml(nickname)+'</span><span class="comment-time">'+fmtDate(new Date(c.created_at).getTime())+'</span>'+(canDel?'<span class="comment-del" data-id="'+c.id+'">删除</span>':'')+'</div><div class="comment-text">'+escHtml(c.content)+'</div></div>';if(canDel){item.querySelector('.comment-del').addEventListener('click',async()=>{if(!confirm('删除此评论？'))return;try{await supa.deleteComment(c.id);toast('已删除');await loadComments(artworkId)}catch{toast('删除失败','error')}})}listEl.appendChild(item)})}catch(e){loadingEl.style.display='none';if(e.message==='SESSION_EXPIRED'){supa.saveSession(null);updateUserUI();listEl.innerHTML='<div class="comment-empty">登录已过期，请<a onclick="openUserAuthModal()" style="color:var(--accent);cursor:pointer;">重新登录</a></div>';renderCommentSection(artworkId)}else{listEl.innerHTML='<div class="comment-empty">评论加载失败：'+escHtml(e.message)+'</div>'}}}
+
+    /* ===== 评论回复：用内容内隐藏标记表达父子关系（无需改 Supabase 表结构） ===== */
+    let replyTarget=null;                       // {pid, name}
+    function mkReplyContent(pid,txt){ return '\u27e8r:'+pid+'\u27e9'+String(txt||'') }
+    function parseReply(content){
+      const m=String(content==null?'':content).match(/^\u27e8r:([0-9a-zA-Z_-]+)\u27e9([\s\S]*)$/);
+      return m?{pid:m[1],text:m[2]}:{pid:'',text:String(content==null?'':content)};
+    }
+    /* ===== 消息中心（站内信）：回复我的评论会进这里 ===== */
+    const INBOX_KEY='inbox_v1';
+    function inboxList(){ try{ return JSON.parse(localStorage.getItem(INBOX_KEY))||[] }catch(e){ return [] } }
+    function inboxSave(a){ try{ localStorage.setItem(INBOX_KEY,JSON.stringify(a.slice(0,200))) }catch(e){} }
+    function inboxUnread(){ return inboxList().filter(function(x){return !x.read}).length }
+    function inboxAdd(rec){
+      try{
+        const a=inboxList();
+        if(a.some(function(x){return x.cid===rec.cid})) return;      // 同一条回复只记一次
+        a.unshift(rec); inboxSave(a);
+        try{ renderSideNav() }catch(e){}                             // 侧栏未读数即时刷新
+      }catch(e){}
+    }
+    function inboxMarkAllRead(){ const a=inboxList(); a.forEach(function(x){x.read=1}); inboxSave(a); try{renderSideNav()}catch(e){} }
+    function renderCommentSection(artworkId){const inputArea=document.getElementById('comment-input-area');const listEl=document.getElementById('comment-list');const loadingEl=document.getElementById('comment-loading');if(supa.user){inputArea.innerHTML='<div class="comment-reply-bar" id="comment-reply-bar" style="display:none"></div><div class="comment-input-wrap"><textarea id="new-comment-text" placeholder="写下你的想法…" rows="2" maxlength="1000"></textarea><button class="btn btn-primary submit-comment" id="submit-comment-btn">发送</button></div>';renderReplyBar();document.getElementById('submit-comment-btn')?.addEventListener('click',async()=>{const ta=document.getElementById('new-comment-text');const content=ta.value.trim();if(!content){toast('请输入评论内容');return}const btn=document.getElementById('submit-comment-btn');btn.disabled=true;btn.textContent='发送中…';try{await supa.addComment(supa.user.id,artworkId,replyTarget?mkReplyContent(replyTarget.pid,content):content);ta.value='';replyTarget=null;renderReplyBar();toast('评论成功','success');await loadComments(artworkId)}catch(e){if(e.message==='SESSION_EXPIRED'){toast('登录已过期，请重新登录','error');supa.saveSession(null);updateUserUI();renderCommentSection(artworkId)}else{toast('评论失败：'+e.message,'error')}}finally{btn.disabled=false;btn.textContent='发送'}})}else{inputArea.innerHTML='<p class="comment-login-tip"><a id="comment-login-link">登录</a> 后参与评论</p>';document.getElementById('comment-login-link')?.addEventListener('click',openUserAuthModal)}loadComments(artworkId)}
+
+    function renderReplyBar(){
+      try{
+        const bar=document.getElementById('comment-reply-bar'); if(!bar) return;
+        if(!replyTarget){ bar.style.display='none'; bar.innerHTML=''; return }
+        bar.style.display='flex';
+        bar.innerHTML='<span>正在回复 <b>'+escHtml(replyTarget.name||'')+'</b></span><button class="comment-reply-cancel" type="button">取消</button>';
+        const c=bar.querySelector('.comment-reply-cancel');
+        if(c) c.addEventListener('click',function(){ replyTarget=null; renderReplyBar() });
+      }catch(e){}
+    }
+    document.addEventListener('click',function(e){
+      const b=e.target&&e.target.closest?e.target.closest('.comment-reply'):null; if(!b) return;
+      replyTarget={pid:b.getAttribute('data-id'), name:b.getAttribute('data-name')||''};
+      renderReplyBar();
+      const ta=document.getElementById('new-comment-text');
+      if(ta){ ta.focus(); try{ ta.scrollIntoView({block:'center',behavior:'smooth'}) }catch(err){ ta.scrollIntoView() } }
+    });
+    function decorateComments(artworkId,comments){
+      try{
+        const listEl=document.getElementById('comment-list'); if(!listEl) return;
+        const arr=Array.isArray(comments)?comments:[];
+        const mineMap={};
+        arr.forEach(function(c){ if(supa.user&&c.user_id===supa.user.id) mineMap[c.id]=true });
+        const items=listEl.querySelectorAll('.comment-item');
+        arr.forEach(function(c,i){
+          const item=items[i]; if(!item) return;
+          const parsed=parseReply(c.content);
+          if(parsed.pid) item.classList.add('comment-is-reply');
+          const head=item.querySelector('.comment-header');
+          if(head && supa.user && !head.querySelector('.comment-reply')){
+            const sp=document.createElement('span');
+            sp.className='comment-reply'; sp.setAttribute('data-id',c.id);
+            sp.setAttribute('data-name',(c.profiles&&c.profiles.nickname)||'匿名用户');
+            sp.textContent='回复';
+            head.appendChild(sp);
+          }
+          if(parsed.pid && mineMap[parsed.pid] && !(supa.user&&c.user_id===supa.user.id)){
+            let artTitle=''; try{ const a=artworks.find(function(y){return y.id===artworkId}); artTitle=a?a.title:'' }catch(e){}
+            inboxAdd({cid:c.id,aid:artworkId,artTitle:artTitle,name:(c.profiles&&c.profiles.nickname)||'匿名用户',text:parsed.text,ts:new Date(c.created_at).getTime()||Date.now(),read:0});
+          }
+        });
+      }catch(e){}
+    }
+    async function loadComments(artworkId){const listEl=document.getElementById('comment-list');const loadingEl=document.getElementById('comment-loading');loadingEl.style.display='block';listEl.innerHTML='';try{const comments=await supa.getComments(artworkId);loadingEl.style.display='none';if(!comments.length){listEl.innerHTML='<div class="comment-empty">还没有评论，快来第一个发言吧 😊</div>';return}listEl.innerHTML='';comments.forEach(c=>{const nickname=c.profiles?.nickname||'匿名用户';const initial=[...nickname][0]||'?';const canDel=supa.user&&supa.user.id===c.user_id;const item=document.createElement('div');item.className='comment-item';item.innerHTML='<div class="comment-avatar" style="background:'+strColor(c.user_id)+'">'+escHtml(initial)+'</div><div class="comment-body"><div class="comment-header"><span class="comment-name">'+escHtml(nickname)+'</span><span class="comment-time">'+fmtDate(new Date(c.created_at).getTime())+'</span>'+(canDel?'<span class="comment-del" data-id="'+c.id+'">删除</span>':'')+'</div><div class="comment-text">'+escHtml(parseReply(c.content).text)+'</div></div>';if(canDel){item.querySelector('.comment-del').addEventListener('click',async()=>{if(!confirm('删除此评论？'))return;try{await supa.deleteComment(c.id);toast('已删除');await loadComments(artworkId)}catch{toast('删除失败','error')}})}listEl.appendChild(item)});decorateComments(artworkId,comments)}catch(e){loadingEl.style.display='none';if(e.message==='SESSION_EXPIRED'){supa.saveSession(null);updateUserUI();listEl.innerHTML='<div class="comment-empty">登录已过期，请<a onclick="openUserAuthModal()" style="color:var(--accent);cursor:pointer;">重新登录</a></div>';renderCommentSection(artworkId)}else{listEl.innerHTML='<div class="comment-empty">评论加载失败：'+escHtml(e.message)+'</div>'}}}
     function strColor(str){const colors=['#cc785c','#e67e22','#27ae60','#db2b33','#2980b9','#8e44ad','#16a085','#d35400'];let h=0;for(const c of(str||''))h=(h*31+c.charCodeAt(0))&0xffffffff;return colors[Math.abs(h)%colors.length]}
     function renderHotList(){
       const container=document.getElementById('hot-list');
