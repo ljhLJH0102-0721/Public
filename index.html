@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v97';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v98';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -276,6 +276,11 @@
     .comment-reply-cancel:hover{color:var(--accent)}
     .inbox-card.unread{border-color:rgba(var(--accent-rgb),.45);box-shadow:0 0 0 2px rgba(var(--accent-rgb),.10)}
     .inbox-card.unread .sp-card-title:before{content:"● ";color:var(--accent);font-size:.7em;vertical-align:middle}
+
+    @media(max-width:768px){
+      .coll-head{gap:10px}
+      #coll-back{padding:8px 14px;font-size:.9rem}
+    }
     .pg-content{font-size:.96rem;line-height:1.9;color:var(--text);word-break:break-word}
     .pg-content h1{font-size:1.5rem;font-weight:800;margin:26px 0 12px;letter-spacing:-.01em}
     .pg-content h2{font-size:1.22rem;font-weight:700;margin:24px 0 10px}
@@ -1032,6 +1037,7 @@
   <div id="coll-view">
     <div class="coll-wrap">
       <div class="coll-head">
+        <button class="sp-back" id="coll-back" title="返回">‹ 返回</button>
         
         <div class="coll-title" id="coll-title">合集</div>
       </div>
@@ -1959,6 +1965,22 @@
     }
 
     /* ===== 消息中心视图（回复我的评论都在这里） ===== */
+
+    /* ===== 我的空间：卡片点击跳转（事件委托，手机端也可靠） ===== */
+    document.addEventListener('click',function(e){
+      try{
+        const el=e.target&&e.target.closest?e.target.closest('#user-art-grid .cg-card'):null;
+        if(!el) return;
+        const aid=el.getAttribute('data-aid'), cid=el.getAttribute('data-cid');
+        if(aid){
+          const a=(artworks||[]).find(function(x){return x.id===aid});
+          if(a){ try{openDetailArt(a)}catch(err){} try{addRecent(a)}catch(err){} }
+          else { toast&&toast('作品数据未加载完成，请稍后重试','error') }
+          return;
+        }
+        if(cid){ try{ openCollection(cid) }catch(err){} }
+      }catch(err){}
+    });
     function showInbox(){
       try{
         setViewFlags(null);
