@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v108';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v109';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -340,6 +340,17 @@
     .bp-q input{width:100%;padding:8px 12px;border-radius:10px;border:1px solid var(--border);
       background:var(--bg);color:var(--text);font-size:.8rem;font-family:inherit}
     .bp-q input:focus{outline:none;border-color:var(--accent)}
+    .bp-exp-wrap{margin-top:10px}
+    #bp-exp{width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--bg);
+      color:var(--text);font-size:.78rem;line-height:1.75;font-family:inherit;resize:vertical}
+    #bp-exp:focus{outline:none;border-color:var(--accent)}
+    .bp-exp-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+    .bp-ai-state{font-size:.72rem;color:var(--accent)}
+    .bp-ai{margin-top:10px;padding:12px;border-radius:10px;background:var(--surface-2);border:1px dashed rgba(var(--accent-rgb),.28)}
+    .bp-ai-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .bp-ai-row label{flex:0 0 70px;font-size:.74rem;color:var(--text3)}
+    .bp-ai-row input{flex:1;min-width:0;padding:7px 10px;border-radius:9px;border:1px solid var(--border);
+      background:var(--bg);color:var(--text);font-size:.78rem;font-family:inherit}
     .bp-loading{font-size:.78rem;color:var(--text3);padding:6px 0}
     @media(max-width:768px){.bp-row{flex-direction:column;gap:4px}.bp-label{flex:none;padding:0}}
     .lib-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
@@ -1188,9 +1199,30 @@
           <div class="bp-picked" id="bp-picked"></div>
           <div class="bp-out" id="bp-out">（在上面选择词条，这里会实时合成）</div>
           <div class="bp-btns">
-            <button class="btn btn-primary" id="bp-copy" type="button">复制合成结果</button>
+            <button class="btn btn-primary" id="bp-expand" type="button">✨ 扩写提示词</button>
+            <button class="btn btn-outline" id="bp-copy" type="button">复制结果</button>
             <button class="btn btn-outline" id="bp-clear" type="button">清空</button>
+            <select id="bp-level" title="扩写强度" style="padding:6px 10px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.76rem;font-family:inherit">
+              <option value="1">简洁</option>
+              <option value="2" selected>标准</option>
+              <option value="3">详细</option>
+            </select>
             <span class="bp-count" id="bp-count"></span>
+          </div>
+          <div class="bp-exp-wrap">
+            <textarea id="bp-exp" rows="6" placeholder="点「✨ 扩写提示词」，这里会出现完整提示词（可直接编辑）"></textarea>
+            <div class="bp-exp-bar">
+              <button class="btn btn-outline" id="bp-exp-copy" type="button" style="font-size:.76rem;padding:5px 12px">复制扩写结果</button>
+              <button class="btn btn-outline" id="bp-ai-toggle" type="button" style="font-size:.76rem;padding:5px 12px">🤖 AI 扩写设置</button>
+              <button class="btn btn-outline" id="bp-ai-run" type="button" style="font-size:.76rem;padding:5px 12px">用 AI 扩写</button>
+              <span class="bp-ai-state" id="bp-ai-state"></span>
+            </div>
+            <div class="bp-ai" id="bp-ai" style="display:none">
+              <div class="bp-ai-row"><label>接口地址</label><input id="bp-ai-url" placeholder="https://api.deepseek.com/v1/chat/completions" autocomplete="off"></div>
+              <div class="bp-ai-row"><label>模型</label><input id="bp-ai-model" placeholder="deepseek-chat" autocomplete="off"></div>
+              <div class="bp-ai-row"><label>API Key</label><input id="bp-ai-key" type="password" placeholder="sk-...（只存本机浏览器，不上传）" autocomplete="off"></div>
+              <div class="bp-ai-row"><button class="btn btn-primary" id="bp-ai-save" type="button" style="font-size:.76rem;padding:5px 14px">保存到本机</button><span style="font-size:.7rem;color:var(--text3)">密钥保存在你自己的浏览器 localStorage，不会进仓库也不会发给别人</span></div>
+            </div>
           </div>
         </div>
         <div class="lib-tabs" id="lib-tabs"></div>
@@ -2441,6 +2473,124 @@
       });
       const cl=document.getElementById('bp-clear');
       if(cl) cl.addEventListener('click',function(){ bpPicked=[]; bpRender(); });
+    })();
+
+    /* ===== 提示词扩写（本地规则）===== */
+    function bpHumanCat(c){
+      const m={p_hair:'hair',p_head:'head',p_body:'body',p_hand:'hand',p_leg:'leg',p_foot:'foot'};
+      return m[c]||c;
+    }
+    function bpExpand(){
+      const lv = parseInt((document.getElementById('bp-level')||{}).value||'2',10);
+      const picked = bpPicked.slice();
+      if(!picked.length) return '';
+      const cats = picked.map(function(x){return x.c||''});
+      const has = function(pref){ return cats.some(function(c){return c.indexOf(pref)===0}) };
+      const anyNsfw = picked.some(function(x){
+        const c=String(x.c||'');
+        return c==='nsfw'||c.indexOf('nsfw_')===0;
+      }) && !!showR18;
+      const sorted = picked.slice().sort(function(a,b){ return bpCatIndex(a.c)-bpCatIndex(b.c) });
+      const seen={}, core=[];
+      sorted.forEach(function(x){
+        const k=String(x.e).toLowerCase().replace(/\s+/g,' ').trim();
+        if(!k||seen[k]) return; seen[k]=1; core.push(k);
+      });
+
+      /* 自动补充 */
+      const env = [];
+      if(has('indoor'))  env.push('indoors','soft ambient light');
+      if(has('outdoor')) env.push('outdoors','natural light');
+      if(has('weather')) env.push('atmospheric lighting');
+      if(has('space'))   env.push('volumetric light','cinematic atmosphere');
+      const dyn = [];
+      if(has('move') || anyNsfw) dyn.push('dynamic pose');
+      if(has('move') && lv>=2) dyn.push('motion blur');
+      if(anyNsfw) dyn.push('detailed anatomy','detailed skin','blush');
+      if(anyNsfw && lv>=3) dyn.push('sweat','parted lips','glossy skin');
+      const detail = ['detailed face','detailed eyes'];
+      if(lv>=2) detail.push('intricate details','sharp focus');
+      if(lv>=3) detail.push('subsurface scattering','strand-level hair detail','fabric folds');
+      const quality = ['masterpiece','best quality','highly detailed'];
+      if(lv>=2) quality.push('vivid colors','8k');
+      if(lv>=3) quality.push('award-winning illustration','professional color grading');
+      const style = ['illustration'];
+      if(lv>=3) style.push('anime style','clean lineart');
+
+      const all = [];
+      if(anyNsfw) all.push('nsfw','explicit');
+      if(anyNsfw && picked.some(function(x){return /duo|两人|双人/.test(x.e+x.z).valueOf()||false})) all.push('1girl,1boy');
+      all.push.apply(all, core);
+      all.push.apply(all, dyn);
+      all.push.apply(all, env);
+      all.push.apply(all, detail);
+      all.push.apply(all, quality);
+      all.push.apply(all, style);
+      const seen2={}, out=[];
+      all.forEach(function(x){ const k=String(x).toLowerCase().trim(); if(!k||seen2[k]) return; seen2[k]=1; out.push(k) });
+      return out.join(', ');
+    }
+    function bpFillExpanded(){
+      const s=bpExpand();
+      const ta=document.getElementById('bp-exp'); if(ta) ta.value=s;
+      return s;
+    }
+    /* ---- AI 扩写（可选，自备 key）---- */
+    const AI_CFG_KEY='ai_exp_cfg_v1';
+    function aiCfg(){ try{ return JSON.parse(localStorage.getItem(AI_CFG_KEY))||{} }catch(e){ return {} } }
+    function aiCfgSave(c){ try{ localStorage.setItem(AI_CFG_KEY,JSON.stringify(c)) }catch(e){} }
+    function aiState(msg){ const el=document.getElementById('bp-ai-state'); if(el) el.textContent=msg||'' }
+    async function bpAiExpand(){
+      const cfg=aiCfg();
+      if(!cfg.url||!cfg.key){ try{toast('先在「AI 扩写设置」里填接口地址和 Key')}catch(e){}; const box=document.getElementById('bp-ai'); if(box) box.style.display=''; return }
+      const base=bpBuild()||bpExpand();
+      if(!base){ try{toast('先选择词条')}catch(e){} return }
+      const ta=document.getElementById('bp-exp');
+      aiState('AI 扩写中…');
+      try{
+        const sys='你是 Stable Diffusion / Danbooru 标签提示词专家。把用户给的中文或英文词条扩写成一条完整的英文 tag 提示词：'
+          + '顺序为 主体→外貌→服装→姿态动作→场景环境→光影→情绪→构图→画质风格；用英文小写 tag，逗号分隔，不要句子，不要解释，不要编号。'
+          + '若输入含成人内容则保留 explicit 标签。只输出一行 tag 列表。';
+        const r=await fetch(cfg.url,{
+          method:'POST',
+          headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+cfg.key },
+          body:JSON.stringify({ model:cfg.model||'deepseek-chat', temperature:0.7,
+            messages:[{role:'system',content:sys},{role:'user',content:base}] })
+        });
+        if(!r.ok){ aiState('失败 '+r.status); try{toast('AI 请求失败：HTTP '+r.status,'error')}catch(e){}; return }
+        const j=await r.json();
+        const txt=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'').trim();
+        if(!txt){ aiState('返回为空'); return }
+        if(ta) ta.value=txt.replace(/^["'\s]+|["'\s]+$/g,'');
+        aiState('✓ AI 扩写完成');
+      }catch(e){ aiState('请求出错'); try{toast('AI 请求出错：'+e.message,'error')}catch(err){} }
+    }
+
+    (function(){
+      const ex=document.getElementById('bp-expand');
+      if(ex) ex.addEventListener('click',function(){ bpFillExpanded(); try{toast('已按当前选择扩写','success')}catch(e){} });
+      const cp=document.getElementById('bp-exp-copy');
+      if(cp) cp.addEventListener('click',function(){
+        const ta=document.getElementById('bp-exp'); const s=ta?ta.value.trim():'';
+        if(!s){ try{toast('先点「扩写提示词」')}catch(e){} return }
+        const ok=copyText(s); try{toast(ok?'已复制扩写结果':'复制失败','success')}catch(e){}
+      });
+      const tg=document.getElementById('bp-ai-toggle');
+      if(tg) tg.addEventListener('click',function(){
+        const box=document.getElementById('bp-ai'); if(!box) return;
+        box.style.display = (box.style.display==='none') ? '' : 'none';
+        const c=aiCfg();
+        const set=function(id,v){ const el=document.getElementById(id); if(el&&!el.value) el.value=v||'' };
+        set('bp-ai-url',c.url); set('bp-ai-model',c.model); set('bp-ai-key',c.key);
+      });
+      const sv=document.getElementById('bp-ai-save');
+      if(sv) sv.addEventListener('click',function(){
+        const g=function(id){ const el=document.getElementById(id); return el?String(el.value||'').trim():'' };
+        aiCfgSave({url:g('bp-ai-url'),model:g('bp-ai-model'),key:g('bp-ai-key')});
+        aiState('✓ 已保存到本机'); try{toast('已保存','success')}catch(e){}
+      });
+      const run=document.getElementById('bp-ai-run');
+      if(run) run.addEventListener('click',bpAiExpand);
     })();
     function showInbox(){
       try{
