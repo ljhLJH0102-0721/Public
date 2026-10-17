@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v112';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v113';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -2966,12 +2966,87 @@
         else on=(!special&&navActiveKey===k);
         b.classList.toggle('active',on)})}catch(e){}}
     function logoutNow(){try{supa.signOut()}catch(e){}userLikedSet=new Set();showSkeletons();updateUserUI();renderSideNav();resetToHome()}
+
+    /* =====================================================================
+       侧栏路由（收口点）
+       ─────────────────────────────────────────────────────────────────────
+       以后新增功能区，只需在 NAV_ROUTES 里加一行：
+           R.myFeature = function(){ openMyFeature() };
+       需要"先关掉其他视图、露出主视图"的（列表类），用 view(...) 包一层：
+           R.myList = view(function(){ showMyList() });
+       ===================================================================== */
+    function navPreamble(){
+      ['sp-view','set-view','coll-view','detail-view','ws-view','pg-view','sci-view','ai-view'].forEach(function(id){
+        const el=document.getElementById(id); if(el) el.classList.remove('open');
+      });
+      const pv=document.getElementById('post-view'); if(pv) pv.style.display='none';
+      const mv=document.getElementById('main-view'); if(mv) mv.classList.remove('hidden');
+    }
+    const NAV_ROUTES=(function(){
+      const R={};
+      const view=function(fn){ return function(){ navPreamble(); try{ fn() }catch(e){ console.warn('[nav] view route',e) } } };
+      const safe=function(fn,label){ return function(){ try{ fn() }catch(e){ console.warn('[nav] '+label,e) } } };
+
+      /* —— 基础 —— */
+      R.home      = safe(function(){ goHome() },'home');
+      R.collapse  = function(){ toggleCollapse() };
+      R.pagenew   = safe(function(){ openPageEditor(null) },'pagenew');
+
+      /* —— 娱乐区 —— */
+      R.post      = view(function(){ showPostsArea(); syncNavActive() });
+
+      /* —— 科学区 —— */
+      R.solar     = safe(function(){ openScience('scene') },'solar');
+      R.deep      = safe(function(){ openScience('deep') },'deep');
+      R.edu       = safe(function(){ openScience('edu') },'edu');
+
+      /* —— 工作区 —— */
+      R.workspace = safe(function(){ openWorkspace('translate') },'workspace');
+      R.translate = safe(function(){ openWorkspace('translate') },'translate');
+      R.convert   = safe(function(){ openWorkspace('convert') },'convert');
+      R.gif       = safe(function(){ openWorkspace('gif') },'gif');
+      R.workbench = safe(function(){ if(typeof openWorkbench==='function') openWorkbench() },'workbench');
+
+      /* —— AI 区 —— */
+      R.prompts   = safe(function(){ openAiArea('lib') },'prompts');
+      R.promptgen = safe(function(){ openAiArea('gen') },'promptgen');
+      R.poses     = safe(function(){ openAiArea('lib') },'poses');
+
+      /* —— 我的 —— */
+      R.inbox     = safe(function(){ showInbox() },'inbox');
+      R.liked     = view(function(){ showLikedView(); syncNavActive() });
+      R.history   = view(function(){ showHistoryView(); syncNavActive() });
+      R.space     = view(function(){ showMySpace(); syncNavActive() });
+
+      /* —— 弹窗类（不切视图、不动图库）—— */
+      R.upload    = safe(function(){ openUploadModal() },'upload');
+      R.announce  = safe(function(){ if(typeof openAnnounceModal==='function') openAnnounceModal() },'announce');
+      R.account   = safe(function(){ openUserAuthModal() },'account');
+      R.logout    = safe(function(){ logoutNow() },'logout');
+
+      /* —— 系统 —— */
+      R.settings  = view(function(){ showSetView(); syncNavActive() });
+
+      return R;
+    })();
+    try{ window.NAV_ROUTES=NAV_ROUTES }catch(e){}
+    /* 兜底：未知键（含自定义页面 page:xxx）交回原有逻辑 */
+    function navGo(k){
+      const kk=String(k||'');
+      if(NAV_ROUTES[kk]){
+        try{ closeNav() }catch(e){}
+        try{ navActiveKey=kk }catch(e){}
+        try{ NAV_ROUTES[kk]() }catch(e){ console.warn('[nav] route failed: '+kk, e) }
+        return true;
+      }
+      return false;
+    }
     (function(){
       const nav=document.getElementById('side-nav');const mask=document.getElementById('nav-mask');
       if(mask)mask.addEventListener('click',closeNav);
       window.addEventListener('resize',function(){if(window.innerWidth>=1024)closeNav()});
       if(!nav)return;
-      nav.addEventListener('click',function(e){const b=e.target.closest('.sn-item');if(!b)return;const k=b.dataset.nav;
+      nav.addEventListener('click',function(e){const b=e.target.closest('.sn-item');if(!b)return;const k=b.dataset.nav; if(k!=='collapse'&&navGo(k)) return;
         if(k==='collapse'){toggleCollapse();return}
         closeNav();
         navActiveKey=k;
