@@ -196,8 +196,8 @@
 <script type="importmap">
 {
   "imports": {
-    "three": "./vendor/three.module.js",
-    "three/addons/": "./vendor/addons/"
+    "three": "https://gcore.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://gcore.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
   }
 }
 </script>
@@ -205,13 +205,17 @@
 <script>
   /* 若 8 秒内模块仍未启动（多半是离线 / CDN 被墙），给出可读提示 */
   window.__booted = false;
+  var __bootTimer = setInterval(function(){
+    if(window.__booted){ var bb = document.getElementById('boot'); if(bb){ bb.style.display='none'; bb.innerHTML=''; } clearInterval(__bootTimer); }
+  }, 300);
   setTimeout(function(){
-    if(window.__booted) return;
+    if(window.__booted){ clearInterval(__bootTimer); return; }
     var b = document.getElementById('boot');
     b.style.display = 'grid';
-    b.innerHTML = '无法从 CDN 加载 three.js。<br>本地引擎文件缺失或浏览器不支持 ES Module。<br><br>' +
-      '离线环境请改用同目录下的 <code>solar-system.html</code>（纯 WebGL、零依赖、程序化贴图）。';
-  }, 8000);
+    b.innerHTML = '三维引擎还在加载（three.js 约 1.2MB，网络慢时需要多等一会儿）…<br><br>' +
+      '如果一直停在这里，说明当前网络无法访问 CDN。<br>' +
+      '可以：<b>刷新重试</b>，或点右上角<b>「全屏打开 ↗」</b>单开此页。';
+  }, 20000);
 </script>
 
 <script type="module">
@@ -227,12 +231,19 @@ let THREE, OrbitControls;
 try{
   THREE = await import('three');
   ({ OrbitControls } = await import('three/addons/controls/OrbitControls.js'));
-}catch(err){
-  document.getElementById('boot').style.display = 'grid';
-  document.getElementById('boot').innerHTML =
-    'three.js 加载失败：' + (err && err.message ? err.message : err) +
-    '<br><br>请检查网络，或改用同目录下的 <code>solar-system.html</code>（零依赖离线版）。';
-  throw err;
+}catch(err1){
+  console.warn('[solar] CDN 引擎不可用，改用本地内置：', err1);
+  try{
+    THREE = await import('./vendor/three.module.js');
+    ({ OrbitControls } = await import('./vendor/addons/controls/OrbitControls.js'));
+    console.log('[solar] 已切换到本地 three.js');
+  }catch(err2){
+    document.getElementById('boot').style.display = 'grid';
+    document.getElementById('boot').innerHTML =
+      '三维引擎加载失败：' + (err2 && err2.message ? err2.message : err2) +
+      '<br><br>请刷新重试，或点右上角「全屏打开 ↗」单开此页。';
+    throw err2;
+  }
 }
 window.__booted = true;
 
