@@ -99,6 +99,21 @@
       "k": "p_foot",
       "n": "脚",
       "g": "part"
+    },
+    {
+      "k": "nsfw_pos",
+      "n": "体位",
+      "g": "nsfw"
+    },
+    {
+      "k": "nsfw_act",
+      "n": "行为",
+      "g": "nsfw"
+    },
+    {
+      "k": "nsfw_sta",
+      "n": "状态",
+      "g": "nsfw"
     }
   ],
   "items": [
@@ -1585,6 +1600,370 @@
       "n": "足部特写",
       "c": "p_foot",
       "r": 0
+    },
+    {
+      "z": "正常位",
+      "e": "missionary position, on bed, legs spread",
+      "n": "男方在上、女方仰躺",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "屈膝正常位",
+      "e": "missionary position, knees bent, legs pushed up",
+      "n": "正常位加屈膝",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "抬腿过肩",
+      "e": "missionary position, legs over shoulders",
+      "n": "双腿架到对方肩上",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "骑乘位",
+      "e": "cowgirl position, sitting on top, facing viewer",
+      "n": "女上位、面对面",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "后仰骑乘",
+      "e": "cowgirl position, leaning back, hands behind",
+      "n": "女上位后仰",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "前倾骑乘",
+      "e": "cowgirl position, leaning forward, hands on chest",
+      "n": "女上位前倾",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "反向骑乘",
+      "e": "reverse cowgirl position, facing away",
+      "n": "背对骑乘",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "后入位",
+      "e": "doggy style, from behind, on all fours",
+      "n": "四肢跪趴、从后方",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "站立后入",
+      "e": "standing, from behind, bent forward slightly",
+      "n": "站立前倾后入",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "抵墙站立",
+      "e": "standing against wall, one leg lifted",
+      "n": "靠墙站立单腿抬起",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "侧卧位",
+      "e": "spooning position, lying on side",
+      "n": "两人同侧躺",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "侧卧抬腿",
+      "e": "lying on side, one leg lifted over partner",
+      "n": "侧躺单腿抬起",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "抱坐位",
+      "e": "lotus position, sitting in lap facing each other",
+      "n": "面对面抱坐",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "背对抱坐",
+      "e": "sitting in lap, facing away",
+      "n": "背对坐在腿上",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "俯卧位",
+      "e": "prone bone, lying face down flat",
+      "n": "趴平从后方",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "压腿位",
+      "e": "mating press, legs pushed back beside head",
+      "n": "双腿压向两侧",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "悬空抱起",
+      "e": "suspended, lifted up, legs around waist",
+      "n": "被抱起悬空、腿缠腰",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "俯冲位",
+      "e": "piledriver position, inverted",
+      "n": "倒立式",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "69 位",
+      "e": "sixty-nine position, mutual",
+      "n": "互相口交的对称姿态",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "女上坐位",
+      "e": "amazon position, partner below",
+      "n": "女方在上男方仰躺",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "单腿抬肩位",
+      "e": "one leg over partner shoulder, standing",
+      "n": "站立单腿搭肩",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "桌边位",
+      "e": "bent over desk edge, from behind",
+      "n": "趴在桌沿",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "床边位",
+      "e": "lying on bed edge, legs hanging off",
+      "n": "躺床沿腿垂下",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "跪姿后入",
+      "e": "kneeling, from behind, back arched",
+      "n": "跪姿背部弓起",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "面对面坐姿",
+      "e": "facing each other, seated close, intimate",
+      "n": "面对面贴近坐",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "插入",
+      "e": "penetration, explicit, detailed",
+      "n": "明确结合状态",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "缓慢抽送",
+      "e": "slow motion, gentle movement",
+      "n": "缓慢节奏",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "激烈挺动",
+      "e": "intense movement, motion blur, rough",
+      "n": "激烈动态模糊",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "抚摸胸部",
+      "e": "fondling breasts, hands cupping",
+      "n": "双手揉抚",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "亲吻颈部",
+      "e": "kissing neck, lips on skin",
+      "n": "嘴唇贴颈",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "深吻",
+      "e": "deep kiss, tongue, close-up",
+      "n": "深入接吻",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "口交",
+      "e": "fellatio, close-up on face",
+      "n": "口部特写",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "舔舐",
+      "e": "licking, tongue out",
+      "n": "舌头伸出",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "摩擦",
+      "e": "grinding, hips close together",
+      "n": "身体紧贴摩擦",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "后颈抓握",
+      "e": "hand gripping the back of neck",
+      "n": "一只手扣住后颈",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "十指相扣",
+      "e": "interlocked fingers, hands clasped",
+      "n": "手被十指交扣按住",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "射精瞬间",
+      "e": "ejaculation, afterglow",
+      "n": "高潮后的余韵",
+      "c": "nsfw_act",
+      "r": 1
+    },
+    {
+      "z": "潮红",
+      "e": "flushed skin, red cheeks, heavy breathing",
+      "n": "皮肤泛红呼吸急促",
+      "c": "nsfw_sta",
+      "r": 1
+    },
+    {
+      "z": "出汗",
+      "e": "sweaty skin, glistening, damp hair",
+      "n": "皮肤出汗发丝湿润",
+      "c": "nsfw_sta",
+      "r": 1
+    },
+    {
+      "z": "失神",
+      "e": "dazed expression, half-closed eyes, mouth open",
+      "n": "眼神涣散半闭微张嘴",
+      "c": "nsfw_sta",
+      "r": 1
+    },
+    {
+      "z": "咬唇",
+      "e": "biting lip, holding back moan",
+      "n": "咬住下唇",
+      "c": "nsfw_sta",
+      "r": 1
+    },
+    {
+      "z": "眼角泛泪",
+      "e": "teary eyes, wet lashes",
+      "n": "眼角湿亮",
+      "c": "nsfw_sta",
+      "r": 1
+    },
+    {
+      "z": "衣衫凌乱",
+      "e": "messy clothes, disheveled, half removed",
+      "n": "衣服被弄乱",
+      "c": "nsfw_sta",
+      "r": 1
+    },
+    {
+      "z": "内衣半脱",
+      "e": "bra pulled down, panties aside",
+      "n": "内衣被拉下",
+      "c": "nsfw_sta",
+      "r": 1
+    },
+    {
+      "z": "大腿内侧",
+      "e": "inner thighs, thighs pressed together",
+      "n": "大腿内侧并拢",
+      "c": "nsfw_sta",
+      "r": 1
+    },
+    {
+      "z": "床单抓皱",
+      "e": "hands gripping sheets, wrinkled bedsheet",
+      "n": "手指抓紧床单",
+      "c": "nsfw_sta",
+      "r": 1
+    },
+    {
+      "z": "事后余韵",
+      "e": "afterglow, relaxed body, messy hair",
+      "n": "结束后的慵懒",
+      "c": "nsfw_sta",
+      "r": 1
+    },
+    {
+      "z": "男方视角",
+      "e": "male pov, viewer is the partner",
+      "n": "第一人称即男方",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "女方视角",
+      "e": "female pov, looking up at partner",
+      "n": "第一人称即女方",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "俯拍全身",
+      "e": "from above, full body, bed visible",
+      "n": "从上往下拍全身",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "特写局部",
+      "e": "close-up on contact area, shallow depth of field",
+      "n": "交合处特写浅景深",
+      "c": "nsfw_pos",
+      "r": 1
+    },
+    {
+      "z": "镜中倒影",
+      "e": "mirror reflection, two bodies",
+      "n": "镜中映出两人",
+      "c": "nsfw_pos",
+      "r": 1
     }
   ]
 }

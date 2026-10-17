@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v107';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v108';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -319,6 +319,12 @@
     .bp{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:0 0 16px;box-shadow:var(--shadow-xs)}
     .bp-hd{font-size:.88rem;font-weight:800;color:var(--text);margin-bottom:4px}
     .bp-sub{font-weight:500;font-size:.72rem;color:var(--text3);margin-left:6px}
+    .bp-picked{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;min-height:26px}
+    .bp-tag{padding:4px 10px;border-radius:999px;border:1px solid rgba(var(--accent-rgb),.4);background:var(--accent-bg);
+      color:var(--accent);font-size:.72rem;font-family:inherit;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .bp-tag b{opacity:.6;margin-left:3px}
+    .bp-tag:hover{border-color:#d9534f;color:#d9534f;}
+    .bp-empty{font-size:.75rem;color:var(--text3)}
     .bp-rows{display:flex;flex-direction:column;gap:8px;margin:12px 0}
     .bp-row{display:flex;align-items:flex-start;gap:10px}
     .bp-label{flex:0 0 40px;font-size:.76rem;font-weight:700;color:var(--accent);padding-top:5px}
@@ -1178,9 +1184,8 @@
 
       <div class="ws-panel active" data-aipanel="lib">
         <div class="bp">
-          <div class="bp-hd">🧩 词条组合器 <span class="bp-sub">从词库选词条 · 合成顺序 头发→头→身体→手→腿→脚→动作→场景</span></div>
-          <div class="bp-q" style="margin:10px 0 0"><input id="bp-q" type="text" placeholder="搜索词条（中文或英文）…" autocomplete="off"></div>
-          <div class="bp-rows" id="bp-rows"></div>
+          <div class="bp-hd">🧩 词条组合器 <span class="bp-sub">在下方列表卡片上点「＋」加入 · 合成顺序 头发→头→身体→手→腿→脚→动作→场景</span></div>
+          <div class="bp-picked" id="bp-picked"></div>
           <div class="bp-out" id="bp-out">（在上面选择词条，这里会实时合成）</div>
           <div class="bp-btns">
             <button class="btn btn-primary" id="bp-copy" type="button">复制合成结果</button>
@@ -2309,11 +2314,16 @@
         return '<div class="pose-card" data-i="'+i+'">'
           + '<div class="pose-h"><span class="pose-z">'+escHtml(x.z)+'</span>'
           + (x.r===1?'<span class="pose-r18">R18</span>':'')
-          + '<span class="sp"></span><button class="ai-mini" data-copy="'+escHtml(x.e)+'">复制</button></div>'
+          + '<span class="sp"></span><button class="ai-mini" data-add="'+escHtml(x.e)+'" data-cat="'+x.c+'" title="加入组合器">＋</button><button class="ai-mini" data-copy="'+escHtml(x.e)+'">复制</button></div>'
           + '<div class="pose-n">'+escHtml(x.n||'')+'</div>'
           + '<div class="pose-e">'+escHtml(x.e)+'</div></div>';
       }).join('');
       Array.prototype.forEach.call(box.querySelectorAll('.pose-card'),function(el){
+        const ad=el.querySelector('[data-add]');
+        if(ad) ad.addEventListener('click',function(){
+          const ok=bpAdd(ad.dataset.add, ad.dataset.cat);
+          try{toast(ok?'已加入组合器（见顶部）':'这条已经在组合里了')}catch(e){}
+        });
         const b=el.querySelector('[data-copy]');
         if(b) b.addEventListener('click',function(){ const ok=copyText(b.dataset.copy); try{toast(ok?'已复制英文提示词':'复制失败','success')}catch(e){} });
       });
@@ -2372,6 +2382,7 @@
     /* 顺序：头发→头→身体→手→腿→脚→动作→场景→成人向（词条全部来自词库） */
     const BP_PART_ORDER=['p_hair','p_head','p_body','p_hand','p_leg','p_foot'];
     let bpQ='';
+    let bpPicked=[];            /* [{e,c}] 已加入组合的词条 */
     function bpOrder(){
       const cats=(posesCache&&posesCache.cats)||[];
       const byKey={}; cats.forEach(function(c){ byKey[c.k]=c });
@@ -2381,67 +2392,55 @@
       return out;
     }
     const bpSel={};
+    function bpPickedList(){ return bpPicked }
+    function bpCatIndex(k){
+      const list=bpOrder(); for(let i=0;i<list.length;i++) if(list[i].k===k) return i;
+      return 999;
+    }
+    function bpAdd(e,c){
+      if(bpPicked.some(function(x){ return x.e===e })) return false;
+      bpPicked.push({ e:e, c:c||'' }); bpRender(); return true;
+    }
     function bpRender(){
-      const box=document.getElementById('bp-rows'); if(!box) return;
-      if(!posesCache){ box.innerHTML='<div class="bp-loading">词条数据加载中…</div>'; return }
-      const items=posesCache.items||[];
-      box.innerHTML=bpOrder().map(function(o){
-        const list=items.filter(function(x){ if(x.r===1&&!showR18) return false; if(x.c!==o.k) return false;
-          if(bpQ && (x.z+' '+x.e).toLowerCase().indexOf(bpQ)<0) return false; return true });
-        if(!list.length) return '';
-        return '<div class="bp-row"><span class="bp-label">'+o.n+'</span><div class="bp-chips">'
-          + list.map(function(x){
-              const on=bpSel[o.k].indexOf(x.e)>=0;
-              return '<button type="button" class="bp-chip'+(on?' on':'')+'" data-k="'+o.k+'" data-e="'+escHtml(x.e)+'" title="'+escHtml(x.z)+'">'+escHtml(x.z)+'</button>';
-            }).join('')
-          + '</div></div>';
-      }).join('');
-      if(!box.dataset.bound){
-        box.dataset.bound='1';
-        box.addEventListener('click',function(e){
-          const b=e.target.closest('.bp-chip'); if(!b) return;
-          const k=b.dataset.k, e2=b.dataset.e, arr=bpSel[k];
-          const i=arr.indexOf(e2);
-          if(i>=0) arr.splice(i,1); else arr.push(e2);
-          b.classList.toggle('on', i<0);
-          bpUpdate();
+      const box=document.getElementById('bp-picked'); if(!box) return;
+      if(!bpPicked.length){
+        box.innerHTML='<span class="bp-empty">还没有加入词条 —— 在下面列表的卡片上点「＋」</span>';
+      } else {
+        box.innerHTML=bpPicked.map(function(x){
+          return '<button type="button" class="bp-tag" data-e="'+escHtml(x.e)+'" title="点击移除">'+escHtml(x.e)+' <b>×</b></button>';
+        }).join('');
+        Array.prototype.forEach.call(box.querySelectorAll('.bp-tag'),function(b){
+          b.addEventListener('click',function(){ bpPicked=bpPicked.filter(function(x){return x.e!==b.dataset.e}); bpRender() });
         });
-      }
-      const q=document.getElementById('bp-q');
-      if(q&&!q.dataset.bound){
-        q.dataset.bound='1';
-        q.addEventListener('input',function(){ bpQ=String(q.value||'').trim().toLowerCase(); bpRender() });
       }
       bpUpdate();
     }
     function bpBuild(){
+      if(!bpPicked.length) return '';
+      const sorted=bpPicked.slice().sort(function(a,b){ return bpCatIndex(a.c)-bpCatIndex(b.c) });
       const seen={}, out=[];
-      bpOrder().forEach(function(o){
-        (bpSel[o.k]||[]).forEach(function(e){
-          const key=String(e).toLowerCase().replace(/\s+/g,' ').trim();
-          if(!key||seen[key]) return;
-          seen[key]=1; out.push(key);
-        });
+      sorted.forEach(function(x){
+        const key=String(x.e).toLowerCase().replace(/\s+/g,' ').trim();
+        if(!key||seen[key]) return;
+        seen[key]=1; out.push(key);
       });
       return out.join(', ');
     }
     function bpUpdate(){
       const s=bpBuild();
       const out=document.getElementById('bp-out');
-      if(out) out.textContent = s || '（在上面选择词条，这里会实时合成）';
+      if(out) out.textContent = s || '（在下方词条卡片上点「＋」，这里会实时合成）';
       const c=document.getElementById('bp-count');
       if(c) c.textContent = s ? ('共 ' + s.split(', ').length + ' 个词条，' + s.length + ' 字符') : '';
     }
     (function(){
       const cp=document.getElementById('bp-copy');
       if(cp) cp.addEventListener('click',function(){
-        const s=bpBuild(); if(!s){ try{toast('先选择词条')}catch(e){} return }
+        const s=bpBuild(); if(!s){ try{toast('先加入词条')}catch(e){} return }
         const ok=copyText(s); try{toast(ok?'已复制合成结果':'复制失败','success')}catch(e){}
       });
       const cl=document.getElementById('bp-clear');
-      if(cl) cl.addEventListener('click',function(){
-        bpOrder().forEach(function(o){ bpSel[o.k]=[] }); bpRender();
-      });
+      if(cl) cl.addEventListener('click',function(){ bpPicked=[]; bpRender(); });
     })();
     function showInbox(){
       try{
