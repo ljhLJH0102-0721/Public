@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v99';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v100';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -280,6 +280,35 @@
     @media(max-width:768px){
       .coll-head{gap:10px}
       #coll-back{padding:8px 14px;font-size:.9rem}
+    }
+
+    /* ===== AI 区 ===== */
+    .ai-body{padding:18px 20px 90px;max-width:900px;margin:0 auto}
+    .ai-tip{font-size:.78rem;color:var(--text3);margin:0 0 14px;padding:9px 13px;border-radius:10px;
+      background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.16);line-height:1.6}
+    .ai-list{display:flex;flex-direction:column;gap:10px}
+    .ai-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow-xs)}
+    .ai-card-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .ai-card-t{font-size:.92rem;font-weight:700;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .ai-card-h .sp{flex:1}
+    .ai-card-b{font-size:.82rem;line-height:1.75;color:var(--text2);word-break:break-word;white-space:pre-wrap}
+    .ai-mini{background:none;border:1px solid var(--border);color:var(--text2);border-radius:8px;
+      font-size:.72rem;padding:3px 9px;cursor:pointer;font-family:inherit}
+    .ai-mini:hover{border-color:var(--accent);color:var(--accent)}
+    .ai-mini.danger:hover{border-color:#d9534f;color:#d9534f}
+    .ai-gen{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow-xs)}
+    .ai-gen-row{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+    .ai-gen-row label{flex:0 0 46px;font-size:.8rem;color:var(--text3);font-weight:600}
+    .ai-gen-row input,.ai-gen-row select{flex:1;min-width:0;padding:8px 11px;border-radius:10px;
+      border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.84rem;font-family:inherit}
+    .ai-gen-row input:focus,.ai-gen-row select:focus{outline:none;border-color:var(--accent)}
+    .ai-gen-out{margin:14px 0;padding:12px 14px;border-radius:10px;background:var(--surface-2);
+      border:1px dashed rgba(var(--accent-rgb),.3);font-size:.82rem;line-height:1.75;color:var(--text);word-break:break-word;min-height:52px}
+    .ai-gen-btns{display:flex;gap:10px}
+    @media(max-width:768px){
+      .ai-body{padding:12px 12px 90px}
+      .ai-gen-row{flex-wrap:wrap;gap:6px}
+      .ai-gen-row label{flex:0 0 100%;margin-bottom:-2px}
     }
     .pg-content{font-size:.96rem;line-height:1.9;color:var(--text);word-break:break-word}
     .pg-content h1{font-size:1.5rem;font-weight:800;margin:26px 0 12px;letter-spacing:-.01em}
@@ -1095,6 +1124,54 @@
 
   </div>
   <button id="nav-fab" title="菜单" aria-label="菜单"><span></span><span></span><span></span></button>
+
+  <div id="ai-view">
+    <div class="sp-header">
+      <div class="sp-title" id="ai-title">🖼 提示词库</div>
+      <div class="pg-actions" id="ai-actions"></div>
+    </div>
+    <div class="ai-body">
+      <div class="ws-panel active" data-aipanel="lib">
+        <div class="ai-tip">收录生图提示词 · 仅站长可编辑 · 点「复制」直接拿走</div>
+        <div class="ai-list" id="ai-list"></div>
+      </div>
+      <div class="ws-panel" data-aipanel="gen">
+        <div class="ai-tip">选好参数 → 自动拼成一段生图提示词 → 复制去用</div>
+        <div class="ai-gen">
+          <div class="ai-gen-row"><label>主体</label><input id="pg-subject" placeholder="例如：a purple iris flower / a girl in school uniform"></div>
+          <div class="ai-gen-row"><label>风格</label><select id="pg-style">
+            <option value="">（不指定）</option><option value="anime illustration, clean lineart">动漫插画</option>
+            <option value="photorealistic, 85mm lens">写实摄影</option><option value="oil painting, visible brush strokes">油画</option>
+            <option value="watercolor, soft wash">水彩</option><option value="3d render, octane">3D 渲染</option>
+            <option value="pixel art, 16-bit">像素风</option><option value="ink wash painting, chinese style">国风水墨</option>
+          </select></div>
+          <div class="ai-gen-row"><label>光线</label><select id="pg-light">
+            <option value="">（不指定）</option><option value="soft diffused light">柔光</option>
+            <option value="dramatic rim light">轮廓光</option><option value="golden hour backlight">黄昏逆光</option>
+            <option value="moody cinematic lighting">电影感暗调</option><option value="neon glow, night">霓虹夜光</option>
+            <option value="studio lighting, softbox">棚拍光</option>
+          </select></div>
+          <div class="ai-gen-row"><label>镜头</label><select id="pg-shot">
+            <option value="">（不指定）</option><option value="close-up shot">特写</option><option value="medium shot">中景</option>
+            <option value="full body shot">全身</option><option value="wide establishing shot">大远景</option>
+            <option value="macro photography">微距</option><option value="bird's eye view">俯视</option>
+          </select></div>
+          <div class="ai-gen-row"><label>画幅</label><select id="pg-ar">
+            <option value="">（不指定）</option><option value="--ar 1:1">1:1 方图</option>
+            <option value="--ar 3:4">3:4 竖版</option><option value="--ar 4:3">4:3</option>
+            <option value="--ar 9:16">9:16 手机壁纸</option><option value="--ar 16:9">16:9 横版</option>
+            <option value="--ar 21:9">21:9 超宽</option>
+          </select></div>
+          <div class="ai-gen-row"><label>补充</label><input id="pg-extra" placeholder="例如：ornate golden filigree border, deep navy background"></div>
+          <div class="ai-gen-out" id="pg-out">（填写后这里会实时生成）</div>
+          <div class="ai-gen-btns">
+            <button class="btn btn-primary" id="pg-copy">复制提示词</button>
+            <button class="btn btn-outline" id="pg-save" style="display:none">存进提示词库</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 <div id="main-view">
     <header id="main-header">
       <button class="nav-burger" id="nav-burger" title="菜单" aria-label="菜单">
@@ -1741,7 +1818,7 @@
       if(!hit.length){toast('页面不存在或已删除','error');return}
       const p=hit[0];
       setViewFlags(null);
-      ['sp-view','set-view','coll-view','detail-view','ws-view','sci-view'].forEach(function(x){const el=document.getElementById(x);if(el)el.classList.remove('open')});
+      ['sp-view','set-view','coll-view','detail-view','ws-view','sci-view','ai-view'].forEach(function(x){const el=document.getElementById(x);if(el)el.classList.remove('open')});
       const pv=document.getElementById('post-view');if(pv)pv.style.display='none';
       const mv=document.getElementById('main-view');if(mv)mv.classList.add('hidden');
       const v=document.getElementById('pg-view');if(v)v.classList.add('open');
@@ -1994,6 +2071,144 @@
         if(cid){ try{ openCollection(cid) }catch(err){} }
       }catch(err){}
     });
+
+    /* ===== AI 区：提示词库（prompts.json）/ 生成器 ===== */
+    let promptsCache = [], prSha = null, prReady = false;
+    const AI_TITLE = { lib:'🖼 提示词库', gen:'✨ 提示词生成器' };
+    function aiActivate(v){
+      v = (v==='gen') ? 'gen' : 'lib';
+      document.querySelectorAll('#ai-view .ws-panel').forEach(function(p){ p.classList.toggle('active', p.dataset.aipanel===v) });
+      const tt=document.getElementById('ai-title'); if(tt) tt.textContent = AI_TITLE[v];
+      const acts=document.getElementById('ai-actions');
+      if(acts){
+        acts.innerHTML = (v==='lib' && isOwner()) ? '<button class="btn btn-outline" id="ai-new">＋ 新增提示词</button>' : '';
+        const b=document.getElementById('ai-new'); if(b) b.addEventListener('click', function(){ aiEdit(null) });
+      }
+      try{ navActiveKey = (v==='gen'?'promptgen':'prompts'); syncNavActive() }catch(e){}
+      if(v==='gen') pgUpdate();
+    }
+    function openAiArea(v){
+      setViewFlags(null);
+      ['sp-view','set-view','coll-view','detail-view','ws-view','pg-view','sci-view','ai-view'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('open')});
+      const pv=document.getElementById('post-view'); if(pv) pv.style.display='none';
+      const mv=document.getElementById('main-view'); if(mv) mv.classList.add('hidden');
+      const av=document.getElementById('ai-view'); if(av) av.classList.add('open');
+      aiActivate(v||'lib');
+      if(!prReady) loadPrompts();
+      window.scrollTo(0,0);
+    }
+    async function loadPrompts(){
+      const urls=[siteBase()+'prompts.json?t='+Date.now(),
+                  'https://gcore.jsdelivr.net/gh/'+CFG.owner+'/'+CFG.repo+'@'+CFG.branch+'/prompts.json?t='+Date.now()];
+      for(let i=0;i<urls.length;i++){
+        try{ const r=await fetch(urls[i],{cache:'no-store'}); if(r&&r.ok){ const j=await r.json(); if(Array.isArray(j)){ promptsCache=j; prReady=true; break } } }catch(e){}
+      }
+      renderPrompts();
+    }
+    async function savePrompts(msg){
+      let token; try{ token=await ensureR18Token() }catch(err){ toast(err.message,'error'); throw err }
+      if(!prSha){ try{ const f=await ghGetFile('prompts.json',token); if(f) prSha=f.sha }catch(e){} }
+      const b64=btoa(unescape(encodeURIComponent(JSON.stringify(promptsCache,null,2))));
+      const r=await ghPutFile('prompts.json',b64,msg||'update prompts.json',prSha,token);
+      if(r&&r.content) prSha=r.content.sha;
+    }
+    function copyText(txt){
+      try{
+        if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt); return true }
+      }catch(e){}
+      try{
+        const ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); return true;
+      }catch(e){ return false }
+    }
+    function renderPrompts(){
+      const box=document.getElementById('ai-list'); if(!box) return;
+      if(!promptsCache.length){ box.innerHTML='<div class="sp-empty"><div class="sp-empty-icon">🗂</div><p>还没有提示词'+(isOwner()?'，点右上角「＋ 新增提示词」开始收集':'')+'</p></div>'; return }
+      box.innerHTML=promptsCache.map(function(p,i){
+        return '<div class="ai-card" data-i="'+i+'">'
+          + '<div class="ai-card-h"><span class="ai-card-t">'+escHtml(p.title||'未命名')+'</span><span class="sp"></span>'
+          + '<button class="ai-mini" data-act="copy">复制</button>'
+          + (isOwner()?'<button class="ai-mini" data-act="edit">编辑</button><button class="ai-mini danger" data-act="del">删除</button>':'')
+          + '</div><div class="ai-card-b">'+escHtml(p.body||'')+'</div></div>';
+      }).join('');
+      Array.prototype.forEach.call(box.querySelectorAll('.ai-card'), function(el){
+        const i=+el.dataset.i;
+        Array.prototype.forEach.call(el.querySelectorAll('.ai-mini'), function(b){
+          b.addEventListener('click', async function(){
+            const act=b.dataset.act;
+            if(act==='copy'){ const ok=copyText(promptsCache[i].body||''); try{toast(ok?'已复制提示词':'复制失败，请长按选择','success')}catch(e){} return }
+            if(act==='edit'){ aiEdit(i); return }
+            if(act==='del'){
+              if(!confirm('删除这条提示词？')) return;
+              const bak=promptsCache.slice();
+              promptsCache.splice(i,1); renderPrompts();
+              try{ await savePrompts('prompts: delete'); try{toast('已删除','success')}catch(e){} }
+              catch(e){ promptsCache=bak; renderPrompts(); try{toast('删除失败','error')}catch(e2){} }
+            }
+          });
+        });
+      });
+    }
+    function aiEdit(idx){
+      const isNew = (idx===null||idx===undefined);
+      const cur = isNew ? {title:'',body:''} : promptsCache[idx];
+      const m=document.getElementById('modal-host')||document.body;
+      const wrap=document.createElement('div');
+      wrap.className='ai-modal';
+      wrap.innerHTML='<div class="ai-modal-box"><h3>'+(isNew?'新增提示词':'编辑提示词')+'</h3>'
+        +'<input id="ai-f-title" placeholder="标题（例如：月光鸢尾）" value="'+escHtml(cur.title||'')+'">'
+        +'<textarea id="ai-f-body" rows="8" placeholder="提示词正文…">'+escHtml(cur.body||'')+'</textarea>'
+        +'<div class="ai-modal-btns"><button class="btn btn-ghost" id="ai-cancel">取消</button>'
+        +'<button class="btn btn-primary" id="ai-save">保存</button></div></div>';
+      document.body.appendChild(wrap);
+      wrap.querySelector('#ai-cancel').addEventListener('click', function(){ wrap.remove() });
+      wrap.addEventListener('click', function(e){ if(e.target===wrap) wrap.remove() });
+      wrap.querySelector('#ai-save').addEventListener('click', async function(){
+        const title=wrap.querySelector('#ai-f-title').value.trim();
+        const body=wrap.querySelector('#ai-f-body').value.trim();
+        if(!title&&!body){ try{toast('标题或正文至少填一个')}catch(e){} return }
+        const btn=this; btn.disabled=true; btn.textContent='保存中…';
+        const rec={id:isNew?('p-'+Date.now().toString(36)):(cur.id||('p-'+Date.now().toString(36))),title:title,body:body};
+        const bak=promptsCache.slice();
+        if(isNew) promptsCache.unshift(rec); else promptsCache[idx]=Object.assign({},cur,rec);
+        try{
+          await savePrompts(isNew?'prompts: add':'prompts: update');
+          wrap.remove(); renderPrompts(); try{toast(isNew?'已保存':'已更新','success')}catch(e){}
+        }catch(e){
+          promptsCache=bak; renderPrompts(); btn.disabled=false; btn.textContent='保存';
+        }
+      });
+    }
+    /* ---- 生成器 ---- */
+    function pgBuild(){
+      const g=function(id){ const el=document.getElementById(id); return el?String(el.value||'').trim():'' };
+      const parts=[g('pg-subject'),g('pg-style'),g('pg-light'),g('pg-shot'),g('pg-extra')].filter(Boolean);
+      let s=parts.join(', ');
+      const ar=g('pg-ar'); if(ar) s+=(s?' ':'')+ar;
+      return s;
+    }
+    function pgUpdate(){
+      const out=document.getElementById('pg-out'); if(!out) return;
+      const s=pgBuild();
+      out.textContent = s || '（填写后这里会实时生成）';
+      const sv=document.getElementById('pg-save');
+      if(sv) sv.style.display = (s && isOwner()) ? '' : 'none';
+    }
+    (function(){
+      ['pg-subject','pg-style','pg-light','pg-shot','pg-ar','pg-extra'].forEach(function(id){
+        const el=document.getElementById(id);
+        if(el){ el.addEventListener('input',pgUpdate); el.addEventListener('change',pgUpdate) }
+      });
+      const cp=document.getElementById('pg-copy');
+      if(cp) cp.addEventListener('click',function(){ const s=pgBuild(); if(!s){ try{toast('先填写内容')}catch(e){} return } const ok=copyText(s); try{toast(ok?'已复制':'复制失败','success')}catch(e){} });
+      const sv=document.getElementById('pg-save');
+      if(sv) sv.addEventListener('click',function(){
+        const s=pgBuild(); if(!s) return;
+        promptsCache.unshift({id:'p-'+Date.now().toString(36), title:(document.getElementById('pg-subject')||{}).value||'生成器提示词', body:s});
+        savePrompts('prompts: add from generator').then(function(){ renderPrompts(); try{toast('已存进提示词库','success')}catch(e){} })
+          .catch(function(){ promptsCache.shift(); });
+      });
+    })();
     function showInbox(){
       try{
         inboxFetchRemote();
@@ -2156,6 +2371,8 @@
       bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
       settings:'<circle cx="12" cy="12" r="3"/><path d="M4.5 12a7.5 7.5 0 0 1 .14-1.46l-1.6-1.2 1.5-2.6 1.9.72A7.5 7.5 0 0 1 8.6 6.2L8.9 4.2h3l.3 2a7.5 7.5 0 0 1 2.2 1.26l1.9-.72 1.5 2.6-1.6 1.2A7.5 7.5 0 0 1 19.5 12"/>',
       moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+      spark:'<path d="M12 3.2l1.75 4.55L18.3 9.5l-4.55 1.75L12 15.8l-1.75-4.55L5.7 9.5l4.55-1.75z"/><path d="M18.6 15.2l.8 2.05 2.05.8-2.05.8-.8 2.05-.8-2.05-2.05-.8 2.05-.8z"/>',
+      wand:'<path d="M15 4l5 5"/><path d="M4 20l11-11"/><path d="M17.5 2.5l1 1M21.5 6.5l1 1M12.5 2.5l.6.6"/>',
       key:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m17 6 2 2"/><path d="m14 9 2 2"/>',
       logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
       home:'<path d="m3 10.4 9-7.2 9 7.2"/><path d="M5.5 9.2V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19.5 19V9.2"/><path d="M9.8 20.5v-6h4.4v6"/>',
@@ -2172,6 +2389,7 @@
       {t:'娱乐区',items:[{k:'image',i:'image',l:'插图'},{k:'comic',i:'comic',l:'漫画'},{k:'post',i:'post',l:'博文'}]},
       {t:'科学区',items:[{k:'solar',i:'orbit',l:'太阳系'},{k:'deep',i:'deep',l:'深空星云'},{k:'edu',i:'edu',l:'天文事件'}]},
       {t:'工作区',items:[{k:'translate',i:'translate',l:'文本翻译'},{k:'convert',i:'swap',l:'图片转格式'},{k:'gif',i:'film',l:'视频转 GIF'}]},
+      {t:'AI 区',items:[{k:'prompts',i:'spark',l:'提示词库'},{k:'promptgen',i:'wand',l:'提示词生成器'}]},
       {t:'我的',items:[{k:'inbox',i:'bell',l:'消息'+(inboxUnread()?(' '+inboxUnread()):'')},{k:'liked',i:'heart',l:'我喜欢的'},{k:'history',i:'clock',l:'历史浏览'},{k:'space',i:'user',l:'我的空间'},{k:'upload',i:'upload',l:'上传作品'}]},
       {t:'更多',items:[{k:'announce',i:'bell',l:'公告'},{k:'settings',i:'settings',l:'设置'},supa.user?{k:'logout',i:'logout',l:'退出登录'}:{k:'account',i:'key',l:'登录 / 注册'}]},
     ]}
@@ -2277,7 +2495,7 @@
     function openScience(v){
       v=(v==='deep'||v==='edu')?v:'scene';
       setViewFlags(null);
-      ['sp-view','set-view','coll-view','detail-view','ws-view','pg-view'].forEach(function(x){const el=document.getElementById(x);if(el)el.classList.remove('open')});
+      ['sp-view','set-view','coll-view','detail-view','ws-view','pg-view','ai-view'].forEach(function(x){const el=document.getElementById(x);if(el)el.classList.remove('open')});
       const pv=document.getElementById('post-view');if(pv)pv.style.display='none';
       const mv=document.getElementById('main-view');if(mv)mv.classList.add('hidden');
       const el=document.getElementById('sci-view');if(el)el.classList.add('open');
@@ -2359,9 +2577,10 @@
         if(k==='solar'||k==='deep'||k==='edu'){openScience(k);return}
         if(k==='home'){goHome();return}
         if(k==='inbox'){showInbox();return}
+        if(k==='prompts'||k==='promptgen'){openAiArea(k==='promptgen'?'gen':'lib');return}
         if(k.indexOf('page:')===0){openPage(k.slice(5));return}
         if(k==='pagenew'){openPageEditor(null);return}
-        ['sp-view','set-view','coll-view','detail-view','ws-view','pg-view','sci-view'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('open')});
+        ['sp-view','set-view','coll-view','detail-view','ws-view','pg-view','sci-view','ai-view'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('open')});
         const _pv=document.getElementById('post-view');if(_pv)_pv.style.display='none';
         const _mv=document.getElementById('main-view');if(_mv)_mv.classList.remove('hidden');
         if(k==='liked'){showLikedView();syncNavActive();return}
@@ -2377,7 +2596,7 @@
         if(isLikedView||isHistoryView||isUserView||isMySpaceView)exitSpecialView();
         currentKind=k;renderTagBar();applyFilters();syncNavActive()});
     })();
-    function resetToHome(){setTimeout(function(){try{navActiveKey=currentKind;syncNavActive()}catch(e){}},0);setViewFlags(null);currentTag='all';searchQuery='';currentKind='image';postReadingId=null;searchAuthorsResult=[];searchAuthorsQuery='';const si=document.getElementById('search-input');if(si)si.value='';const sg=document.getElementById('suggestions');if(sg)sg.style.display='none';const uw=document.getElementById('user-result-wrap');if(uw){uw.innerHTML='';uw.style.display='none'}const pv=document.getElementById('post-view');if(pv)pv.style.display='none';['sp-view','set-view','coll-view','detail-view','ws-view','pg-view','sci-view'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('open')});const mv=document.getElementById('main-view');if(mv)mv.classList.remove('hidden');document.querySelectorAll('.kind-pill').forEach(b=>b.classList.toggle('active',b.dataset.kind==='all'))}
+    function resetToHome(){setTimeout(function(){try{navActiveKey=currentKind;syncNavActive()}catch(e){}},0);setViewFlags(null);currentTag='all';searchQuery='';currentKind='image';postReadingId=null;searchAuthorsResult=[];searchAuthorsQuery='';const si=document.getElementById('search-input');if(si)si.value='';const sg=document.getElementById('suggestions');if(sg)sg.style.display='none';const uw=document.getElementById('user-result-wrap');if(uw){uw.innerHTML='';uw.style.display='none'}const pv=document.getElementById('post-view');if(pv)pv.style.display='none';['sp-view','set-view','coll-view','detail-view','ws-view','pg-view','sci-view','ai-view'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('open')});const mv=document.getElementById('main-view');if(mv)mv.classList.remove('hidden');document.querySelectorAll('.kind-pill').forEach(b=>b.classList.toggle('active',b.dataset.kind==='all'))}
     function showPostsArea(){setViewFlags(null);postReadingId=null;const _pv=document.getElementById('post-view');if(_pv)_pv.style.display='none';const mv=document.getElementById('main-view');if(mv)mv.classList.remove('hidden');['sp-view','set-view','coll-view'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('open')});currentKind='post';document.querySelectorAll('.kind-pill').forEach(b=>b.classList.toggle('active',b.dataset.kind==='post'));applyFilters();window.scrollTo(0,0)}
     /* ============================================================
        博客升级（方案 B）：Markdown 正文 · 标签 · 按月归档 · 阅读进度
