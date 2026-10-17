@@ -1,107 +1,1168 @@
 {
   "cats": [
-    { "k": "stand", "n": "站姿" },
-    { "k": "sit", "n": "坐姿" },
-    { "k": "lie", "n": "躺姿" },
-    { "k": "hand", "n": "手部" },
-    { "k": "head", "n": "头颈表情" },
-    { "k": "move", "n": "动态" },
-    { "k": "view", "n": "视角镜头" },
-    { "k": "duo", "n": "双人互动" },
-    { "k": "nsfw", "n": "成人向" }
+    {
+      "k": "stand",
+      "n": "站姿",
+      "g": "act"
+    },
+    {
+      "k": "sit",
+      "n": "坐姿",
+      "g": "act"
+    },
+    {
+      "k": "lie",
+      "n": "躺姿",
+      "g": "act"
+    },
+    {
+      "k": "hand",
+      "n": "手部",
+      "g": "act"
+    },
+    {
+      "k": "head",
+      "n": "头颈表情",
+      "g": "act"
+    },
+    {
+      "k": "move",
+      "n": "动态",
+      "g": "act"
+    },
+    {
+      "k": "view",
+      "n": "视角镜头",
+      "g": "act"
+    },
+    {
+      "k": "duo",
+      "n": "双人互动",
+      "g": "act"
+    },
+    {
+      "k": "nsfw",
+      "n": "成人向",
+      "g": "nsfw"
+    },
+    {
+      "k": "indoor",
+      "n": "室内",
+      "g": "scene"
+    },
+    {
+      "k": "outdoor",
+      "n": "室外",
+      "g": "scene"
+    },
+    {
+      "k": "fantasy",
+      "n": "幻想",
+      "g": "scene"
+    },
+    {
+      "k": "weather",
+      "n": "天气氛围",
+      "g": "scene"
+    },
+    {
+      "k": "space",
+      "n": "宇宙星空",
+      "g": "scene"
+    }
   ],
   "items": [
-    { "z": "标准站姿", "e": "standing, full body, facing viewer", "n": "正面直立，最基础的站姿，适合展示整套服装", "c": "stand", "r": 0 },
-    { "z": "双手叉腰", "e": "arms akimbo, hands on hips, confident pose", "n": "双手放腰侧、抬肩挺胸，显自信", "c": "stand", "r": 0 },
-    { "z": "抱臂", "e": "crossed arms, standing, looking at viewer", "n": "双臂交叉在胸前，气场强", "c": "stand", "r": 0 },
-    { "z": "插口袋", "e": "hands in pockets, casual standing pose", "n": "手插口袋，松弛自然", "c": "stand", "r": 0 },
-    { "z": "单脚站立", "e": "standing on one leg, other leg lifted, dynamic balance", "n": "单腿站立、另一腿抬起，有轻盈感", "c": "stand", "r": 0 },
-    { "z": "回眸站姿", "e": "standing, looking back over shoulder, from behind", "n": "背对镜头回头，露出侧脸", "c": "stand", "r": 0 },
-    { "z": "靠墙站", "e": "leaning against wall, one hand on wall", "n": "靠墙、单手扶墙，街头感", "c": "stand", "r": 0 },
-    { "z": "脚尖点地", "e": "standing, one foot pointed, ballet-like posture", "n": "脚尖绷直点地，优雅", "c": "stand", "r": 0 },
-    { "z": "背手站立", "e": "standing with hands behind back, shy posture", "n": "双手背后，害羞/乖巧", "c": "stand", "r": 0 },
-    { "z": "交叉腿站", "e": "standing with legs crossed, elegant pose", "n": "双腿交叉站，显腿长", "c": "stand", "r": 0 },
-    { "z": "坐椅子", "e": "sitting on chair, hands on lap, upright", "n": "正坐、手放腿上，日常感", "c": "sit", "r": 0 },
-    { "z": "盘腿坐", "e": "sitting cross-legged on floor", "n": "地上盘腿坐，放松", "c": "sit", "r": 0 },
-    { "z": "抱膝坐", "e": "sitting, hugging knees, looking at viewer", "n": "抱膝坐，柔软/脆弱感", "c": "sit", "r": 0 },
-    { "z": "侧坐", "e": "sitting sideways, legs to one side, elegant", "n": "侧身坐、双腿并拢偏向一侧，端庄", "c": "sit", "r": 0 },
-    { "z": "坐台阶", "e": "sitting on steps, elbows on knees", "n": "坐台阶、手肘撑膝，随意", "c": "sit", "r": 0 },
-    { "z": "跪坐", "e": "kneeling, sitting on heels, hands on thighs", "n": "正坐（和式跪坐），乖顺感", "c": "sit", "r": 0 },
-    { "z": "坐桌边", "e": "sitting on desk edge, legs dangling", "n": "坐桌沿、双腿垂下，俏皮", "c": "sit", "r": 0 },
-    { "z": "后仰撑手坐", "e": "sitting, leaning back on hands", "n": "坐着向后靠、双手撑地，放松", "c": "sit", "r": 0 },
-    { "z": "仰躺", "e": "lying on back, arms at sides, looking up", "n": "平躺、手放身侧，安静", "c": "lie", "r": 0 },
-    { "z": "侧躺", "e": "lying on side, one arm under head", "n": "侧躺、单手垫头，慵懒", "c": "lie", "r": 0 },
-    { "z": "趴着", "e": "lying on stomach, feet up, looking at viewer", "n": "趴姿、小腿翘起，可爱", "c": "lie", "r": 0 },
-    { "z": "趴着看书", "e": "lying on stomach, elbows supporting, chin on hands", "n": "趴着用手肘撑起、下巴搁手上", "c": "lie", "r": 0 },
-    { "z": "仰卧曲膝", "e": "lying on back, one knee raised", "n": "平躺、单膝屈起，造型感", "c": "lie", "r": 0 },
-    { "z": "抱枕躺", "e": "lying on bed hugging a pillow", "n": "抱着枕头躺，柔软", "c": "lie", "r": 0 },
-    { "z": "伸手", "e": "reaching out hand toward viewer", "n": "向镜头伸手，互动感强", "c": "hand", "r": 0 },
-    { "z": "比心", "e": "making a heart shape with hands", "n": "双手比心，甜", "c": "hand", "r": 0 },
-    { "z": "挥手", "e": "waving hand, smiling", "n": "挥手打招呼", "c": "hand", "r": 0 },
-    { "z": "托腮", "e": "hand on cheek, resting chin on palm", "n": "单手托腮，思考/撒娇", "c": "hand", "r": 0 },
-    { "z": "手指抵唇", "e": "index finger to lips, shushing gesture", "n": "食指贴唇，嘘——", "c": "hand", "r": 0 },
-    { "z": "拽衣角", "e": "tugging at own clothes hem, shy", "n": "轻拽衣角，害羞", "c": "hand", "r": 0 },
-    { "z": "整理头发", "e": "hand tucking hair behind ear", "n": "把头发别到耳后，温柔", "c": "hand", "r": 0 },
-    { "z": "举手", "e": "raising hand up, pointing upward", "n": "举手/指向上方，活泼", "c": "hand", "r": 0 },
-    { "z": "双手合十", "e": "hands pressed together, praying pose", "n": "双手合十，祈祷", "c": "hand", "r": 0 },
-    { "z": "竖起食指", "e": "index finger raised, lecturing gesture", "n": "竖起食指，强调/得意", "c": "hand", "r": 0 },
-    { "z": "握拳", "e": "clenched fist, determined expression", "n": "握拳，干劲", "c": "hand", "r": 0 },
-    { "z": "捧脸", "e": "both hands cupping face, cheeks squished", "n": "双手捧脸，脸被挤变形", "c": "hand", "r": 0 },
-    { "z": "抬头仰望", "e": "looking up, head tilted back", "n": "抬头望天，希望感", "c": "head", "r": 0 },
-    { "z": "低头", "e": "looking down, head lowered", "n": "低头，忧郁/害羞", "c": "head", "r": 0 },
-    { "z": "歪头", "e": "head tilted to one side, curious", "n": "歪头，疑惑/可爱", "c": "head", "r": 0 },
-    { "z": "侧脸", "e": "profile view, looking to the side", "n": "正侧脸，显轮廓", "c": "head", "r": 0 },
-    { "z": "闭眼微笑", "e": "closed eyes, gentle smile", "n": "闭眼微笑，治愈", "c": "head", "r": 0 },
-    { "z": "惊讶", "e": "wide eyes, surprised expression, mouth slightly open", "n": "睁大眼、微张嘴，惊讶", "c": "head", "r": 0 },
-    { "z": "生气", "e": "pouting, angry expression, furrowed brows", "n": "鼓脸皱眉，生气", "c": "head", "r": 0 },
-    { "z": "脸红", "e": "blushing, averting gaze, embarrassed", "n": "脸红移开视线，害羞", "c": "head", "r": 0 },
-    { "z": "奔跑", "e": "running toward viewer, motion blur, hair flowing", "n": "向镜头奔跑，发丝飘动", "c": "move", "r": 0 },
-    { "z": "跳跃", "e": "jumping mid-air, arms spread, dynamic pose", "n": "腾空跳跃、张开双臂", "c": "move", "r": 0 },
-    { "z": "转身", "e": "turning around, skirt flaring, motion", "n": "旋转转身、裙摆飞起", "c": "move", "r": 0 },
-    { "z": "伸展", "e": "stretching arms overhead, morning stretch", "n": "举臂伸展，刚睡醒", "c": "move", "r": 0 },
-    { "z": "前倾靠近", "e": "leaning forward toward viewer", "n": "身体前倾靠近镜头，压迫感", "c": "move", "r": 0 },
-    { "z": "后退", "e": "stepping backward, surprised", "n": "后退一步，惊讶", "c": "move", "r": 0 },
-    { "z": "战斗准备", "e": "combat stance, knees bent, weapon ready", "n": "屈膝备战、持武器", "c": "move", "r": 0 },
-    { "z": "坐姿翘腿", "e": "sitting with legs crossed, arms folded", "n": "翘二郎腿+抱臂，强势", "c": "move", "r": 0 },
-    { "z": "蹲下", "e": "crouching down, looking up at viewer", "n": "蹲下仰视镜头，视角低", "c": "move", "r": 0 },
-    { "z": "风吹", "e": "wind blowing hair and clothes, dramatic", "n": "风吹发丝与衣摆，动感", "c": "move", "r": 0 },
-    { "z": "自拍视角", "e": "selfie pov, arm extended holding camera", "n": "手机自拍视角，手臂伸出", "c": "view", "r": 0 },
-    { "z": "俯视", "e": "high angle shot, from above, looking down at subject", "n": "从上往下拍，显弱小", "c": "view", "r": 0 },
-    { "z": "仰视", "e": "low angle shot, from below, heroic perspective", "n": "从下往上拍，显气场", "c": "view", "r": 0 },
-    { "z": "越肩视角", "e": "over-the-shoulder shot, subject facing away", "n": "越过肩膀看过去，代入感", "c": "view", "r": 0 },
-    { "z": "特写脸", "e": "close-up on face, detailed eyes", "n": "面部特写，强调眼睛", "c": "view", "r": 0 },
-    { "z": "全身远景", "e": "full body wide shot, environment visible", "n": "全身+环境，交代场景", "c": "view", "r": 0 },
-    { "z": "第一人称", "e": "first person pov, viewer's own hands visible", "n": "第一人称，能看到自己的手", "c": "view", "r": 0 },
-    { "z": "牵手", "e": "holding hands with viewer, close-up on hands", "n": "与镜头牵手，亲密", "c": "duo", "r": 0 },
-    { "z": "背靠背", "e": "two people back to back, standing", "n": "两人背靠背站", "c": "duo", "r": 0 },
-    { "z": "拥抱", "e": "two people hugging, warm embrace", "n": "拥抱", "c": "duo", "r": 0 },
-    { "z": "并肩坐", "e": "two people sitting side by side, talking", "n": "并排坐聊天", "c": "duo", "r": 0 },
-    { "z": "摸头", "e": "one person patting the other's head", "n": "摸头杀", "c": "duo", "r": 0 },
-    { "z": "并肩走", "e": "two people walking side by side, holding hands", "n": "牵手并肩走", "c": "duo", "r": 0 },
-
-    { "z": "跪趴", "e": "on all fours, arched back, looking at viewer", "n": "四肢着地、腰背下压、抬头看镜头", "c": "nsfw", "r": 1 },
-    { "z": "仰躺屈膝张开", "e": "lying on back, knees bent, legs apart", "n": "仰躺、屈膝、双腿分开", "c": "nsfw", "r": 1 },
-    { "z": "趴姿抬臀", "e": "lying face down, hips raised, looking back", "n": "趴着抬臀、回头", "c": "nsfw", "r": 1 },
-    { "z": "跨坐", "e": "straddling, sitting on top, facing viewer", "n": "跨坐、面向镜头", "c": "nsfw", "r": 1 },
-    { "z": "背对跪姿", "e": "kneeling from behind, looking back over shoulder", "n": "背对跪姿、回眸", "c": "nsfw", "r": 1 },
-    { "z": "后仰撑手挺胸", "e": "leaning back on elbows, chest arched up", "n": "后仰用手肘撑地、挺胸", "c": "nsfw", "r": 1 },
-    { "z": "坐姿双腿分开", "e": "sitting, legs spread, leaning back", "n": "坐姿、双腿打开、身体后倾", "c": "nsfw", "r": 1 },
-    { "z": "侧躺单腿抬起", "e": "lying on side, one leg lifted, hand on thigh", "n": "侧躺、单腿抬起、手放腿上", "c": "nsfw", "r": 1 },
-    { "z": "衣物滑落", "e": "clothes slipping off one shoulder, undressing", "n": "衣物滑落、单肩露出", "c": "nsfw", "r": 1 },
-    { "z": "内衣侧躺", "e": "lingerie, lying on side, one leg bent", "n": "穿内衣侧躺、单腿弯曲", "c": "nsfw", "r": 1 },
-    { "z": "淋浴湿身", "e": "showering, wet skin, water droplets, steam", "n": "淋浴、皮肤湿润、水珠与水汽", "c": "nsfw", "r": 1 },
-    { "z": "床上抱枕遮胸", "e": "sitting on bed, hugging pillow to cover chest", "n": "床上抱枕遮胸", "c": "nsfw", "r": 1 },
-    { "z": "背身回望", "e": "back view, looking back, slight forward bend", "n": "背影回望、微微前倾", "c": "nsfw", "r": 1 },
-    { "z": "趴床抬腿", "e": "lying on bed, legs bent up, feet crossed", "n": "趴床、小腿翘起交叉", "c": "nsfw", "r": 1 },
-    { "z": "半脱丝袜", "e": "pulling down stockings, sitting on bed", "n": "坐床边半脱丝袜", "c": "nsfw", "r": 1 },
-    { "z": "遮胸坐姿", "e": "sitting, arms covering chest, shy expression", "n": "坐姿、双臂遮胸、害羞表情", "c": "nsfw", "r": 1 },
-    { "z": "俯身撑床", "e": "bending over bed, hands on mattress, looking back", "n": "俯身撑在床上、回头看", "c": "nsfw", "r": 1 },
-    { "z": "仰躺腿抬起", "e": "lying on back, both legs raised, hands behind knees", "n": "仰躺、双腿抬起、手扶膝后", "c": "nsfw", "r": 1 },
-    { "z": "被单半遮", "e": "sheet partially covering body, lying on bed", "n": "被单半遮身体、躺床上", "c": "nsfw", "r": 1 },
-    { "z": "背对坐腿", "e": "sitting from behind, legs folded, looking back", "n": "背对坐、双腿折叠、回眸", "c": "nsfw", "r": 1 },
-    { "z": "双人相拥躺", "e": "two adults lying together, embracing, on bed", "n": "两名成年人相拥躺床上", "c": "nsfw", "r": 1 },
-    { "z": "双人上下位", "e": "two adults, one above the other, on bed", "n": "两名成年人上下位（需写明均为成年人）", "c": "nsfw", "r": 1 },
-    { "z": "双人背抱", "e": "two adults, one embracing from behind", "n": "两名成年人背后环抱", "c": "nsfw", "r": 1 },
-    { "z": "泳装高抬腿", "e": "swimsuit, high leg cut, one leg lifted", "n": "泳装、高开叉、单腿抬起", "c": "nsfw", "r": 1 }
+    {
+      "z": "标准站姿",
+      "e": "standing, full body, facing viewer",
+      "n": "正面直立，最基础的站姿，适合展示整套服装",
+      "c": "stand",
+      "r": 0
+    },
+    {
+      "z": "双手叉腰",
+      "e": "arms akimbo, hands on hips, confident pose",
+      "n": "双手放腰侧、抬肩挺胸，显自信",
+      "c": "stand",
+      "r": 0
+    },
+    {
+      "z": "抱臂",
+      "e": "crossed arms, standing, looking at viewer",
+      "n": "双臂交叉在胸前，气场强",
+      "c": "stand",
+      "r": 0
+    },
+    {
+      "z": "插口袋",
+      "e": "hands in pockets, casual standing pose",
+      "n": "手插口袋，松弛自然",
+      "c": "stand",
+      "r": 0
+    },
+    {
+      "z": "单脚站立",
+      "e": "standing on one leg, other leg lifted, dynamic balance",
+      "n": "单腿站立、另一腿抬起，有轻盈感",
+      "c": "stand",
+      "r": 0
+    },
+    {
+      "z": "回眸站姿",
+      "e": "standing, looking back over shoulder, from behind",
+      "n": "背对镜头回头，露出侧脸",
+      "c": "stand",
+      "r": 0
+    },
+    {
+      "z": "靠墙站",
+      "e": "leaning against wall, one hand on wall",
+      "n": "靠墙、单手扶墙，街头感",
+      "c": "stand",
+      "r": 0
+    },
+    {
+      "z": "脚尖点地",
+      "e": "standing, one foot pointed, ballet-like posture",
+      "n": "脚尖绷直点地，优雅",
+      "c": "stand",
+      "r": 0
+    },
+    {
+      "z": "背手站立",
+      "e": "standing with hands behind back, shy posture",
+      "n": "双手背后，害羞/乖巧",
+      "c": "stand",
+      "r": 0
+    },
+    {
+      "z": "交叉腿站",
+      "e": "standing with legs crossed, elegant pose",
+      "n": "双腿交叉站，显腿长",
+      "c": "stand",
+      "r": 0
+    },
+    {
+      "z": "坐椅子",
+      "e": "sitting on chair, hands on lap, upright",
+      "n": "正坐、手放腿上，日常感",
+      "c": "sit",
+      "r": 0
+    },
+    {
+      "z": "盘腿坐",
+      "e": "sitting cross-legged on floor",
+      "n": "地上盘腿坐，放松",
+      "c": "sit",
+      "r": 0
+    },
+    {
+      "z": "抱膝坐",
+      "e": "sitting, hugging knees, looking at viewer",
+      "n": "抱膝坐，柔软/脆弱感",
+      "c": "sit",
+      "r": 0
+    },
+    {
+      "z": "侧坐",
+      "e": "sitting sideways, legs to one side, elegant",
+      "n": "侧身坐、双腿并拢偏向一侧，端庄",
+      "c": "sit",
+      "r": 0
+    },
+    {
+      "z": "坐台阶",
+      "e": "sitting on steps, elbows on knees",
+      "n": "坐台阶、手肘撑膝，随意",
+      "c": "sit",
+      "r": 0
+    },
+    {
+      "z": "跪坐",
+      "e": "kneeling, sitting on heels, hands on thighs",
+      "n": "正坐（和式跪坐），乖顺感",
+      "c": "sit",
+      "r": 0
+    },
+    {
+      "z": "坐桌边",
+      "e": "sitting on desk edge, legs dangling",
+      "n": "坐桌沿、双腿垂下，俏皮",
+      "c": "sit",
+      "r": 0
+    },
+    {
+      "z": "后仰撑手坐",
+      "e": "sitting, leaning back on hands",
+      "n": "坐着向后靠、双手撑地，放松",
+      "c": "sit",
+      "r": 0
+    },
+    {
+      "z": "仰躺",
+      "e": "lying on back, arms at sides, looking up",
+      "n": "平躺、手放身侧，安静",
+      "c": "lie",
+      "r": 0
+    },
+    {
+      "z": "侧躺",
+      "e": "lying on side, one arm under head",
+      "n": "侧躺、单手垫头，慵懒",
+      "c": "lie",
+      "r": 0
+    },
+    {
+      "z": "趴着",
+      "e": "lying on stomach, feet up, looking at viewer",
+      "n": "趴姿、小腿翘起，可爱",
+      "c": "lie",
+      "r": 0
+    },
+    {
+      "z": "趴着看书",
+      "e": "lying on stomach, elbows supporting, chin on hands",
+      "n": "趴着用手肘撑起、下巴搁手上",
+      "c": "lie",
+      "r": 0
+    },
+    {
+      "z": "仰卧曲膝",
+      "e": "lying on back, one knee raised",
+      "n": "平躺、单膝屈起，造型感",
+      "c": "lie",
+      "r": 0
+    },
+    {
+      "z": "抱枕躺",
+      "e": "lying on bed hugging a pillow",
+      "n": "抱着枕头躺，柔软",
+      "c": "lie",
+      "r": 0
+    },
+    {
+      "z": "伸手",
+      "e": "reaching out hand toward viewer",
+      "n": "向镜头伸手，互动感强",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "比心",
+      "e": "making a heart shape with hands",
+      "n": "双手比心，甜",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "挥手",
+      "e": "waving hand, smiling",
+      "n": "挥手打招呼",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "托腮",
+      "e": "hand on cheek, resting chin on palm",
+      "n": "单手托腮，思考/撒娇",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "手指抵唇",
+      "e": "index finger to lips, shushing gesture",
+      "n": "食指贴唇，嘘——",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "拽衣角",
+      "e": "tugging at own clothes hem, shy",
+      "n": "轻拽衣角，害羞",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "整理头发",
+      "e": "hand tucking hair behind ear",
+      "n": "把头发别到耳后，温柔",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "举手",
+      "e": "raising hand up, pointing upward",
+      "n": "举手/指向上方，活泼",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "双手合十",
+      "e": "hands pressed together, praying pose",
+      "n": "双手合十，祈祷",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "竖起食指",
+      "e": "index finger raised, lecturing gesture",
+      "n": "竖起食指，强调/得意",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "握拳",
+      "e": "clenched fist, determined expression",
+      "n": "握拳，干劲",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "捧脸",
+      "e": "both hands cupping face, cheeks squished",
+      "n": "双手捧脸，脸被挤变形",
+      "c": "hand",
+      "r": 0
+    },
+    {
+      "z": "抬头仰望",
+      "e": "looking up, head tilted back",
+      "n": "抬头望天，希望感",
+      "c": "head",
+      "r": 0
+    },
+    {
+      "z": "低头",
+      "e": "looking down, head lowered",
+      "n": "低头，忧郁/害羞",
+      "c": "head",
+      "r": 0
+    },
+    {
+      "z": "歪头",
+      "e": "head tilted to one side, curious",
+      "n": "歪头，疑惑/可爱",
+      "c": "head",
+      "r": 0
+    },
+    {
+      "z": "侧脸",
+      "e": "profile view, looking to the side",
+      "n": "正侧脸，显轮廓",
+      "c": "head",
+      "r": 0
+    },
+    {
+      "z": "闭眼微笑",
+      "e": "closed eyes, gentle smile",
+      "n": "闭眼微笑，治愈",
+      "c": "head",
+      "r": 0
+    },
+    {
+      "z": "惊讶",
+      "e": "wide eyes, surprised expression, mouth slightly open",
+      "n": "睁大眼、微张嘴，惊讶",
+      "c": "head",
+      "r": 0
+    },
+    {
+      "z": "生气",
+      "e": "pouting, angry expression, furrowed brows",
+      "n": "鼓脸皱眉，生气",
+      "c": "head",
+      "r": 0
+    },
+    {
+      "z": "脸红",
+      "e": "blushing, averting gaze, embarrassed",
+      "n": "脸红移开视线，害羞",
+      "c": "head",
+      "r": 0
+    },
+    {
+      "z": "奔跑",
+      "e": "running toward viewer, motion blur, hair flowing",
+      "n": "向镜头奔跑，发丝飘动",
+      "c": "move",
+      "r": 0
+    },
+    {
+      "z": "跳跃",
+      "e": "jumping mid-air, arms spread, dynamic pose",
+      "n": "腾空跳跃、张开双臂",
+      "c": "move",
+      "r": 0
+    },
+    {
+      "z": "转身",
+      "e": "turning around, skirt flaring, motion",
+      "n": "旋转转身、裙摆飞起",
+      "c": "move",
+      "r": 0
+    },
+    {
+      "z": "伸展",
+      "e": "stretching arms overhead, morning stretch",
+      "n": "举臂伸展，刚睡醒",
+      "c": "move",
+      "r": 0
+    },
+    {
+      "z": "前倾靠近",
+      "e": "leaning forward toward viewer",
+      "n": "身体前倾靠近镜头，压迫感",
+      "c": "move",
+      "r": 0
+    },
+    {
+      "z": "后退",
+      "e": "stepping backward, surprised",
+      "n": "后退一步，惊讶",
+      "c": "move",
+      "r": 0
+    },
+    {
+      "z": "战斗准备",
+      "e": "combat stance, knees bent, weapon ready",
+      "n": "屈膝备战、持武器",
+      "c": "move",
+      "r": 0
+    },
+    {
+      "z": "坐姿翘腿",
+      "e": "sitting with legs crossed, arms folded",
+      "n": "翘二郎腿+抱臂，强势",
+      "c": "move",
+      "r": 0
+    },
+    {
+      "z": "蹲下",
+      "e": "crouching down, looking up at viewer",
+      "n": "蹲下仰视镜头，视角低",
+      "c": "move",
+      "r": 0
+    },
+    {
+      "z": "风吹",
+      "e": "wind blowing hair and clothes, dramatic",
+      "n": "风吹发丝与衣摆，动感",
+      "c": "move",
+      "r": 0
+    },
+    {
+      "z": "自拍视角",
+      "e": "selfie pov, arm extended holding camera",
+      "n": "手机自拍视角，手臂伸出",
+      "c": "view",
+      "r": 0
+    },
+    {
+      "z": "俯视",
+      "e": "high angle shot, from above, looking down at subject",
+      "n": "从上往下拍，显弱小",
+      "c": "view",
+      "r": 0
+    },
+    {
+      "z": "仰视",
+      "e": "low angle shot, from below, heroic perspective",
+      "n": "从下往上拍，显气场",
+      "c": "view",
+      "r": 0
+    },
+    {
+      "z": "越肩视角",
+      "e": "over-the-shoulder shot, subject facing away",
+      "n": "越过肩膀看过去，代入感",
+      "c": "view",
+      "r": 0
+    },
+    {
+      "z": "特写脸",
+      "e": "close-up on face, detailed eyes",
+      "n": "面部特写，强调眼睛",
+      "c": "view",
+      "r": 0
+    },
+    {
+      "z": "全身远景",
+      "e": "full body wide shot, environment visible",
+      "n": "全身+环境，交代场景",
+      "c": "view",
+      "r": 0
+    },
+    {
+      "z": "第一人称",
+      "e": "first person pov, viewer's own hands visible",
+      "n": "第一人称，能看到自己的手",
+      "c": "view",
+      "r": 0
+    },
+    {
+      "z": "牵手",
+      "e": "holding hands with viewer, close-up on hands",
+      "n": "与镜头牵手，亲密",
+      "c": "duo",
+      "r": 0
+    },
+    {
+      "z": "背靠背",
+      "e": "two people back to back, standing",
+      "n": "两人背靠背站",
+      "c": "duo",
+      "r": 0
+    },
+    {
+      "z": "拥抱",
+      "e": "two people hugging, warm embrace",
+      "n": "拥抱",
+      "c": "duo",
+      "r": 0
+    },
+    {
+      "z": "并肩坐",
+      "e": "two people sitting side by side, talking",
+      "n": "并排坐聊天",
+      "c": "duo",
+      "r": 0
+    },
+    {
+      "z": "摸头",
+      "e": "one person patting the other's head",
+      "n": "摸头杀",
+      "c": "duo",
+      "r": 0
+    },
+    {
+      "z": "并肩走",
+      "e": "two people walking side by side, holding hands",
+      "n": "牵手并肩走",
+      "c": "duo",
+      "r": 0
+    },
+    {
+      "z": "跪趴",
+      "e": "on all fours, arched back, looking at viewer",
+      "n": "四肢着地、腰背下压、抬头看镜头",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "仰躺屈膝张开",
+      "e": "lying on back, knees bent, legs apart",
+      "n": "仰躺、屈膝、双腿分开",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "趴姿抬臀",
+      "e": "lying face down, hips raised, looking back",
+      "n": "趴着抬臀、回头",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "跨坐",
+      "e": "straddling, sitting on top, facing viewer",
+      "n": "跨坐、面向镜头",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "背对跪姿",
+      "e": "kneeling from behind, looking back over shoulder",
+      "n": "背对跪姿、回眸",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "后仰撑手挺胸",
+      "e": "leaning back on elbows, chest arched up",
+      "n": "后仰用手肘撑地、挺胸",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "坐姿双腿分开",
+      "e": "sitting, legs spread, leaning back",
+      "n": "坐姿、双腿打开、身体后倾",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "侧躺单腿抬起",
+      "e": "lying on side, one leg lifted, hand on thigh",
+      "n": "侧躺、单腿抬起、手放腿上",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "衣物滑落",
+      "e": "clothes slipping off one shoulder, undressing",
+      "n": "衣物滑落、单肩露出",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "内衣侧躺",
+      "e": "lingerie, lying on side, one leg bent",
+      "n": "穿内衣侧躺、单腿弯曲",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "淋浴湿身",
+      "e": "showering, wet skin, water droplets, steam",
+      "n": "淋浴、皮肤湿润、水珠与水汽",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "床上抱枕遮胸",
+      "e": "sitting on bed, hugging pillow to cover chest",
+      "n": "床上抱枕遮胸",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "背身回望",
+      "e": "back view, looking back, slight forward bend",
+      "n": "背影回望、微微前倾",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "趴床抬腿",
+      "e": "lying on bed, legs bent up, feet crossed",
+      "n": "趴床、小腿翘起交叉",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "半脱丝袜",
+      "e": "pulling down stockings, sitting on bed",
+      "n": "坐床边半脱丝袜",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "遮胸坐姿",
+      "e": "sitting, arms covering chest, shy expression",
+      "n": "坐姿、双臂遮胸、害羞表情",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "俯身撑床",
+      "e": "bending over bed, hands on mattress, looking back",
+      "n": "俯身撑在床上、回头看",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "仰躺腿抬起",
+      "e": "lying on back, both legs raised, hands behind knees",
+      "n": "仰躺、双腿抬起、手扶膝后",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "被单半遮",
+      "e": "sheet partially covering body, lying on bed",
+      "n": "被单半遮身体、躺床上",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "背对坐腿",
+      "e": "sitting from behind, legs folded, looking back",
+      "n": "背对坐、双腿折叠、回眸",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "双人相拥躺",
+      "e": "two adults lying together, embracing, on bed",
+      "n": "两名成年人相拥躺床上",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "双人上下位",
+      "e": "two adults, one above the other, on bed",
+      "n": "两名成年人上下位（需写明均为成年人）",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "双人背抱",
+      "e": "two adults, one embracing from behind",
+      "n": "两名成年人背后环抱",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "泳装高抬腿",
+      "e": "swimsuit, high leg cut, one leg lifted",
+      "n": "泳装、高开叉、单腿抬起",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "卧室",
+      "e": "cozy bedroom, unmade bed, soft morning light through curtains",
+      "n": "床、窗帘透进的晨光，私密温馨",
+      "c": "indoor",
+      "r": 0
+    },
+    {
+      "z": "浴室",
+      "e": "tiled bathroom, steam, mirror fogged up",
+      "n": "瓷砖浴室、水汽、起雾的镜子",
+      "c": "indoor",
+      "r": 0
+    },
+    {
+      "z": "教室",
+      "e": "empty classroom, rows of desks, afternoon sunlight",
+      "n": "空教室、课桌成排、午后阳光",
+      "c": "indoor",
+      "r": 0
+    },
+    {
+      "z": "图书馆",
+      "e": "library, tall bookshelves, dusty light beams",
+      "n": "高书架、光束中有浮尘",
+      "c": "indoor",
+      "r": 0
+    },
+    {
+      "z": "咖啡厅",
+      "e": "cafe interior, window seat, latte on table",
+      "n": "靠窗座位、桌上有拿铁",
+      "c": "indoor",
+      "r": 0
+    },
+    {
+      "z": "神社",
+      "e": "japanese shrine, torii gate, stone steps",
+      "n": "神社、鸟居、石阶",
+      "c": "indoor",
+      "r": 0
+    },
+    {
+      "z": "楼梯间",
+      "e": "stairwell, railing shadows, dramatic light",
+      "n": "楼梯间、栏杆投影",
+      "c": "indoor",
+      "r": 0
+    },
+    {
+      "z": "天台",
+      "e": "rooftop with fence, city skyline behind",
+      "n": "天台铁网、背后城市天际线",
+      "c": "outdoor",
+      "r": 0
+    },
+    {
+      "z": "街道",
+      "e": "city street at night, wet asphalt reflects neon",
+      "n": "夜晚街道、湿沥青反射霓虹",
+      "c": "outdoor",
+      "r": 0
+    },
+    {
+      "z": "海边",
+      "e": "sandy beach, gentle waves, clear sky",
+      "n": "沙滩、细浪、晴朗天空",
+      "c": "outdoor",
+      "r": 0
+    },
+    {
+      "z": "森林",
+      "e": "dense forest, sunbeams through leaves",
+      "n": "密林、叶隙光斑",
+      "c": "outdoor",
+      "r": 0
+    },
+    {
+      "z": "雪地",
+      "e": "snowy field, falling snow, bare trees",
+      "n": "雪原、落雪、枯树",
+      "c": "outdoor",
+      "r": 0
+    },
+    {
+      "z": "花田",
+      "e": "field of flowers, wind blowing petals",
+      "n": "花田、风吹花瓣",
+      "c": "outdoor",
+      "r": 0
+    },
+    {
+      "z": "废弃建筑",
+      "e": "abandoned building, broken windows, overgrown vines",
+      "n": "废弃建筑、破碎窗户、爬藤",
+      "c": "outdoor",
+      "r": 0
+    },
+    {
+      "z": "雨中街角",
+      "e": "rainy street corner, umbrella, reflections on ground",
+      "n": "雨中街角、伞、地面积水倒影",
+      "c": "weather",
+      "r": 0
+    },
+    {
+      "z": "黄昏",
+      "e": "golden hour, long shadows, warm backlight",
+      "n": "日落侧逆光、长阴影",
+      "c": "weather",
+      "r": 0
+    },
+    {
+      "z": "霓虹夜",
+      "e": "neon night, cyan and magenta glow, rain",
+      "n": "霓虹夜色、青品红辉光、细雨",
+      "c": "weather",
+      "r": 0
+    },
+    {
+      "z": "清晨薄雾",
+      "e": "foggy morning, muted colors, dew",
+      "n": "清晨薄雾、低饱和、露水",
+      "c": "weather",
+      "r": 0
+    },
+    {
+      "z": "暴风雨",
+      "e": "thunderstorm, wind, dark clouds",
+      "n": "雷雨、大风、乌云",
+      "c": "weather",
+      "r": 0
+    },
+    {
+      "z": "樱花飘落",
+      "e": "cherry blossom petals falling, spring breeze",
+      "n": "樱花瓣飘落、春风",
+      "c": "weather",
+      "r": 0
+    },
+    {
+      "z": "星云",
+      "e": "deep space nebula, glowing gas clouds",
+      "n": "深空星云、发光气体",
+      "c": "space",
+      "r": 0
+    },
+    {
+      "z": "星球表面",
+      "e": "alien planet surface, two moons in sky",
+      "n": "异星地表、天上有两颗月",
+      "c": "space",
+      "r": 0
+    },
+    {
+      "z": "空间站",
+      "e": "space station interior, window view of earth",
+      "n": "空间站内部、窗外是地球",
+      "c": "space",
+      "r": 0
+    },
+    {
+      "z": "魔法阵",
+      "e": "glowing magic circle on floor, floating runes",
+      "n": "地面发光魔法阵、悬浮符文",
+      "c": "space",
+      "r": 0
+    },
+    {
+      "z": "云海",
+      "e": "above the clouds, sea of clouds at sunrise",
+      "n": "云海之上、日出",
+      "c": "space",
+      "r": 0
+    },
+    {
+      "z": "海底",
+      "e": "underwater scene, light rays, bubbles",
+      "n": "水下、光柱、气泡",
+      "c": "space",
+      "r": 0
+    },
+    {
+      "z": "站立背面",
+      "e": "standing from behind, back arched, looking over shoulder",
+      "n": "背对站立、背部微弓、回眸",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "前倾扶墙",
+      "e": "leaning forward with both hands on wall",
+      "n": "双手扶墙、身体前倾",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "抬腿站立",
+      "e": "standing, one leg raised high, holding thigh",
+      "n": "站立单腿高抬、手扶大腿",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "蹲伏仰视",
+      "e": "crouching low, looking up at viewer",
+      "n": "低蹲仰视镜头",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "缠腿",
+      "e": "legs wrapped around, sitting on lap",
+      "n": "双腿缠绕、坐在对方腿上",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "交叉环抱",
+      "e": "sitting in lap, arms around neck",
+      "n": "坐在腿上、双臂环颈",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "跪坐仰视",
+      "e": "kneeling, looking up, hands on knees",
+      "n": "跪地仰视、双手放膝",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "趴床翘脚",
+      "e": "lying on bed, hips raised, feet crossed in air",
+      "n": "趴床、臀部抬起、小腿空中交叉",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "侧卧抬腿交叉",
+      "e": "lying on side, top leg crossed over",
+      "n": "侧卧、上方腿交叉",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "反手背后",
+      "e": "hands behind back, chest forward",
+      "n": "双手背后、挺胸",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "咬唇伸手",
+      "e": "biting lip, reaching hand toward viewer",
+      "n": "咬唇、向镜头伸手",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "衣物半解",
+      "e": "shirt unbuttoned, one side slipping off",
+      "n": "衬衫解开、一侧滑落",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "肩带滑落",
+      "e": "bra strap falling off shoulder",
+      "n": "内衣肩带滑落",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "浴缸浸泡",
+      "e": "soaking in bathtub, foam, wet hair",
+      "n": "浴缸泡澡、泡沫、湿发",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "镜前自照",
+      "e": "standing before mirror, reflection visible",
+      "n": "镜前站立、可见倒影",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "双人叠坐",
+      "e": "two adults, one sitting on the other's lap",
+      "n": "两名成年人叠坐",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "双人侧抱",
+      "e": "two adults embracing side by side on bed",
+      "n": "两名成年人侧躺相拥",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "抱膝坐床",
+      "e": "sitting on bed, knees drawn up, looking away",
+      "n": "坐床上、抱膝、视线移开",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "仰头闭眼",
+      "e": "head tilted back, eyes closed, lips parted",
+      "n": "仰头闭眼、微张唇",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "仰躺遮脸",
+      "e": "lying on back, arm covering face, blushing",
+      "n": "仰躺、手臂遮脸、脸红",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "手扶床头",
+      "e": "gripping headboard, from behind",
+      "n": "手抓床头、背对视角",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "趴枕回眸",
+      "e": "face down on pillow, looking back",
+      "n": "趴枕、回头",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "单膝跪地",
+      "e": "one knee on floor, other leg bent, looking up",
+      "n": "单膝跪地、抬头",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "背靠墙抬腿",
+      "e": "back against wall, one leg lifted, held by partner",
+      "n": "背靠墙、单腿被抬起",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "湿身白衬衫",
+      "e": "wet white shirt, clinging to skin",
+      "n": "湿白衬衫贴肤",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "脱下外套",
+      "e": "sliding off jacket, bare shoulders",
+      "n": "外套滑落、露出肩部",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "俯身桌面",
+      "e": "bent over desk, papers scattered",
+      "n": "俯身桌面、纸张散落",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "趴膝上",
+      "e": "lying across lap, face down",
+      "n": "趴在膝盖上、面朝下",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "仰躺分腿扶膝",
+      "e": "lying on back, legs apart, hands on knees",
+      "n": "仰躺、双腿分开、手扶膝",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "双人跨坐对视",
+      "e": "straddling partner, face to face",
+      "n": "跨坐对视",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "被单拉至胸口",
+      "e": "sheet pulled to chest, sitting up in bed",
+      "n": "坐床上、被单拉到胸口",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "单腿抬肩",
+      "e": "one leg lifted over partner's shoulder",
+      "n": "单腿搭在对方肩上",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "背部线条",
+      "e": "back view, spine visible, hair falling forward",
+      "n": "背部视角、脊椎线条、发丝垂下",
+      "c": "nsfw",
+      "r": 1
+    },
+    {
+      "z": "精灵森林",
+      "e": "elven forest, giant glowing trees, floating spores",
+      "n": "发光巨树、漂浮孢子",
+      "c": "fantasy",
+      "r": 0
+    },
+    {
+      "z": "神殿废墟",
+      "e": "ancient temple ruins, broken columns, ivy",
+      "n": "古代神殿废墟、断柱、爬藤",
+      "c": "fantasy",
+      "r": 0
+    },
+    {
+      "z": "浮空岛",
+      "e": "floating islands, waterfalls into sky",
+      "n": "浮空岛、瀑布落入云海",
+      "c": "fantasy",
+      "r": 0
+    },
+    {
+      "z": "熔岩洞窟",
+      "e": "lava cavern, glowing cracks in rock",
+      "n": "熔岩洞窟、岩壁裂缝发光",
+      "c": "fantasy",
+      "r": 0
+    },
+    {
+      "z": "冰晶宫殿",
+      "e": "ice palace, crystal pillars, frozen throne",
+      "n": "冰晶宫殿、水晶柱、冰封王座",
+      "c": "fantasy",
+      "r": 0
+    },
+    {
+      "z": "赛博都市",
+      "e": "cyberpunk city, holographic signs, rain",
+      "n": "赛博都市、全息招牌、雨",
+      "c": "fantasy",
+      "r": 0
+    }
   ]
 }

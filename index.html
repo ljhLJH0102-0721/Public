@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v102';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v103';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -312,6 +312,11 @@
     }
 
     /* ===== 动作提示词 ===== */
+    .lib-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+    .lib-tab{padding:7px 16px;border-radius:999px;border:1px solid var(--border);background:var(--surface);
+      color:var(--text2);font-size:.8rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all .16s}
+    .lib-tab:hover{border-color:var(--accent);color:var(--accent)}
+    .lib-tab.active{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
     .pose-cats{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}
     .pose-chip{padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);
       color:var(--text2);font-size:.78rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .16s}
@@ -1146,14 +1151,12 @@
       <div class="pg-actions" id="ai-actions"></div>
     </div>
     <div class="ai-body">
-      <div class="ws-panel" data-aipanel="pose">
-        <div class="ai-tip" id="pose-tip">按分类挑动作 · 点卡片复制英文提示词 · 中文说明帮你看懂 <span id="pose-count"></span></div>
-        <div class="pose-cats" id="pose-cats"></div>
-        <div class="pose-list" id="pose-list"></div>
-      </div>
 
       <div class="ws-panel active" data-aipanel="lib">
-        <div class="ai-tip">收录生图提示词 · 仅站长可编辑 · 点「复制」直接拿走</div>
+        <div class="lib-tabs" id="lib-tabs"></div>
+        <div class="ai-tip" id="lib-tip">收录生图提示词 · 仅站长可编辑 · 点「复制」直接拿走</div>
+        <div class="pose-cats" id="pose-cats" style="display:none"></div>
+        <div class="pose-list" id="pose-list" style="display:none"></div>
         <div class="ai-list" id="ai-list"></div>
       </div>
       <div class="ws-panel" data-aipanel="gen">
@@ -2107,7 +2110,7 @@
       }
       try{ navActiveKey = (v==='gen'?'promptgen':(v==='pose'?'poses':'prompts')); syncNavActive() }catch(e){}
       if(v==='gen') pgUpdate();
-      if(v==='pose'&&!posesCache) loadPoses();
+      if(v==='lib'){ try{ renderLibTabs() }catch(e){} }
     }
     function openAiArea(v){
       setViewFlags(null);
@@ -2245,7 +2248,8 @@
     function renderPoses(){
       const box=document.getElementById('pose-list'); if(!box) return;
       if(!posesCache){ box.innerHTML='<div class="sp-empty"><div class="sp-empty-icon">📥</div><p>动作词库加载中…</p></div>'; return }
-      const cats=[{k:'all',n:'全部'}].concat(posesCache.cats||[]);
+      const grpCats=(posesCache.cats||[]).filter(function(c){return c.g===poseTab});
+      const cats=[{k:'all',n:'全部'}].concat(grpCats);
       const cbox=document.getElementById('pose-cats');
       if(cbox&&!cbox.dataset.done){
         cbox.dataset.done='1';
@@ -2256,12 +2260,13 @@
       const q=poseQ.toLowerCase();
       const list=(posesCache.items||[]).filter(function(x){
         if(x.r===1 && !showR18) return false;                       // 跟随站点 R18 开关
+        if(poseTab!=='nsfw'){ const cc=(posesCache.cats||[]).filter(function(z){return z.k===x.c})[0]; if(!cc||cc.g!==poseTab) return false }
         if(poseCat!=='all' && x.c!==poseCat) return false;
         if(q && (String(x.z).toLowerCase().indexOf(q)<0 && String(x.e).toLowerCase().indexOf(q)<0 && String(x.n).toLowerCase().indexOf(q)<0)) return false;
         return true;
       });
       const cnt=document.getElementById('pose-count');
-      if(cnt) cnt.textContent='　共 '+list.length+' 条'+(showR18?'':'（成人向已隐藏）');
+      if(cnt) cnt.textContent='　共 '+list.length+' 条';
       if(!list.length){ box.innerHTML='<div class="sp-empty"><div class="sp-empty-icon">🔍</div><p>没有匹配的动作</p></div>'; return }
       box.innerHTML=list.map(function(x,i){
         return '<div class="pose-card" data-i="'+i+'">'
@@ -2294,6 +2299,37 @@
         }
       }catch(err){}
     });
+
+    /* ===== 提示词库页签：我的 / 动作 / 场景 / 成人向 ===== */
+    let poseTab = 'mine';
+    const LIB_TABS = [
+      { k:'mine',  n:'我的提示词' },
+      { k:'act',   n:'动作' },
+      { k:'scene', n:'场景' },
+      { k:'nsfw',  n:'🔞 成人向' }
+    ];
+    function renderLibTabs(){
+      const box=document.getElementById('lib-tabs'); if(!box) return;
+      if(!box.dataset.done){
+        box.dataset.done='1';
+        box.innerHTML=LIB_TABS.map(function(x){ return '<button class="lib-tab" data-t="'+x.k+'">'+x.n+'</button>' }).join('');
+        box.addEventListener('click',function(e){
+          const b=e.target.closest('.lib-tab'); if(!b) return;
+          poseTab=b.dataset.t; poseCat='all'; renderLibTabs();
+        });
+      }
+      Array.prototype.forEach.call(box.querySelectorAll('.lib-tab'),function(b){ b.classList.toggle('active', b.dataset.t===poseTab) });
+      const mine=(poseTab==='mine');
+      const el=(id)=>document.getElementById(id);
+      if(el('ai-list')) el('ai-list').style.display = mine ? '' : 'none';
+      if(el('lib-tip')) el('lib-tip').style.display = mine ? '' : 'none';
+      if(el('pose-cats')) el('pose-cats').style.display = mine ? 'none' : 'flex';
+      if(el('pose-list')) el('pose-list').style.display = mine ? 'none' : 'grid';
+      const acts=document.getElementById('ai-actions');
+      if(acts) acts.style.display = mine ? '' : 'none';
+      if(mine) renderPrompts();
+      else { if(!posesCache) loadPoses(); else renderPoses(); }
+    }
     function showInbox(){
       try{
         inboxFetchRemote();
@@ -2475,7 +2511,7 @@
       {t:'娱乐区',items:[{k:'image',i:'image',l:'插图'},{k:'comic',i:'comic',l:'漫画'},{k:'post',i:'post',l:'博文'}]},
       {t:'科学区',items:[{k:'solar',i:'orbit',l:'太阳系'},{k:'deep',i:'deep',l:'深空星云'},{k:'edu',i:'edu',l:'天文事件'}]},
       {t:'工作区',items:[{k:'translate',i:'translate',l:'文本翻译'},{k:'convert',i:'swap',l:'图片转格式'},{k:'gif',i:'film',l:'视频转 GIF'}]},
-      {t:'AI 区',items:[{k:'prompts',i:'spark',l:'提示词库'},{k:'poses',i:'pose',l:'动作提示词'},{k:'promptgen',i:'wand',l:'提示词生成器'}]},
+      {t:'AI 区',items:[{k:'prompts',i:'spark',l:'提示词库'},{k:'promptgen',i:'wand',l:'提示词生成器'}]},
       {t:'我的',items:[{k:'inbox',i:'bell',l:'消息'+(inboxUnread()?(' '+inboxUnread()):'')},{k:'liked',i:'heart',l:'我喜欢的'},{k:'history',i:'clock',l:'历史浏览'},{k:'space',i:'user',l:'我的空间'},{k:'upload',i:'upload',l:'上传作品'}]},
       {t:'更多',items:[{k:'announce',i:'bell',l:'公告'},{k:'settings',i:'settings',l:'设置'},supa.user?{k:'logout',i:'logout',l:'退出登录'}:{k:'account',i:'key',l:'登录 / 注册'}]},
     ]}
