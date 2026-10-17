@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v100';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v101';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -310,6 +310,21 @@
       .ai-gen-row{flex-wrap:wrap;gap:6px}
       .ai-gen-row label{flex:0 0 100%;margin-bottom:-2px}
     }
+
+    /* ===== 动作提示词 ===== */
+    .pose-cats{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}
+    .pose-chip{padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);
+      color:var(--text2);font-size:.78rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .16s}
+    .pose-chip:hover{border-color:var(--accent);color:var(--accent)}
+    .pose-chip.active{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+    .pose-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+    .pose-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow-xs)}
+    .pose-h{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+    .pose-z{font-size:.9rem;font-weight:700;color:var(--text)}
+    .pose-r18{font-size:.62rem;font-weight:700;color:#fff;background:#d9534f;border-radius:5px;padding:1px 6px}
+    .pose-n{font-size:.78rem;color:var(--text2);line-height:1.65;margin-bottom:6px}
+    .pose-e{font-size:.74rem;color:var(--text3);font-family:ui-monospace,Menlo,Consolas,monospace;line-height:1.6;word-break:break-word}
+    @media(max-width:768px){.pose-list{grid-template-columns:1fr}}
     .pg-content{font-size:.96rem;line-height:1.9;color:var(--text);word-break:break-word}
     .pg-content h1{font-size:1.5rem;font-weight:800;margin:26px 0 12px;letter-spacing:-.01em}
     .pg-content h2{font-size:1.22rem;font-weight:700;margin:24px 0 10px}
@@ -1131,6 +1146,12 @@
       <div class="pg-actions" id="ai-actions"></div>
     </div>
     <div class="ai-body">
+      <div class="ws-panel" data-aipanel="pose">
+        <div class="ai-tip" id="pose-tip">按分类挑动作 · 点卡片复制英文提示词 · 中文说明帮你看懂 <span id="pose-count"></span></div>
+        <div class="pose-cats" id="pose-cats"></div>
+        <div class="pose-list" id="pose-list"></div>
+      </div>
+
       <div class="ws-panel active" data-aipanel="lib">
         <div class="ai-tip">收录生图提示词 · 仅站长可编辑 · 点「复制」直接拿走</div>
         <div class="ai-list" id="ai-list"></div>
@@ -2074,9 +2095,9 @@
 
     /* ===== AI 区：提示词库（prompts.json）/ 生成器 ===== */
     let promptsCache = [], prSha = null, prReady = false;
-    const AI_TITLE = { lib:'🖼 提示词库', gen:'✨ 提示词生成器' };
+    const AI_TITLE = { lib:'🖼 提示词库', pose:'🤸 动作提示词', gen:'✨ 提示词生成器' };
     function aiActivate(v){
-      v = (v==='gen') ? 'gen' : 'lib';
+      v = (v==='gen'||v==='pose') ? v : 'lib';
       document.querySelectorAll('#ai-view .ws-panel').forEach(function(p){ p.classList.toggle('active', p.dataset.aipanel===v) });
       const tt=document.getElementById('ai-title'); if(tt) tt.textContent = AI_TITLE[v];
       const acts=document.getElementById('ai-actions');
@@ -2084,8 +2105,9 @@
         acts.innerHTML = (v==='lib' && isOwner()) ? '<button class="btn btn-outline" id="ai-new">＋ 新增提示词</button>' : '';
         const b=document.getElementById('ai-new'); if(b) b.addEventListener('click', function(){ aiEdit(null) });
       }
-      try{ navActiveKey = (v==='gen'?'promptgen':'prompts'); syncNavActive() }catch(e){}
+      try{ navActiveKey = (v==='gen'?'promptgen':(v==='pose'?'poses':'prompts')); syncNavActive() }catch(e){}
       if(v==='gen') pgUpdate();
+      if(v==='pose'&&!posesCache) loadPoses();
     }
     function openAiArea(v){
       setViewFlags(null);
@@ -2209,6 +2231,51 @@
           .catch(function(){ promptsCache.shift(); });
       });
     })();
+
+    /* ===== 动作提示词库（poses.json）：中文说明 + 英文可用 ===== */
+    let posesCache = null, poseCat = 'all', poseQ = '';
+    async function loadPoses(){
+      const urls=[siteBase()+'poses.json?t='+Date.now(),
+                  'https://gcore.jsdelivr.net/gh/'+CFG.owner+'/'+CFG.repo+'@'+CFG.branch+'/poses.json?t='+Date.now()];
+      for(let i=0;i<urls.length;i++){
+        try{ const r=await fetch(urls[i],{cache:'no-store'}); if(r&&r.ok){ const j=await r.json(); if(j&&Array.isArray(j.items)){ posesCache=j; break } } }catch(e){}
+      }
+      renderPoses();
+    }
+    function renderPoses(){
+      const box=document.getElementById('pose-list'); if(!box) return;
+      if(!posesCache){ box.innerHTML='<div class="sp-empty"><div class="sp-empty-icon">📥</div><p>动作词库加载中…</p></div>'; return }
+      const cats=[{k:'all',n:'全部'}].concat(posesCache.cats||[]);
+      const cbox=document.getElementById('pose-cats');
+      if(cbox&&!cbox.dataset.done){
+        cbox.dataset.done='1';
+        cbox.innerHTML=cats.map(function(c){ return '<button class="pose-chip" data-k="'+c.k+'">'+escHtml(c.n)+'</button>' }).join('');
+        cbox.addEventListener('click',function(e){ const b=e.target.closest('.pose-chip'); if(!b)return; poseCat=b.dataset.k; renderPoses(); });
+      }
+      if(cbox) Array.prototype.forEach.call(cbox.querySelectorAll('.pose-chip'),function(b){ b.classList.toggle('active', b.dataset.k===poseCat) });
+      const q=poseQ.toLowerCase();
+      const list=(posesCache.items||[]).filter(function(x){
+        if(x.r===1 && !showR18) return false;                       // 跟随站点 R18 开关
+        if(poseCat!=='all' && x.c!==poseCat) return false;
+        if(q && (String(x.z).toLowerCase().indexOf(q)<0 && String(x.e).toLowerCase().indexOf(q)<0 && String(x.n).toLowerCase().indexOf(q)<0)) return false;
+        return true;
+      });
+      const cnt=document.getElementById('pose-count');
+      if(cnt) cnt.textContent='　共 '+list.length+' 条'+(showR18?'':'（成人向已隐藏）');
+      if(!list.length){ box.innerHTML='<div class="sp-empty"><div class="sp-empty-icon">🔍</div><p>没有匹配的动作</p></div>'; return }
+      box.innerHTML=list.map(function(x,i){
+        return '<div class="pose-card" data-i="'+i+'">'
+          + '<div class="pose-h"><span class="pose-z">'+escHtml(x.z)+'</span>'
+          + (x.r===1?'<span class="pose-r18">R18</span>':'')
+          + '<span class="sp"></span><button class="ai-mini" data-copy="'+escHtml(x.e)+'">复制</button></div>'
+          + '<div class="pose-n">'+escHtml(x.n||'')+'</div>'
+          + '<div class="pose-e">'+escHtml(x.e)+'</div></div>';
+      }).join('');
+      Array.prototype.forEach.call(box.querySelectorAll('.pose-card'),function(el){
+        const b=el.querySelector('[data-copy]');
+        if(b) b.addEventListener('click',function(){ const ok=copyText(b.dataset.copy); try{toast(ok?'已复制英文提示词':'复制失败','success')}catch(e){} });
+      });
+    }
     function showInbox(){
       try{
         inboxFetchRemote();
@@ -2373,6 +2440,7 @@
       moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
       spark:'<path d="M12 3.2l1.75 4.55L18.3 9.5l-4.55 1.75L12 15.8l-1.75-4.55L5.7 9.5l4.55-1.75z"/><path d="M18.6 15.2l.8 2.05 2.05.8-2.05.8-.8 2.05-.8-2.05-2.05-.8 2.05-.8z"/>',
       wand:'<path d="M15 4l5 5"/><path d="M4 20l11-11"/><path d="M17.5 2.5l1 1M21.5 6.5l1 1M12.5 2.5l.6.6"/>',
+      pose:'<circle cx="12" cy="4.5" r="2"/><path d="M12 6.5v6"/><path d="M8 21l4-8 4 8"/><path d="M7.5 10l4.5 2 4.5-2"/>',
       key:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m17 6 2 2"/><path d="m14 9 2 2"/>',
       logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
       home:'<path d="m3 10.4 9-7.2 9 7.2"/><path d="M5.5 9.2V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19.5 19V9.2"/><path d="M9.8 20.5v-6h4.4v6"/>',
@@ -2389,7 +2457,7 @@
       {t:'娱乐区',items:[{k:'image',i:'image',l:'插图'},{k:'comic',i:'comic',l:'漫画'},{k:'post',i:'post',l:'博文'}]},
       {t:'科学区',items:[{k:'solar',i:'orbit',l:'太阳系'},{k:'deep',i:'deep',l:'深空星云'},{k:'edu',i:'edu',l:'天文事件'}]},
       {t:'工作区',items:[{k:'translate',i:'translate',l:'文本翻译'},{k:'convert',i:'swap',l:'图片转格式'},{k:'gif',i:'film',l:'视频转 GIF'}]},
-      {t:'AI 区',items:[{k:'prompts',i:'spark',l:'提示词库'},{k:'promptgen',i:'wand',l:'提示词生成器'}]},
+      {t:'AI 区',items:[{k:'prompts',i:'spark',l:'提示词库'},{k:'poses',i:'pose',l:'动作提示词'},{k:'promptgen',i:'wand',l:'提示词生成器'}]},
       {t:'我的',items:[{k:'inbox',i:'bell',l:'消息'+(inboxUnread()?(' '+inboxUnread()):'')},{k:'liked',i:'heart',l:'我喜欢的'},{k:'history',i:'clock',l:'历史浏览'},{k:'space',i:'user',l:'我的空间'},{k:'upload',i:'upload',l:'上传作品'}]},
       {t:'更多',items:[{k:'announce',i:'bell',l:'公告'},{k:'settings',i:'settings',l:'设置'},supa.user?{k:'logout',i:'logout',l:'退出登录'}:{k:'account',i:'key',l:'登录 / 注册'}]},
     ]}
@@ -2577,7 +2645,7 @@
         if(k==='solar'||k==='deep'||k==='edu'){openScience(k);return}
         if(k==='home'){goHome();return}
         if(k==='inbox'){showInbox();return}
-        if(k==='prompts'||k==='promptgen'){openAiArea(k==='promptgen'?'gen':'lib');return}
+        if(k==='prompts'||k==='promptgen'||k==='poses'){openAiArea(k==='promptgen'?'gen':(k==='poses'?'pose':'lib'));return}
         if(k.indexOf('page:')===0){openPage(k.slice(5));return}
         if(k==='pagenew'){openPageEditor(null);return}
         ['sp-view','set-view','coll-view','detail-view','ws-view','pg-view','sci-view','ai-view'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('open')});
