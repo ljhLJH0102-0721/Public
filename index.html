@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v105';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v106';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -315,6 +315,24 @@
     }
 
     /* ===== 动作提示词 ===== */
+    /* ===== 词条组合器 ===== */
+    .bp{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:0 0 16px;box-shadow:var(--shadow-xs)}
+    .bp-hd{font-size:.88rem;font-weight:800;color:var(--text);margin-bottom:4px}
+    .bp-sub{font-weight:500;font-size:.72rem;color:var(--text3);margin-left:6px}
+    .bp-rows{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+    .bp-row{display:flex;align-items:flex-start;gap:10px}
+    .bp-label{flex:0 0 40px;font-size:.76rem;font-weight:700;color:var(--accent);padding-top:5px}
+    .bp-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1}
+    .bp-chip{padding:4px 11px;border-radius:999px;border:1px solid var(--border);background:var(--bg);
+      color:var(--text2);font-size:.74rem;font-family:inherit;cursor:pointer;transition:all .14s}
+    .bp-chip:hover{border-color:var(--accent);color:var(--accent)}
+    .bp-chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:700}
+    .bp-out{margin:10px 0;padding:11px 13px;border-radius:10px;background:var(--surface-2);
+      border:1px dashed rgba(var(--accent-rgb),.3);font-size:.8rem;line-height:1.7;color:var(--text);word-break:break-word;min-height:44px}
+    .bp-btns{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .bp-count{margin-left:auto;font-size:.72rem;color:var(--text3)}
+    .bp-loading{font-size:.78rem;color:var(--text3);padding:6px 0}
+    @media(max-width:768px){.bp-row{flex-direction:column;gap:4px}.bp-label{flex:none;padding:0}}
     .lib-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
     .lib-tab{padding:7px 16px;border-radius:999px;border:1px solid var(--border);background:var(--surface);
       color:var(--text2);font-size:.8rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all .16s}
@@ -1156,6 +1174,16 @@
     <div class="ai-body">
 
       <div class="ws-panel active" data-aipanel="lib">
+        <div class="bp">
+          <div class="bp-hd">🧩 词条组合器 <span class="bp-sub">按 头发 → 头 → 身体 → 手 → 腿 → 脚 依次选择，自动合成一段优化后的提示词</span></div>
+          <div class="bp-rows" id="bp-rows"></div>
+          <div class="bp-out" id="bp-out">（在上面选择词条，这里会实时合成）</div>
+          <div class="bp-btns">
+            <button class="btn btn-primary" id="bp-copy" type="button">复制合成结果</button>
+            <button class="btn btn-outline" id="bp-clear" type="button">清空</button>
+            <span class="bp-count" id="bp-count"></span>
+          </div>
+        </div>
         <div class="lib-tabs" id="lib-tabs"></div>
         <div class="ai-tip" id="lib-tip">收录生图提示词 · 仅站长可编辑 · 点「复制」直接拿走</div>
         <div class="pose-cats" id="pose-cats" style="display:none"></div>
@@ -2113,7 +2141,7 @@
       }
       try{ navActiveKey = (v==='gen'?'promptgen':(v==='pose'?'poses':'prompts')); syncNavActive() }catch(e){}
       if(v==='gen') pgUpdate();
-      if(v==='lib'){ try{ renderLibTabs() }catch(e){} }
+      if(v==='lib'){ try{ renderLibTabs(); if(posesCache) bpRender() }catch(e){} }
     }
     function openAiArea(v){
       setViewFlags(null);
@@ -2248,6 +2276,7 @@
         try{ const r=await fetch(urls[i],{cache:'no-store'}); if(r&&r.ok){ const j=await r.json(); if(j&&Array.isArray(j.items)){ posesCache=j; break } } }catch(e){}
       }
       renderPoses();
+      try{ bpRender() }catch(e){}
     }
     function renderPoses(){
       const box=document.getElementById('pose-list'); if(!box) return;
@@ -2334,6 +2363,68 @@
       if(mine) renderPrompts();
       else { if(!posesCache) loadPoses(); else renderPoses(); }
     }
+
+    /* ===== 词条组合器：头发→头→身体→手→腿→脚，自动合成优化 ===== */
+    const BP_ORDER=[{k:'p_hair',n:'头发'},{k:'p_head',n:'头'},{k:'p_body',n:'身体'},
+                    {k:'p_hand',n:'手'},{k:'p_leg',n:'腿'},{k:'p_foot',n:'脚'}];
+    const bpSel={};           // {p_hair:[eng,...], ...}
+    BP_ORDER.forEach(function(o){ bpSel[o.k]=[] });
+    function bpRender(){
+      const box=document.getElementById('bp-rows'); if(!box) return;
+      if(!posesCache){ box.innerHTML='<div class="bp-loading">词条数据加载中…</div>'; return }
+      const items=posesCache.items||[];
+      box.innerHTML=BP_ORDER.map(function(o){
+        const list=items.filter(function(x){return x.c===o.k});
+        if(!list.length) return '';
+        return '<div class="bp-row"><span class="bp-label">'+o.n+'</span><div class="bp-chips">'
+          + list.map(function(x){
+              const on=bpSel[o.k].indexOf(x.e)>=0;
+              return '<button type="button" class="bp-chip'+(on?' on':'')+'" data-k="'+o.k+'" data-e="'+escHtml(x.e)+'" title="'+escHtml(x.z)+'">'+escHtml(x.z)+'</button>';
+            }).join('')
+          + '</div></div>';
+      }).join('');
+      if(!box.dataset.bound){
+        box.dataset.bound='1';
+        box.addEventListener('click',function(e){
+          const b=e.target.closest('.bp-chip'); if(!b) return;
+          const k=b.dataset.k, e2=b.dataset.e, arr=bpSel[k];
+          const i=arr.indexOf(e2);
+          if(i>=0) arr.splice(i,1); else arr.push(e2);
+          b.classList.toggle('on', i<0);
+          bpUpdate();
+        });
+      }
+      bpUpdate();
+    }
+    function bpBuild(){
+      const seen={}, out=[];
+      BP_ORDER.forEach(function(o){
+        (bpSel[o.k]||[]).forEach(function(e){
+          const key=String(e).toLowerCase().replace(/\s+/g,' ').trim();
+          if(!key||seen[key]) return;
+          seen[key]=1; out.push(key);
+        });
+      });
+      return out.join(', ');
+    }
+    function bpUpdate(){
+      const s=bpBuild();
+      const out=document.getElementById('bp-out');
+      if(out) out.textContent = s || '（在上面选择词条，这里会实时合成）';
+      const c=document.getElementById('bp-count');
+      if(c) c.textContent = s ? ('共 ' + s.split(', ').length + ' 个词条，' + s.length + ' 字符') : '';
+    }
+    (function(){
+      const cp=document.getElementById('bp-copy');
+      if(cp) cp.addEventListener('click',function(){
+        const s=bpBuild(); if(!s){ try{toast('先选择词条')}catch(e){} return }
+        const ok=copyText(s); try{toast(ok?'已复制合成结果':'复制失败','success')}catch(e){}
+      });
+      const cl=document.getElementById('bp-clear');
+      if(cl) cl.addEventListener('click',function(){
+        BP_ORDER.forEach(function(o){ bpSel[o.k]=[] }); bpRender();
+      });
+    })();
     function showInbox(){
       try{
         inboxFetchRemote();

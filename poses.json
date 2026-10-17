@@ -69,6 +69,36 @@
       "k": "space",
       "n": "宇宙星空",
       "g": "scene"
+    },
+    {
+      "k": "p_hair",
+      "n": "头发",
+      "g": "part"
+    },
+    {
+      "k": "p_head",
+      "n": "头",
+      "g": "part"
+    },
+    {
+      "k": "p_body",
+      "n": "身体",
+      "g": "part"
+    },
+    {
+      "k": "p_hand",
+      "n": "手",
+      "g": "part"
+    },
+    {
+      "k": "p_leg",
+      "n": "腿",
+      "g": "part"
+    },
+    {
+      "k": "p_foot",
+      "n": "脚",
+      "g": "part"
     }
   ],
   "items": [
@@ -1162,6 +1192,398 @@
       "e": "cyberpunk city, holographic signs, rain",
       "n": "赛博都市、全息招牌、雨",
       "c": "fantasy",
+      "r": 0
+    },
+    {
+      "z": "长直发",
+      "e": "long straight hair",
+      "n": "垂到腰的直发",
+      "c": "p_hair",
+      "r": 0
+    },
+    {
+      "z": "双马尾",
+      "e": "twin tails, hair ties",
+      "n": "两侧各扎一束",
+      "c": "p_hair",
+      "r": 0
+    },
+    {
+      "z": "单马尾",
+      "e": "ponytail, high ponytail",
+      "n": "一侧高马尾",
+      "c": "p_hair",
+      "r": 0
+    },
+    {
+      "z": "短发",
+      "e": "short bob cut",
+      "n": "齐耳短发",
+      "c": "p_hair",
+      "r": 0
+    },
+    {
+      "z": "银白长发",
+      "e": "long silver white hair",
+      "n": "银白长发",
+      "c": "p_hair",
+      "r": 0
+    },
+    {
+      "z": "卷发",
+      "e": "wavy curly hair",
+      "n": "大波浪卷",
+      "c": "p_hair",
+      "r": 0
+    },
+    {
+      "z": "麻花辫",
+      "e": "braided hair, side braid",
+      "n": "侧边麻花辫",
+      "c": "p_hair",
+      "r": 0
+    },
+    {
+      "z": "刘海",
+      "e": "blunt bangs, straight fringe",
+      "n": "齐刘海",
+      "c": "p_hair",
+      "r": 0
+    },
+    {
+      "z": "呆毛",
+      "e": "ahoge, single hair strand sticking up",
+      "n": "头顶一根翘发",
+      "c": "p_hair",
+      "r": 0
+    },
+    {
+      "z": "盘发",
+      "e": "hair bun, updo",
+      "n": "盘起发髻",
+      "c": "p_hair",
+      "r": 0
+    },
+    {
+      "z": "抬头",
+      "e": "head tilted up, chin raised",
+      "n": "下巴抬起",
+      "c": "p_head",
+      "r": 0
+    },
+    {
+      "z": "低头",
+      "e": "head lowered, looking down",
+      "n": "视线向下",
+      "c": "p_head",
+      "r": 0
+    },
+    {
+      "z": "歪头",
+      "e": "head tilted to one side",
+      "n": "头向一侧倾",
+      "c": "p_head",
+      "r": 0
+    },
+    {
+      "z": "侧脸",
+      "e": "profile view, face turned to the side",
+      "n": "正侧面",
+      "c": "p_head",
+      "r": 0
+    },
+    {
+      "z": "回眸",
+      "e": "looking back over shoulder",
+      "n": "扭头看身后",
+      "c": "p_head",
+      "r": 0
+    },
+    {
+      "z": "闭眼",
+      "e": "eyes closed, peaceful expression",
+      "n": "闭目",
+      "c": "p_head",
+      "r": 0
+    },
+    {
+      "z": "微张唇",
+      "e": "lips slightly parted",
+      "n": "嘴唇微开",
+      "c": "p_head",
+      "r": 0
+    },
+    {
+      "z": "戴眼镜",
+      "e": "wearing glasses, thin frame",
+      "n": "细框眼镜",
+      "c": "p_head",
+      "r": 0
+    },
+    {
+      "z": "戴帽子",
+      "e": "wearing a beret",
+      "n": "贝雷帽",
+      "c": "p_head",
+      "r": 0
+    },
+    {
+      "z": "微笑",
+      "e": "gentle smile, soft expression",
+      "n": "温柔笑",
+      "c": "p_head",
+      "r": 0
+    },
+    {
+      "z": "纤细",
+      "e": "slender body, slim figure",
+      "n": "苗条",
+      "c": "p_body",
+      "r": 0
+    },
+    {
+      "z": "匀称",
+      "e": "toned body, athletic build",
+      "n": "线条紧实",
+      "c": "p_body",
+      "r": 0
+    },
+    {
+      "z": "娇小",
+      "e": "petite frame, short stature",
+      "n": "小巧",
+      "c": "p_body",
+      "r": 0
+    },
+    {
+      "z": "高挑",
+      "e": "tall stature, long limbs",
+      "n": "身材高",
+      "c": "p_body",
+      "r": 0
+    },
+    {
+      "z": "前倾",
+      "e": "leaning torso forward",
+      "n": "上半身向前",
+      "c": "p_body",
+      "r": 0
+    },
+    {
+      "z": "后仰",
+      "e": "torso leaning back, chest up",
+      "n": "上身后仰",
+      "c": "p_body",
+      "r": 0
+    },
+    {
+      "z": "侧身",
+      "e": "body turned sideways",
+      "n": "身体侧转",
+      "c": "p_body",
+      "r": 0
+    },
+    {
+      "z": "挺胸",
+      "e": "chest pushed forward, shoulders back",
+      "n": "挺胸收肩",
+      "c": "p_body",
+      "r": 0
+    },
+    {
+      "z": "含胸",
+      "e": "shoulders slightly hunched",
+      "n": "肩膀内收",
+      "c": "p_body",
+      "r": 0
+    },
+    {
+      "z": "扭转",
+      "e": "waist twisted, torso rotated",
+      "n": "腰部扭转",
+      "c": "p_body",
+      "r": 0
+    },
+    {
+      "z": "手插口袋",
+      "e": "hands in pockets",
+      "n": "手放口袋",
+      "c": "p_hand",
+      "r": 0
+    },
+    {
+      "z": "双手叉腰",
+      "e": "hands on hips",
+      "n": "双手放腰",
+      "c": "p_hand",
+      "r": 0
+    },
+    {
+      "z": "抱臂",
+      "e": "arms crossed",
+      "n": "双臂交叉",
+      "c": "p_hand",
+      "r": 0
+    },
+    {
+      "z": "托腮",
+      "e": "hand on cheek, resting chin",
+      "n": "手托脸颊",
+      "c": "p_hand",
+      "r": 0
+    },
+    {
+      "z": "比心",
+      "e": "heart shape with hands",
+      "n": "双手比心",
+      "c": "p_hand",
+      "r": 0
+    },
+    {
+      "z": "伸手向前",
+      "e": "reaching hand forward",
+      "n": "向镜头伸手",
+      "c": "p_hand",
+      "r": 0
+    },
+    {
+      "z": "手指抵唇",
+      "e": "index finger to lips",
+      "n": "食指贴唇",
+      "c": "p_hand",
+      "r": 0
+    },
+    {
+      "z": "握拳",
+      "e": "clenched fists",
+      "n": "双手握拳",
+      "c": "p_hand",
+      "r": 0
+    },
+    {
+      "z": "双手背后",
+      "e": "hands behind back",
+      "n": "手放身后",
+      "c": "p_hand",
+      "r": 0
+    },
+    {
+      "z": "并腿站",
+      "e": "legs together, standing",
+      "n": "双腿并拢",
+      "c": "p_leg",
+      "r": 0
+    },
+    {
+      "z": "交叉腿",
+      "e": "legs crossed, standing",
+      "n": "交叉站姿",
+      "c": "p_leg",
+      "r": 0
+    },
+    {
+      "z": "单腿抬起",
+      "e": "one leg lifted, knee bent",
+      "n": "单腿屈起",
+      "c": "p_leg",
+      "r": 0
+    },
+    {
+      "z": "翘二郎腿",
+      "e": "legs crossed while sitting",
+      "n": "坐姿翘腿",
+      "c": "p_leg",
+      "r": 0
+    },
+    {
+      "z": "分开站立",
+      "e": "legs apart, stable stance",
+      "n": "双腿分开",
+      "c": "p_leg",
+      "r": 0
+    },
+    {
+      "z": "屈膝",
+      "e": "knees bent, crouching slightly",
+      "n": "膝盖弯曲",
+      "c": "p_leg",
+      "r": 0
+    },
+    {
+      "z": "跪姿",
+      "e": "kneeling on both knees",
+      "n": "双膝跪地",
+      "c": "p_leg",
+      "r": 0
+    },
+    {
+      "z": "盘腿",
+      "e": "cross-legged sitting",
+      "n": "盘腿",
+      "c": "p_leg",
+      "r": 0
+    },
+    {
+      "z": "踮脚",
+      "e": "standing on tiptoes",
+      "n": "脚尖点地",
+      "c": "p_leg",
+      "r": 0
+    },
+    {
+      "z": "长腿",
+      "e": "long legs, elongated proportions",
+      "n": "腿长比例夸张",
+      "c": "p_leg",
+      "r": 0
+    },
+    {
+      "z": "赤脚",
+      "e": "barefoot",
+      "n": "光脚",
+      "c": "p_foot",
+      "r": 0
+    },
+    {
+      "z": "穿袜子",
+      "e": "wearing socks, white socks",
+      "n": "白袜",
+      "c": "p_foot",
+      "r": 0
+    },
+    {
+      "z": "穿长靴",
+      "e": "wearing long boots",
+      "n": "长靴",
+      "c": "p_foot",
+      "r": 0
+    },
+    {
+      "z": "穿高跟鞋",
+      "e": "wearing high heels",
+      "n": "高跟鞋",
+      "c": "p_foot",
+      "r": 0
+    },
+    {
+      "z": "穿凉鞋",
+      "e": "wearing sandals",
+      "n": "凉鞋",
+      "c": "p_foot",
+      "r": 0
+    },
+    {
+      "z": "脚尖绷直",
+      "e": "pointed toes, ballet foot",
+      "n": "脚背绷直",
+      "c": "p_foot",
+      "r": 0
+    },
+    {
+      "z": "脚趾特写",
+      "e": "close-up on feet, detailed toes",
+      "n": "足部特写",
+      "c": "p_foot",
       "r": 0
     }
   ]
