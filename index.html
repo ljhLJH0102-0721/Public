@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v106';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v107';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -331,6 +331,9 @@
       border:1px dashed rgba(var(--accent-rgb),.3);font-size:.8rem;line-height:1.7;color:var(--text);word-break:break-word;min-height:44px}
     .bp-btns{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .bp-count{margin-left:auto;font-size:.72rem;color:var(--text3)}
+    .bp-q input{width:100%;padding:8px 12px;border-radius:10px;border:1px solid var(--border);
+      background:var(--bg);color:var(--text);font-size:.8rem;font-family:inherit}
+    .bp-q input:focus{outline:none;border-color:var(--accent)}
     .bp-loading{font-size:.78rem;color:var(--text3);padding:6px 0}
     @media(max-width:768px){.bp-row{flex-direction:column;gap:4px}.bp-label{flex:none;padding:0}}
     .lib-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
@@ -1175,7 +1178,8 @@
 
       <div class="ws-panel active" data-aipanel="lib">
         <div class="bp">
-          <div class="bp-hd">🧩 词条组合器 <span class="bp-sub">按 头发 → 头 → 身体 → 手 → 腿 → 脚 依次选择，自动合成一段优化后的提示词</span></div>
+          <div class="bp-hd">🧩 词条组合器 <span class="bp-sub">从词库选词条 · 合成顺序 头发→头→身体→手→腿→脚→动作→场景</span></div>
+          <div class="bp-q" style="margin:10px 0 0"><input id="bp-q" type="text" placeholder="搜索词条（中文或英文）…" autocomplete="off"></div>
           <div class="bp-rows" id="bp-rows"></div>
           <div class="bp-out" id="bp-out">（在上面选择词条，这里会实时合成）</div>
           <div class="bp-btns">
@@ -2365,16 +2369,25 @@
     }
 
     /* ===== 词条组合器：头发→头→身体→手→腿→脚，自动合成优化 ===== */
-    const BP_ORDER=[{k:'p_hair',n:'头发'},{k:'p_head',n:'头'},{k:'p_body',n:'身体'},
-                    {k:'p_hand',n:'手'},{k:'p_leg',n:'腿'},{k:'p_foot',n:'脚'}];
-    const bpSel={};           // {p_hair:[eng,...], ...}
-    BP_ORDER.forEach(function(o){ bpSel[o.k]=[] });
+    /* 顺序：头发→头→身体→手→腿→脚→动作→场景→成人向（词条全部来自词库） */
+    const BP_PART_ORDER=['p_hair','p_head','p_body','p_hand','p_leg','p_foot'];
+    let bpQ='';
+    function bpOrder(){
+      const cats=(posesCache&&posesCache.cats)||[];
+      const byKey={}; cats.forEach(function(c){ byKey[c.k]=c });
+      const out=[];
+      BP_PART_ORDER.forEach(function(k){ if(byKey[k]) out.push(byKey[k]) });
+      ['act','scene','nsfw'].forEach(function(g){ cats.forEach(function(c){ if(c.g===g) out.push(c) }) });
+      return out;
+    }
+    const bpSel={};
     function bpRender(){
       const box=document.getElementById('bp-rows'); if(!box) return;
       if(!posesCache){ box.innerHTML='<div class="bp-loading">词条数据加载中…</div>'; return }
       const items=posesCache.items||[];
-      box.innerHTML=BP_ORDER.map(function(o){
-        const list=items.filter(function(x){return x.c===o.k});
+      box.innerHTML=bpOrder().map(function(o){
+        const list=items.filter(function(x){ if(x.r===1&&!showR18) return false; if(x.c!==o.k) return false;
+          if(bpQ && (x.z+' '+x.e).toLowerCase().indexOf(bpQ)<0) return false; return true });
         if(!list.length) return '';
         return '<div class="bp-row"><span class="bp-label">'+o.n+'</span><div class="bp-chips">'
           + list.map(function(x){
@@ -2394,11 +2407,16 @@
           bpUpdate();
         });
       }
+      const q=document.getElementById('bp-q');
+      if(q&&!q.dataset.bound){
+        q.dataset.bound='1';
+        q.addEventListener('input',function(){ bpQ=String(q.value||'').trim().toLowerCase(); bpRender() });
+      }
       bpUpdate();
     }
     function bpBuild(){
       const seen={}, out=[];
-      BP_ORDER.forEach(function(o){
+      bpOrder().forEach(function(o){
         (bpSel[o.k]||[]).forEach(function(e){
           const key=String(e).toLowerCase().replace(/\s+/g,' ').trim();
           if(!key||seen[key]) return;
@@ -2422,7 +2440,7 @@
       });
       const cl=document.getElementById('bp-clear');
       if(cl) cl.addEventListener('click',function(){
-        BP_ORDER.forEach(function(o){ bpSel[o.k]=[] }); bpRender();
+        bpOrder().forEach(function(o){ bpSel[o.k]=[] }); bpRender();
       });
     })();
     function showInbox(){
