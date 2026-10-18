@@ -8,5 +8,25 @@
     "id": "p-sample-2",
     "title": "示例：深空星云",
     "body": "a vast colorful nebula in deep space, voluminous glowing gas clouds, embedded star cluster, subtle diffraction spikes, ultra wide field, cinematic color grading, 8k astrophotography --ar 16:9"
+  },
+  {
+    "id": "p-iris",
+    "title": "月光鸢尾 · 生图",
+    "body": "full body, (feet visible:1.2), a single purple iris flower glowing under moonlight, ornate golden filigree border, deep navy background, intricate linework, dramatic rim light, centered composition, highly detailed illustration, masterpiece, best quality --ar 1:1"
+  },
+  {
+    "id": "p-nebula",
+    "title": "深空星云 · 生图",
+    "body": "a vast colorful nebula in deep space, voluminous glowing gas clouds, embedded star cluster, subtle diffraction spikes, ultra wide field, cinematic color grading, 8k astrophotography --ar 16:9"
+  },
+  {
+    "id": "p-portrait",
+    "title": "角色立绘（全身）",
+    "body": "full body, from head to toe, (feet visible:1.2), standing, facing viewer, 1girl, silver long hair, purple eyes, elegant dress, detailed face, detailed eyes, soft ambient light, masterpiece, best quality, highly detailed, --ar 3:4"
+  },
+  {
+    "id": "p-scene",
+    "title": "场景空镜（霓虹夜街）",
+    "body": "neon night city street, wet asphalt reflecting neon signs, rain, volumetric fog, cinematic lighting, no people, ultra detailed, 8k, --ar 16:9"
   }
 ]
