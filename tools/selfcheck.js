@@ -59,7 +59,7 @@ const groupEnd = t.indexOf('function renderSideNav', groupStart);
 const groupSrc = (groupStart > -1 && groupEnd > groupStart) ? t.slice(groupStart, groupEnd) : '';
 const navKeys = [...new Set([...groupSrc.matchAll(/k:'([a-zA-Z]+)'/g)].map(m => m[1]))];
 const kindKeys = ['image', 'comic', 'post'];
-const missing = navKeys.filter(k => !kindKeys.includes(k) && !new RegExp("k==='" + k + "'").test(t) && k !== 'collapse');
+const missing = navKeys.filter(k => !kindKeys.includes(k) && !new RegExp("k==='" + k + "'").test(t) && !new RegExp("R\\." + k + "\\s*=").test(t) && k !== 'collapse');
 check(navKeys.length >= 10, '侧栏项共 ' + navKeys.length + ' 个', '侧栏项数量异常: ' + navKeys.length);
 check(missing.length === 0, '所有侧栏项都有点击分支', '缺少分支: ' + missing.join(','));
 
