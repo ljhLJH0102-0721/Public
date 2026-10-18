@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v115';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v116';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -331,6 +331,20 @@
     .bp{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:0 0 16px;box-shadow:var(--shadow-xs)}
     .bp-hd{font-size:.88rem;font-weight:800;color:var(--text);margin-bottom:4px}
     .bp-sub{font-weight:500;font-size:.72rem;color:var(--text3);margin-left:6px}
+    .bp-frame{margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border)}
+    .bp-frame-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .bp-frame-row label{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--text3)}
+    .bp-frame-row select{padding:5px 8px;border-radius:8px;border:1px solid var(--border);
+      background:var(--bg);color:var(--text);font-size:.74rem;font-family:inherit}
+    .bp-wt{gap:4px!important;cursor:pointer}
+    .bp-hint{margin-top:7px;font-size:.7rem;color:var(--accent);line-height:1.5}
+    .bp-neg-wrap{margin-top:10px}
+    .bp-neg-hd{font-size:.78rem;font-weight:700;color:var(--text2);margin-bottom:6px}
+    .bp-neg-tip{font-weight:500;font-size:.7rem;color:var(--text3)}
+    #bp-neg{width:100%;padding:9px 11px;border-radius:9px;border:1px solid var(--border);background:var(--bg);
+      color:var(--text2);font-size:.74rem;line-height:1.7;font-family:inherit;resize:vertical}
+    #bp-neg:focus{outline:none;border-color:var(--accent)}
+    .bp-neg-bar{display:flex;gap:8px;margin-top:6px}
     .bp-picked{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;min-height:26px}
     .bp-tag{padding:4px 10px;border-radius:999px;border:1px solid rgba(var(--accent-rgb),.4);background:var(--accent-bg);
       color:var(--accent);font-size:.72rem;font-family:inherit;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1209,6 +1223,39 @@
         <div class="bp">
           <div class="bp-hd">🧩 词条组合器 <span class="bp-sub">在下方列表卡片上点「＋」加入 · 合成顺序 头发→头→身体→手→腿→脚→动作→场景</span></div>
           <div class="bp-picked" id="bp-picked"></div>
+          <div class="bp-frame">
+            <div class="bp-frame-row">
+              <label>构图
+                <select id="bp-shot">
+                  <option value="">（不指定）</option>
+                  <option value="full" selected>全身</option>
+                  <option value="wide">全身 + 环境（远景）</option>
+                  <option value="medium">腰部以上（中景）</option>
+                  <option value="close">脸部特写</option>
+                </select>
+              </label>
+              <label>视角
+                <select id="bp-ang">
+                  <option value="">（平视）</option>
+                  <option value="low">仰视（显腿长）</option>
+                  <option value="high">俯视</option>
+                  <option value="ots">越肩</option>
+                </select>
+              </label>
+              <label>画幅
+                <select id="bp-ar2">
+                  <option value="">（不指定）</option>
+                  <option value="--ar 3:4" selected>3:4 竖版</option>
+                  <option value="--ar 2:3">2:3 更长</option>
+                  <option value="--ar 9:16">9:16 手机</option>
+                  <option value="--ar 16:9">16:9 横版</option>
+                  <option value="--ar 1:1">1:1 方图</option>
+                </select>
+              </label>
+              <label class="bp-wt"><input type="checkbox" id="bp-weight" checked> 加权重</label>
+            </div>
+            <div class="bp-hint" id="bp-hint"></div>
+          </div>
           <div class="bp-out" id="bp-out">（在上面选择词条，这里会实时合成）</div>
           <div class="bp-btns">
             <button class="btn btn-primary" id="bp-expand" type="button">✨ 扩写提示词</button>
@@ -1223,6 +1270,14 @@
           </div>
           <div class="bp-exp-wrap">
             <textarea id="bp-exp" rows="6" placeholder="点「✨ 扩写提示词」，这里会出现完整提示词（可直接编辑）"></textarea>
+            <div class="bp-neg-wrap">
+              <div class="bp-neg-hd">🚫 负面提示词 <span class="bp-neg-tip">（直接粘到 negative prompt 框里）</span></div>
+              <textarea id="bp-neg" rows="3" placeholder="点下方按钮生成"></textarea>
+              <div class="bp-neg-bar">
+                <button class="btn btn-outline" id="bp-neg-gen" type="button" style="font-size:.74rem;padding:4px 12px">生成负面</button>
+                <button class="btn btn-outline" id="bp-neg-copy" type="button" style="font-size:.74rem;padding:4px 12px">复制负面</button>
+              </div>
+            </div>
             <div class="bp-exp-bar">
               <button class="btn btn-outline" id="bp-exp-copy" type="button" style="font-size:.76rem;padding:5px 12px">复制扩写结果</button>
               <button class="btn btn-outline" id="bp-ai-toggle" type="button" style="font-size:.76rem;padding:5px 12px">🤖 AI 扩写设置</button>
@@ -2548,7 +2603,22 @@
       const style = ['illustration'];
       if(lv>=3) style.push('anime style','clean lineart');
 
+      /* —— 构图层（放最前，权重最高）—— */
+      const gv=function(id){ const el=document.getElementById(id); return el?String(el.value||''):'' };
+      const shot=gv('bp-shot'), ang=gv('bp-ang'), ar=gv('bp-ar2');
+      const wt=(document.getElementById('bp-weight')||{}).checked!==false;
+      const W=function(s,w){ return wt?('('+s+':'+w+')'):s };
+      const frame=[];
+      if(shot==='full'){ frame.push(W('full body','1.3')); frame.push('from head to toe'); frame.push(W('feet visible','1.2')); frame.push('standing on the ground') }
+      else if(shot==='wide'){ frame.push(W('full body','1.25')); frame.push('wide shot'); frame.push('from head to toe'); frame.push('environment visible') }
+      else if(shot==='medium'){ frame.push(W('cowboy shot','1.2')); frame.push('medium shot') }
+      else if(shot==='close'){ frame.push('close-up on face'); frame.push('detailed eyes') }
+      if(ang==='low') frame.push('from below, low angle');
+      else if(ang==='high') frame.push('from above, high angle');
+      else if(ang==='ots') frame.push('over the shoulder shot');
+
       const all = [];
+      all.push.apply(all, frame);
       if(anyNsfw) all.push('nsfw','explicit');
       if(anyNsfw && picked.some(function(x){return /duo|两人|双人/.test(x.e+x.z).valueOf()||false})) all.push('1girl,1boy');
       all.push.apply(all, core);
@@ -2557,8 +2627,27 @@
       all.push.apply(all, detail);
       all.push.apply(all, quality);
       all.push.apply(all, style);
+      if(ar) all.push(ar);
       const seen2={}, out=[];
       all.forEach(function(x){ const k=String(x).toLowerCase().trim(); if(!k||seen2[k]) return; seen2[k]=1; out.push(k) });
+      return out.join(', ');
+    }
+
+    /* ===== 负面提示词（按强度分级）===== */
+    function bpNegText(){
+      const lv=parseInt((document.getElementById('bp-level')||{}).value||'2',10);
+      const base=['lowres','bad anatomy','bad hands','extra digits','missing limbs',
+                  'cropped','out of frame','upper body only','portrait crop','headshot',
+                  'watermark','signature','text','jpeg artifacts','blurry','worst quality','low quality'];
+      const more=['extra limbs','mutated hands','poorly drawn face','deformed','disfigured',
+                  'long neck','bad proportions','duplicate','multiple views','artist name','logo'];
+      const max=['fused fingers','too many fingers','missing legs','floating limbs','asymmetric eyes',
+                 'malformed feet','no feet','wide hips','cross-eyed','chromatic aberration','noise'];
+      let arr=base.slice();
+      if(lv>=2) arr=arr.concat(more);
+      if(lv>=3) arr=arr.concat(max);
+      const seen={}, out=[];
+      arr.forEach(function(x){ if(!seen[x]){ seen[x]=1; out.push(x) } });
       return out.join(', ');
     }
     function bpFillExpanded(){
@@ -2622,6 +2711,36 @@
       });
       const run=document.getElementById('bp-ai-run');
       if(run) run.addEventListener('click',bpAiExpand);
+    })();
+
+    (function(){
+      const gen=document.getElementById('bp-neg-gen');
+      if(gen) gen.addEventListener('click',function(){
+        const ta=document.getElementById('bp-neg'); if(ta) ta.value=bpNegText();
+        try{toast('已生成负面提示词','success')}catch(e){}
+      });
+      const cp=document.getElementById('bp-neg-copy');
+      if(cp) cp.addEventListener('click',function(){
+        const ta=document.getElementById('bp-neg'); const s=ta?ta.value.trim():'';
+        if(!s){ try{toast('先生成负面提示词')}catch(e){} return }
+        const ok=copyText(s); try{toast(ok?'已复制负面提示词':'复制失败','success')}catch(e){}
+      });
+      const upd=function(){
+        const g=function(id){ const el=document.getElementById(id); return el?String(el.value||''):'' };
+        const hint=document.getElementById('bp-hint'); if(!hint) return;
+        const shot=g('bp-shot'), ar=g('bp-ar2');
+        const res={'--ar 3:4':'832×1216','--ar 2:3':'832×1248','--ar 9:16':'768×1344','--ar 16:9':'1216×688','--ar 1:1':'1024×1024'}[ar]||'';
+        let msg='';
+        if(shot==='full'||shot==='wide') msg='已自动把 full body / feet visible 放到最前并加权 ✓';
+        else if(shot==='medium') msg='半身构图：cowboy shot（到大腿）';
+        else if(shot==='close') msg='脸部特写：不会再画全身';
+        if(res) msg+=(msg?'　·　':'')+'建议分辨率 '+res;
+        hint.textContent=msg;
+      };
+      ['bp-shot','bp-ang','bp-ar2','bp-weight','bp-level'].forEach(function(id){
+        const el=document.getElementById(id); if(el){ el.addEventListener('change',upd); }
+      });
+      upd();
     })();
     function showInbox(){
       try{
