@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v118';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v119';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -429,6 +429,7 @@
       color:var(--text2);font-size:.8rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all .16s}
     .lib-tab:hover{border-color:var(--accent);color:var(--accent)}
     .lib-tab.active{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+    .pose-count{font-size:.72rem;color:var(--text3);align-self:center;margin-left:auto}
     .pose-cats{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}
     .pose-chip{padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);
       color:var(--text2);font-size:.78rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .16s}
@@ -1354,7 +1355,7 @@
         </div>
         <div class="lib-tabs" id="lib-tabs"></div>
         <div class="ai-tip" id="lib-tip">收录生图提示词 · 仅站长可编辑 · 点「复制」直接拿走</div>
-        <div class="pose-cats" id="pose-cats" style="display:none"></div>
+        <div class="pose-cats" id="pose-cats" style="display:none"><span class="pose-count" id="pose-count"></span></div>
         <div class="pose-list" id="pose-list" style="display:none"></div>
         <div class="ai-list" id="ai-list"></div>
       </div>

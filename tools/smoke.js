@@ -100,12 +100,30 @@ for (const rel of PAGES) {
     }
   }
   const uniqRef = [...new Set(refBad)];
+  /* ------------------------------------------------------------------
+     白名单：以下 id 在 HTML 里没有静态元素，但都属于「运行时动态创建」或
+     「引用处已有空值保护」，不是 bug。不要因为看到它们在名单里就删掉引用。
+       pg-back / sci-back / set-back / sp-back   各视图的返回按钮（渲染阶段生成）
+       ws-edu                                   工作区科普入口（按需插入）
+       sci-tabs                                 科学区标签条（sciActivate 时构建）
+       post-view-title / post-view-sub          博文阅读页头部（openPostView 时填充）
+       bg-deg-label / bg-reset / set-bg-reset   设置页背景控制器（showSetView 时构建）
+       user-avatar-btn / owner-crown / upload-btn / posts-btn   登录态相关按钮
+       modal-host / user-back-btn               历史遗留引用（均已 if 保护）
+     ------------------------------------------------------------------ */
+  const DYN_OK = new Set([
+    'pg-back', 'sci-back', 'set-back', 'sp-back', 'ws-edu', 'sci-tabs',
+    'post-view-title', 'post-view-sub', 'bg-deg-label', 'bg-reset', 'set-bg-reset',
+    'user-avatar-btn', 'owner-crown', 'upload-btn', 'posts-btn',
+    'modal-host', 'user-back-btn', 'set-bg-deg-label', '#user-back-btn'
+  ]);
+  const uniqRefReal = uniqRef.filter(x => !DYN_OK.has(x));
   const uniqDangle = [...new Set(dangling)];
   if (syntaxBad) fail++;
   if (uniqDangle.length) { fail++; console.log(red('  ✗ 悬空引用（变量声明已被删除但仍在用 → 运行时会 ReferenceError，导致页面元素缺失）: ' + uniqDangle.slice(0, 10).join(', '))); }
   else console.log(grn('  ✓ 无悬空变量引用'));
-  if (uniqRef.length) { warn++; console.log(yel('  ! 引用了静态看不到的元素 id（' + uniqRef.length + ' 个，可能由 JS 动态创建，仅作参考，不要贸然删除）: ' + uniqRef.slice(0, 8).join(', '))); }
-  else console.log(grn('  ✓ 所有 getElementById / #id 引用都存在'));
+  if (uniqRefReal.length) { warn++; console.log(yel('  ! 引用了静态看不到的元素 id（' + uniqRefReal.length + ' 个，且不在白名单内，值得看一下）: ' + uniqRefReal.slice(0, 8).join(', '))); }
+  else console.log(grn('  ✓ 所有 getElementById / #id 引用都存在或属已知动态创建（白名单 ' + DYN_OK.size + ' 项）'));
   if (dupBad.length) { warn++; console.log(yel('  ! 顶层函数重名（后者覆盖前者）: ' + [...new Set(dupBad)].join(', '))); }
   else console.log(grn('  ✓ 无重名顶层函数'));
   if (nakedBad) { if (rel === 'index.html') { fail++; console.log(red('  ✗ 裸链式 getElementById(...).addEventListener：' + nakedBad + ' 处')); } else { warn++; console.log(yel('  ! 裸链式事件绑定 ' + nakedBad + ' 处（独立页面，元素固定存在，低风险）')); } }

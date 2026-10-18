@@ -93,6 +93,42 @@ console.log('\n9) 版本号');
 const ver = (t.match(/var V='([^']*)'/) || [])[1];
 check(!!ver, '版本号 ' + ver, '版本号缺失');
 
+/* 10. div 开闭平衡（插入错位置的 div 会导致视图嵌套错乱） */
+console.log('\n10) div 标签平衡');
+const dOpen = (t.match(/<div\b/g) || []).length;
+const dClose = (t.match(/<\/div>/g) || []).length;
+check(dOpen === dClose, 'div 开闭平衡 (' + dOpen + '/' + dClose + ')', 'div 不平衡：开 ' + dOpen + ' / 闭 ' + dClose + '（差值 ' + (dOpen - dClose) + '）');
+
+/* 11. 视图容器必须同层（深度 0；post-view 允许 1~2） */
+console.log('\n11) 视图容器同层');
+const VIEW_IDS = ['ai-view', 'anime-view', 'main-view', 'sp-view', 'sci-view', 'ws-view', 'pg-view', 'set-view', 'coll-view', 'detail-view'];
+const depthOf = {};
+{
+  let d = 0;
+  for (const m of t.matchAll(/<div\b[^>]*>|<\/div>/g)) {
+    const s = m[0];
+    if (s === '</div>') { d--; continue; }
+    const idm = s.match(/id="([^"]+)"/);
+    if (idm && VIEW_IDS.includes(idm[1])) depthOf[idm[1]] = d;
+    d++;
+  }
+}
+const deepViews = Object.keys(depthOf).filter(k => depthOf[k] !== 0);
+check(deepViews.length === 0,
+  '视图容器全部同层（' + Object.keys(depthOf).length + ' 个）',
+  '视图嵌套异常：' + deepViews.map(k => k + ' depth=' + depthOf[k]).join(', '));
+
+/* 12. 每个视图容器都必须"默认隐藏 + .open 显示"（v105 那次叠加 bug 的根因）
+      main-view 是特例：默认显示，靠 .hidden 类隐藏 */
+console.log('\n12) 视图容器显隐规则');
+const noHide = VIEW_IDS.filter(id => {
+  if (id === 'main-view') return t.indexOf('#main-view.hidden{display:none') < 0;
+  return t.indexOf('#' + id + '{display:none') < 0;
+});
+check(noHide.length === 0,
+  '所有视图都有正确的隐藏规则',
+  '缺隐藏规则（会永久挂在页面上）：' + noHide.join(', '));
+
 console.log('\n----------------------------------------');
 console.log(pass + ' 通过 / ' + fail + ' 失败');
 process.exit(fail ? 1 : 0);
