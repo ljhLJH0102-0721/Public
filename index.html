@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v120';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v121';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -322,6 +322,27 @@
     .anime-series{font-size:.74rem;color:var(--text3);margin:2px 0 7px}
     .anime-tagsline{display:flex;flex-wrap:wrap;gap:5px}
     .anime-tag{font-size:.66rem;padding:2px 8px;border-radius:999px;background:var(--accent-bg);color:var(--accent);border:1px solid rgba(var(--accent-rgb),.2)}
+    .anime-acts{display:flex;gap:6px;margin-top:9px}
+    .anime-act{flex:1;padding:4px 6px;border-radius:8px;border:1px solid var(--border);background:var(--bg);
+      color:var(--text2);font-size:.68rem;font-family:inherit;cursor:pointer;transition:all .14s}
+    .anime-act:hover{border-color:var(--accent);color:var(--accent)}
+    .anime-act.danger:hover{border-color:#d9534f;color:#d9534f}
+    .anime-hl{background:rgba(var(--accent-rgb),.22);color:var(--text);border-radius:3px;padding:0 2px}
+    .anime-dv{max-width:900px;margin:0 auto}
+    .anime-dvbar{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+    .anime-dv-t{font-size:.86rem;color:var(--text3)}
+    .anime-dv-hero{height:240px;border-radius:var(--radius);overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center}
+    .anime-dv-hero img{width:100%;height:100%;object-fit:cover}
+    .anime-dv-hero .anime-ph{font-size:5rem}
+    .anime-dv-body{padding:16px 4px 40px}
+    .anime-dv-body h2{margin:0 0 4px;font-size:1.35rem}
+    .anime-dv-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    @media(max-width:768px){.anime-dv-hero{height:190px}}
+    .bp-presets{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0 4px}
+    .bp-presets-l{font-size:.72rem;font-weight:700;color:var(--accent);margin-right:2px}
+    .bp-preset{padding:4px 11px;border-radius:999px;border:1px dashed rgba(var(--accent-rgb),.45);
+      background:var(--surface-2);color:var(--text2);font-size:.72rem;font-family:inherit;cursor:pointer;transition:all .14s}
+    .bp-preset:hover{border-style:solid;border-color:var(--accent);color:var(--accent)}
     .anime-detail{display:none;padding:0 13px 13px;border-top:1px solid var(--border);margin-top:2px}
     .anime-card.open .anime-detail{display:block}
     .anime-sec{margin-top:11px}
@@ -1271,6 +1292,7 @@
       <div class="anime-tags" id="anime-tags"></div>
       <div class="anime-count" id="anime-count"></div>
       <div class="anime-grid" id="anime-grid"></div>
+      <div class="anime-dv" id="anime-dv" style="display:none"></div>
     </div>
   </div>
   <div id="ai-view">
@@ -1284,6 +1306,7 @@
         <div class="bp">
           <div class="bp-hd">🧩 词条组合器 <span class="bp-sub">在下方列表卡片上点「＋」加入 · 合成顺序 头发→头→身体→手→腿→脚→动作→场景</span></div>
           <div class="bp-picked" id="bp-picked"></div>
+          <div class="bp-presets" id="bp-presets"></div>
           <div class="bp-frame">
             <div class="bp-frame-row">
               <label>构图
@@ -2483,6 +2506,7 @@
       }
       renderPoses();
       try{ bpRender() }catch(e){}
+      try{ bpPresetsRender() }catch(e){}
     }
     function renderPoses(){
       const box=document.getElementById('pose-list'); if(!box) return;
@@ -2591,6 +2615,8 @@
     const bpSel={};
     function bpPickedList(){ return bpPicked }
     function bpCatIndex(k){
+      /* 姿势预设与角色外观词条排在所有词库分类之前 */
+      if(k==='preset'||k==='preset_cha') return -2;
       const list=bpOrder(); for(let i=0;i<list.length;i++) if(list[i].k===k) return i;
       return 999;
     }
@@ -2622,6 +2648,24 @@
         seen[key]=1; out.push(key);
       });
       return out.join(', ');
+    }
+    function bpPresetsRender(){
+      const box=document.getElementById('bp-presets'); if(!box) return;
+      const list=(posesCache&&posesCache.presets)||[];
+      if(!list.length){ box.innerHTML=''; return }
+      if(!box.dataset.done){
+        box.dataset.done='1';
+        box.innerHTML='<span class="bp-presets-l">姿势预设</span>'+list.map(function(p,i){
+          return '<button type="button" class="bp-preset" data-i="'+i+'">'+escHtml(p.n)+'</button>';
+        }).join('');
+        box.addEventListener('click',function(e){
+          const b=e.target.closest('.bp-preset'); if(!b) return;
+          const p=list[+b.dataset.i]; if(!p) return;
+          let n=0;
+          (p.items||[]).forEach(function(it){ if(bpAdd(it,'preset')) n++ });
+          try{toast(n?('已加入「'+p.n+'」的 '+n+' 个姿势标签'):'这些标签已在组合里了')}catch(err){}
+        });
+      }
     }
     function bpUpdate(){
       const s=bpBuild();
@@ -2911,54 +2955,188 @@
       return blob.indexOf(q)>=0;
     }
     function animeHue(s){ let h=0; for(let i=0;i<String(s).length;i++) h=(h*31+String(s).charCodeAt(i))%360; return h }
+    /* ===== 动漫区渲染（P2）===== */
+    let animeSha = null, animeDvIdx = -1;
+    function animeAliases(c){
+      const out = [];
+      const nm = String(c.name || '');
+      out.push(nm);
+      /* 从「A（B）」里拆出两个别名 */
+      const m = nm.match(/^(.+?)[（(](.+?)[）)]/);
+      if (m) { out.push(m[1].trim()); out.push(m[2].trim()) }
+      (c.aliases || []).forEach(a => out.push(a));
+      return out.filter(Boolean);
+    }
+    function animeHit(c, q){
+      if (!q) return true;
+      const blob = animeAliases(c).concat([c.series, c.world, c.intro, (c.tags || []).join(' '), (c.memes || []).join(' ')]).join(' ').toLowerCase();
+      return blob.indexOf(q) >= 0;
+    }
+    function animeHue(s){ let h = 0; for (let i = 0; i < String(s).length; i++) h = (h * 31 + String(s).charCodeAt(i)) % 360; return h }
+    function hl(s, q){
+      const str = escHtml(s || '');
+      if (!q) return str;
+      try {
+        const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return str.replace(new RegExp('(' + safe + ')', 'ig'), '<mark class="anime-hl">$1</mark>');
+      } catch (e) { return str }
+    }
     function renderAnime(){
-      const grid=document.getElementById('anime-grid'); if(!grid) return;
-      if(!animeCache){ grid.innerHTML='<div class="sp-empty"><div class="sp-empty-icon">📥</div><p>角色数据加载中…</p></div>'; return }
-      const tbox=document.getElementById('anime-tags');
-      if(tbox&&!tbox.dataset.done){
-        tbox.dataset.done='1';
-        tbox.innerHTML=ANIME_TAGS.map(function(x){ return '<button class="anime-chip'+(x==='全部'?' active':'')+'" data-t="'+x+'">'+x+'</button>' }).join('');
-        tbox.addEventListener('click',function(e){
-          const b=e.target.closest('.anime-chip'); if(!b) return;
-          animeTag=b.dataset.t; renderAnime();
+      const grid = document.getElementById('anime-grid'); if (!grid) return;
+      if (!animeCache) { grid.innerHTML = '<div class="sp-empty"><div class="sp-empty-icon">📥</div><p>角色数据加载中…</p></div>'; return }
+      const tbox = document.getElementById('anime-tags');
+      if (tbox && !tbox.dataset.done) {
+        tbox.dataset.done = '1';
+        tbox.innerHTML = ANIME_TAGS.map(x => '<button class="anime-chip' + (x === '全部' ? ' active' : '') + '" data-t="' + x + '">' + x + '</button>').join('');
+        tbox.addEventListener('click', function(e){
+          const b = e.target.closest('.anime-chip'); if (!b) return;
+          animeTag = b.dataset.t; renderAnime();
         });
       }
-      if(tbox) Array.prototype.forEach.call(tbox.querySelectorAll('.anime-chip'),function(b){ b.classList.toggle('active', b.dataset.t===animeTag) });
-      const q=animeQ.trim().toLowerCase();
-      const list=(animeCache||[]).filter(function(c){
-        if(animeTag!=='全部' && (c.tags||[]).indexOf(animeTag)<0) return false;
-        return animeMatch(c,q);
+      if (tbox) Array.prototype.forEach.call(tbox.querySelectorAll('.anime-chip'), b => b.classList.toggle('active', b.dataset.t === animeTag));
+      const q = animeQ.trim().toLowerCase();
+      const list = (animeCache || []).filter(c => {
+        if (animeTag !== '全部' && (c.tags || []).indexOf(animeTag) < 0) return false;
+        return animeHit(c, q);
       });
-      const cnt=document.getElementById('anime-count');
-      if(cnt) cnt.textContent='共 '+list.length+' 位角色'+(q?('　匹配「'+animeQ+'」'):'');
-      if(!list.length){
-        grid.innerHTML='<div class="sp-empty"><div class="sp-empty-icon">🔍</div><p>没有匹配的角色<br><span style="font-size:.78rem;color:var(--text3)">试试「白毛」「双马尾」「傲娇」，或直接搜梗</span></p></div>';
+      const cnt = document.getElementById('anime-count');
+      if (cnt) cnt.textContent = '共 ' + list.length + ' 位角色' + (q ? ('　匹配「' + animeQ + '」') : '');
+      if (!list.length) {
+        grid.innerHTML = '<div class="sp-empty"><div class="sp-empty-icon">🔍</div><p>没有匹配的角色<br><span style="font-size:.78rem;color:var(--text3)">试试「白毛」「双马尾」「傲娇」，或直接搜梗（如「无量空处」「披萨」）</span></p></div>';
         return;
       }
-      grid.innerHTML=list.map(function(c,i){
-        const hue=animeHue(c.name);
-        const img=c.image?('<img src="'+escHtml(c.image)+'" alt="" loading="lazy" />')
-          :('<div class="anime-ph" style="--h:'+hue+'">'+escHtml([...String(c.name)][0]||'?')+'</div>');
-        return '<div class="anime-card" data-i="'+i+'">'
-          + '<div class="anime-cover">'+img+'</div>'
+      grid.innerHTML = list.map(function(c, i){
+        const hue = animeHue(c.name);
+        const img = c.image ? ('<img src="' + escHtml(c.image) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'" />')
+          : ('<div class="anime-ph" style="--h:' + hue + '">' + escHtml([...String(c.name)][0] || '?') + '</div>');
+        return '<div class="anime-card" data-i="' + i + '">'
+          + '<div class="anime-cover">' + img + '</div>'
           + '<div class="anime-info">'
-          +   '<div class="anime-name">'+escHtml(c.name)+'</div>'
-          +   '<div class="anime-series">'+escHtml(c.series||'')+'</div>'
-          +   '<div class="anime-tagsline">'+(c.tags||[]).map(function(x){return '<span class="anime-tag">'+escHtml(x)+'</span>'}).join('')+'</div>'
-          + '</div>'
-          + '<div class="anime-detail">'
-          +   '<div class="anime-sec"><b>角色介绍</b><p>'+escHtml(c.intro||'')+'</p></div>'
-          +   '<div class="anime-sec"><b>世界观</b><p>'+escHtml(c.world||'')+'</p></div>'
-          +   (c.memes&&c.memes.length?('<div class="anime-sec"><b>相关梗</b><p class="anime-memes">'+c.memes.map(function(m){return '<span class="anime-meme">'+escHtml(m)+'</span>'}).join('')+'</p></div>'):'')
+          +   '<div class="anime-name">' + hl(c.name, q) + '</div>'
+          +   '<div class="anime-series">' + hl(c.series || '', q) + '</div>'
+          +   '<div class="anime-tagsline">' + (c.tags || []).map(x => '<span class="anime-tag">' + escHtml(x) + '</span>').join('') + '</div>'
+          +   '<div class="anime-acts">'
+          +     '<button class="anime-act" data-act="dv" data-i="' + i + '">详情</button>'
+          +     '<button class="anime-act" data-act="add" data-i="' + i + '">＋ 提示词</button>'
+          +     (isOwner() ? '<button class="anime-act" data-act="edit" data-i="' + i + '">编辑</button><button class="anime-act danger" data-act="del" data-i="' + i + '">删</button>' : '')
+          +   '</div>'
           + '</div>'
           + '</div>';
       }).join('');
-      Array.prototype.forEach.call(grid.querySelectorAll('.anime-card'),function(el){
-        el.addEventListener('click',function(e){
-          if(e.target.closest('.anime-meme')||e.target.closest('a')) return;
-          el.classList.toggle('open');
+      Array.prototype.forEach.call(grid.querySelectorAll('.anime-card'), function(el){
+        const i = +el.dataset.i;
+        el.addEventListener('click', function(e){
+          const b = e.target.closest('.anime-act');
+          if (!b) { animeDetailOpen(i); return }
+          const act = b.dataset.act;
+          if (act === 'dv') animeDetailOpen(i);
+          else if (act === 'add') animeToComposer(i);
+          else if (act === 'edit') animeEdit(i);
+          else if (act === 'del') animeDel(i);
         });
       });
+    }
+    /* 详情页 */
+    function animeDetailOpen(idx){
+      const c = (animeCache || [])[idx]; if (!c) return;
+      animeDvIdx = idx;
+      const dv = document.getElementById('anime-dv'); if (!dv) return;
+      const grid = document.getElementById('anime-grid'), tg = document.getElementById('anime-tags'), cntEl = document.getElementById('anime-count'), srch = document.querySelector('.anime-search');
+      const hue = animeHue(c.name);
+      const cover = c.image ? ('<img src="' + escHtml(c.image) + '" alt="" />') : ('<div class="anime-ph" style="--h:' + hue + '">' + escHtml([...String(c.name)][0] || '?') + '</div>');
+      dv.innerHTML = '<div class="anime-dvbar"><button class="sp-back" id="anime-dv-back">‹ 返回列表</button>'
+        + '<span class="anime-dv-t">' + escHtml(c.name) + '</span></div>'
+        + '<div class="anime-dv-hero">' + cover + '</div>'
+        + '<div class="anime-dv-body">'
+        +   '<h2>' + escHtml(c.name) + '</h2>'
+        +   '<div class="anime-series">' + escHtml(c.series || '') + '</div>'
+        +   '<div class="anime-tagsline">' + (c.tags || []).map(x => '<span class="anime-tag">' + escHtml(x) + '</span>').join('') + '</div>'
+        +   '<div class="anime-sec"><b>角色介绍</b><p>' + escHtml(c.intro || '') + '</p></div>'
+        +   '<div class="anime-sec"><b>世界观</b><p>' + escHtml(c.world || '') + '</p></div>'
+        +   (c.memes && c.memes.length ? ('<div class="anime-sec"><b>相关梗</b><p class="anime-memes">' + c.memes.map(m => '<span class="anime-meme">' + escHtml(m) + '</span>').join('') + '</p></div>') : '')
+        +   '<div class="anime-dv-acts">'
+        +     '<button class="btn btn-primary" id="anime-dv-add">＋ 外观加入提示词组合器</button>'
+        +     (isOwner() ? '<button class="btn btn-outline" id="anime-dv-edit">编辑</button>' : '')
+        +   '</div>'
+        + '</div>';
+      dv.style.display = 'block';
+      if (grid) grid.style.display = 'none';
+      if (tg) tg.style.display = 'none';
+      if (cntEl) cntEl.style.display = 'none';
+      if (srch) srch.style.display = 'none';
+      dv.querySelector('#anime-dv-back').addEventListener('click', animeDetailClose);
+      const ad = dv.querySelector('#anime-dv-add');
+      if (ad) ad.addEventListener('click', function(){ animeToComposer(idx) });
+      const ed = dv.querySelector('#anime-dv-edit');
+      if (ed) ed.addEventListener('click', function(){ animeEdit(idx) });
+      window.scrollTo(0, 0);
+    }
+    function animeDetailClose(){
+      const dv = document.getElementById('anime-dv'); if (dv) { dv.style.display = 'none'; dv.innerHTML = '' }
+      const grid = document.getElementById('anime-grid'), tg = document.getElementById('anime-tags'), cntEl = document.getElementById('anime-count'), srch = document.querySelector('.anime-search');
+      if (grid) grid.style.display = '';
+      if (tg) tg.style.display = '';
+      if (cntEl) cntEl.style.display = '';
+      if (srch) srch.style.display = '';
+      animeDvIdx = -1;
+    }
+    /* 角色外观 → 组合器 */
+    function animeToComposer(idx){
+      const c = (animeCache || [])[idx]; if (!c) return;
+      let n = 0;
+      (c.tags || []).forEach(function(tag){
+        const word = ({ '白毛': 'white hair', '黑长直': 'long black hair', '双马尾': 'twin tails', '粉毛': 'pink hair', '蓝毛': 'blue hair', '绿毛': 'green hair', '紫发': 'purple hair', '橙发': 'orange hair', '金发': 'blonde hair', '棕发': 'brown hair', '银白': 'silver hair', '浅色发': 'light hair', '长发': 'long hair', '短发': 'short hair', '红瞳': 'red eyes', '紫瞳': 'purple eyes', '金瞳': 'golden eyes', '兽耳': 'animal ears', '猫耳': 'cat ears', '兔耳': 'rabbit ears', '狼耳': 'wolf ears', '角': 'horns', '眼罩': 'eyepatch', '女仆': 'maid outfit', '巫女': 'miko outfit', '和服': 'kimono', '骑士': 'knight armor', '偶像': 'idol costume', '西装': 'business suit', '呆毛': 'ahoge' }[tag]) || tag;
+        if (bpAdd(word, 'preset_cha')) n++;
+      });
+      try { toast(n ? ('已把 ' + n + ' 个外观标签加入组合器') : '该角色没有可用的外观标签', n ? 'success' : 'error') } catch (e) {}
+      animeDetailClose();
+      try { openAiArea('lib') } catch (e) {}
+      try { setTimeout(function(){ bpRender() }, 60) } catch (e) {}
+    }
+    /* 站长编辑 */
+    async function saveAnime(msg){
+      let token; try { token = await ensureR18Token() } catch (err) { throw err }
+      if (!animeSha) { try { const f = await ghGetFile('anime.json', token); if (f) animeSha = f.sha } catch (e) {} }
+      const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(animeCache, null, 2))));
+      const r = await ghPutFile('anime.json', b64, msg || 'update anime.json', animeSha, token);
+      if (r && r.content) animeSha = r.content.sha;
+    }
+    function animeEdit(idx){
+      const isNew = (idx === null || idx === undefined);
+      const cur = isNew ? { name: '', series: '', world: '', intro: '', tags: [], memes: [], image: '' } : animeCache[idx];
+      const wrap = document.createElement('div');
+      wrap.className = 'ai-modal';
+      wrap.innerHTML = '<div class="ai-modal-box"><h3>' + (isNew ? '新增角色' : '编辑角色') + '</h3>'
+        + '<input id="an-f-name" placeholder="角色名" value="' + escHtml(cur.name || '') + '">'
+        + '<input id="an-f-series" placeholder="作品名" value="' + escHtml(cur.series || '') + '">'
+        + '<input id="an-f-image" placeholder="图片 URL（可留空，留空显示首字母占位）" value="' + escHtml(cur.image || '') + '">'
+        + '<input id="an-f-tags" placeholder="标签，逗号分隔（如：白毛,双马尾,傲娇）" value="' + escHtml((cur.tags || []).join(',')) + '">'
+        + '<input id="an-f-memes" placeholder="梗，逗号分隔" value="' + escHtml((cur.memes || []).join(',')) + '">'
+        + '<textarea id="an-f-intro" rows="3" placeholder="角色介绍">' + escHtml(cur.intro || '') + '</textarea>'
+        + '<textarea id="an-f-world" rows="3" placeholder="世界观">' + escHtml(cur.world || '') + '</textarea>'
+        + '<div class="ai-modal-btns"><button class="btn btn-ghost" id="an-cancel">取消</button><button class="btn btn-primary" id="an-save">保存</button></div></div>';
+      document.body.appendChild(wrap);
+      wrap.querySelector('#an-cancel').addEventListener('click', () => wrap.remove());
+      wrap.addEventListener('click', e => { if (e.target === wrap) wrap.remove() });
+      wrap.querySelector('#an-save').addEventListener('click', async function(){
+        const g = id => wrap.querySelector('#' + id).value.trim();
+        const sp = s => s.split(/[,，]/).map(x => x.trim()).filter(Boolean);
+        const rec = { id: isNew ? ('an-' + Date.now().toString(36)) : (cur.id || ('an-' + Date.now().toString(36))), name: g('an-f-name'), series: g('an-f-series'), image: g('an-f-image'), tags: sp(g('an-f-tags')), memes: sp(g('an-f-memes')), intro: g('an-f-intro'), world: g('an-f-world') };
+        if (!rec.name) { try { toast('角色名不能为空') } catch (e) {} return }
+        const btn = this; btn.disabled = true; btn.textContent = '保存中…';
+        const bak = animeCache.slice();
+        if (isNew) animeCache.unshift(rec); else animeCache[idx] = rec;
+        try { await saveAnime(isNew ? 'anime: add' : 'anime: update'); wrap.remove(); animeDetailClose(); renderAnime(); try { toast(isNew ? '已添加' : '已更新', 'success') } catch (e) {} }
+        catch (e) { animeCache = bak; renderAnime(); btn.disabled = false; btn.textContent = '保存' }
+      });
+    }
+    async function animeDel(idx){
+      const c = animeCache[idx]; if (!c) return;
+      if (!confirm('删除角色「' + c.name + '」？')) return;
+      const bak = animeCache.slice();
+      animeCache.splice(idx, 1); animeDetailClose(); renderAnime();
+      try { await saveAnime('anime: delete'); try { toast('已删除', 'success') } catch (e) {} }
+      catch (e) { animeCache = bak; renderAnime(); try { toast('删除失败', 'error') } catch (e2) {} }
     }
     function openAnimeArea(){
       setViewFlags(null);

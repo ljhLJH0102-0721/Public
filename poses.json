@@ -1965,5 +1965,147 @@
       "c": "nsfw_pos",
       "r": 1
     }
+  ],
+  "presets": [
+    {
+      "k": "stand",
+      "n": "站立",
+      "items": [
+        "standing",
+        "facing viewer",
+        "legs together",
+        "arms at sides"
+      ]
+    },
+    {
+      "k": "stand_hip",
+      "n": "叉腰站",
+      "items": [
+        "standing",
+        "arms akimbo",
+        "hands on hips",
+        "chest out"
+      ]
+    },
+    {
+      "k": "kneel",
+      "n": "跪姿",
+      "items": [
+        "kneeling",
+        "on both knees",
+        "hands on thighs",
+        "looking up at viewer"
+      ]
+    },
+    {
+      "k": "kneel_back",
+      "n": "跪姿背影",
+      "items": [
+        "kneeling",
+        "from behind",
+        "back arched",
+        "legs apart",
+        "looking back over shoulder"
+      ]
+    },
+    {
+      "k": "lie_back",
+      "n": "仰躺",
+      "items": [
+        "lying on back",
+        "legs up",
+        "knees bent",
+        "arms above head"
+      ]
+    },
+    {
+      "k": "prone",
+      "n": "趴姿",
+      "items": [
+        "on all fours",
+        "from side",
+        "hips raised",
+        "head down"
+      ]
+    },
+    {
+      "k": "sit_cross",
+      "n": "盘腿坐",
+      "items": [
+        "sitting",
+        "cross-legged",
+        "on the floor",
+        "hands on knees"
+      ]
+    },
+    {
+      "k": "sit_chair",
+      "n": "翘腿坐",
+      "items": [
+        "sitting",
+        "legs crossed",
+        "one hand on knee",
+        "facing viewer"
+      ]
+    },
+    {
+      "k": "sit_lean",
+      "n": "后仰坐",
+      "items": [
+        "sitting",
+        "leaning back on hands",
+        "legs apart",
+        "chest up"
+      ]
+    },
+    {
+      "k": "cowgirl",
+      "n": "骑乘",
+      "items": [
+        "cowgirl position",
+        "sitting on top",
+        "facing viewer",
+        "knees bent"
+      ]
+    },
+    {
+      "k": "doggy",
+      "n": "后入",
+      "items": [
+        "doggy style",
+        "from behind",
+        "on all fours",
+        "back arched"
+      ]
+    },
+    {
+      "k": "spoon",
+      "n": "侧卧位",
+      "items": [
+        "spooning position",
+        "lying on side",
+        "legs together"
+      ]
+    },
+    {
+      "k": "wall",
+      "n": "靠墙站",
+      "items": [
+        "standing against wall",
+        "one leg lifted",
+        "hands on wall",
+        "looking back"
+      ]
+    },
+    {
+      "k": "stretch",
+      "n": "伸展",
+      "items": [
+        "stretching arms overhead",
+        "standing",
+        "eyes closed",
+        "morning stretch"
+      ]
+    }
   ]
 }
