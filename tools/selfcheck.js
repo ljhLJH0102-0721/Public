@@ -129,6 +129,21 @@ check(noHide.length === 0,
   '所有视图都有正确的隐藏规则',
   '缺隐藏规则（会永久挂在页面上）：' + noHide.join(', '));
 
+/* 13. 视图管理：不得再有硬编码的视图清单（新增视图必须自动生效） */
+console.log('\n13) 视图管理永久方案');
+{
+  const hardLists = (t.match(/\[(?:'[a-z]+-view'\s*,\s*)*'[a-z]+-view'\]/g) || []).length;
+  check(hardLists === 0, '无硬编码视图清单（视图由 allViewIds() 自动发现）',
+    '仍有 ' + hardLists + ' 处硬编码视图清单（新视图会被漏掉 → 视图叠加）');
+  check(t.indexOf('function closeAllViews(') > -1, 'closeAllViews 存在', 'closeAllViews 缺失（视图无法统一关闭）');
+  check(t.indexOf('function allViewIds(') > -1, 'allViewIds 存在', 'allViewIds 缺失（视图无法自动发现）');
+  check(t.indexOf('MutationObserver') > -1 && t.indexOf("attributeFilter:['class','style']") > -1,
+    '视图互斥观察器存在', '视图互斥观察器缺失（兜底失效）');
+  /* 所有 *-view 都必须被 closeAllViews 覆盖：只要 id 以 -view 结尾即可命中 */
+  const viewIds = [...new Set([...t.matchAll(/id="([a-z]+-view)"/g)].map(m => m[1]))];
+  check(viewIds.length >= 8, '检测到 ' + viewIds.length + ' 个视图容器', '视图容器数量异常: ' + viewIds.length);
+}
+
 console.log('\n----------------------------------------');
 console.log(pass + ' 通过 / ' + fail + ' 失败');
 process.exit(fail ? 1 : 0);
