@@ -14,7 +14,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v122';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
+  <script>(function(){document.documentElement.classList.add('boot');document.documentElement.setAttribute('data-theme','dark');var V='v124';window.__SITE_V__=V;try{var s=window.sessionStorage;if(s&&s.getItem('_site_ver')!==V){s.setItem('_site_ver',V);var base=location.href.split('#')[0].split('?')[0];location.replace(base+'?_v='+V+'-'+Date.now())}}catch(e){};setTimeout(function(){try{document.documentElement.classList.remove('boot')}catch(e){}},4500)})();</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#faf9f5;--bg-grad:#faf9f5;--surface:#fff;--surface-2:#f7f5f1;--surface-glass-2:rgba(255,255,255,.97);--surface-glass:rgba(255,255,255,.92);--surface-glass-3:rgba(255,255,255,.82);--surface-glass-4:rgba(255,255,255,.62);--border:#e9e4dc;--border2:#d8d1c6;--text:#1b1b19;--text2:#565149;--text3:#8c857a;--accent:#cc785c;--accent-2:#e09a7d;--accent-h:#b3644a;--accent-bg:#fbeee8;--accent-rgb:204,120,92;--accent-fg:#fff;--radius:12px;--radius-s:8px;--shadow:0 2px 14px rgba(120,92,72,.09);--shadow-h:0 10px 28px rgba(120,92,72,.15);--heart:#ff4757;--danger:#db2b33;--announce-bg:#fbeee8;--announce-text:#7a3f2c}
@@ -322,6 +322,37 @@
     .anime-series{font-size:.74rem;color:var(--text3);margin:2px 0 7px}
     .anime-tagsline{display:flex;flex-wrap:wrap;gap:5px}
     .anime-tag{font-size:.66rem;padding:2px 8px;border-radius:999px;background:var(--accent-bg);color:var(--accent);border:1px solid rgba(var(--accent-rgb),.2)}
+    /* ===== 图片编辑 ===== */
+    .ie-wrap{display:flex;gap:18px;padding:18px 20px 90px;max-width:1200px;margin:0 auto;align-items:flex-start}
+    .ie-left{flex:1;min-width:0}
+    .ie-right{flex:0 0 320px;display:flex;flex-direction:column;gap:10px}
+    .ie-drop{border:2px dashed var(--border);border-radius:var(--radius);padding:38px 20px;text-align:center;cursor:pointer;
+      background:var(--surface);transition:border-color .16s,background .16s}
+    .ie-drop:hover,.ie-drop.over{border-color:var(--accent);background:var(--accent-bg)}
+    .ie-drop-i{font-size:2.2rem;margin-bottom:8px}
+    .ie-drop-t{font-size:.9rem;font-weight:700;color:var(--text)}
+    .ie-drop-s{font-size:.74rem;color:var(--text3);margin-top:6px}
+    .ie-stage{display:flex;align-items:center;justify-content:center;background:var(--surface-2);border-radius:var(--radius);
+      padding:12px;min-height:200px;cursor:pointer}
+    .ie-stage canvas{max-width:100%;height:auto;border-radius:8px;box-shadow:var(--shadow-sm)}
+    .ie-meta{font-size:.74rem;color:var(--text3);margin-top:8px;text-align:center}
+    .ie-sec{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 13px}
+    .ie-sec-t{font-size:.74rem;font-weight:700;color:var(--accent);margin-bottom:8px}
+    .ie-btns{display:flex;flex-wrap:wrap;gap:7px}
+    .ie-btn{flex:1 1 44%;padding:6px 8px;border-radius:9px;border:1px solid var(--border);background:var(--bg);
+      color:var(--text2);font-size:.74rem;font-family:inherit;cursor:pointer;transition:all .14s}
+    .ie-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .ie-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+    .ie-row:last-child{margin-bottom:0}
+    .ie-row label{flex:0 0 32px;font-size:.72rem;color:var(--text3)}
+    .ie-row input[type=range]{flex:1;min-width:0}
+    .ie-num{width:70px;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.74rem;font-family:inherit}
+    .ie-input{width:100%;padding:6px 9px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.78rem;font-family:inherit;margin-bottom:7px}
+    .ie-sel{width:100%;padding:6px 9px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.76rem;font-family:inherit}
+    .ie-v{flex:0 0 42px;text-align:right;font-size:.7rem;color:var(--text3)}
+    .ie-u{font-size:.7rem;color:var(--text3)}
+    .ie-color{width:34px;height:26px;padding:0;border:1px solid var(--border);border-radius:6px;background:var(--bg)}
+    @media(max-width:900px){.ie-wrap{flex-direction:column;padding:12px 12px 90px}.ie-right{flex:none;width:100%}}
     .anime-acts{display:flex;gap:6px;margin-top:9px}
     .anime-act{flex:1;padding:4px 6px;border-radius:8px;border:1px solid var(--border);background:var(--bg);
       color:var(--text2);font-size:.68rem;font-family:inherit;cursor:pointer;transition:all .14s}
@@ -1602,6 +1633,90 @@
       </div>
     </div>
     <div class="ws-main">
+
+      <div class="ws-panel" data-wspanel="imgedit">
+        <div class="ie-wrap">
+          <div class="ie-left">
+            <div class="ie-drop" id="ie-drop">
+              <div class="ie-drop-i">🖼</div>
+              <div class="ie-drop-t">点击选择图片，或把图片拖到这里</div>
+              <div class="ie-drop-s">全程在本地处理，不会上传到任何服务器</div>
+              <input type="file" id="ie-file" accept="image/*" hidden />
+            </div>
+            <div class="ie-stage" id="ie-stage" style="display:none">
+              <canvas id="ie-canvas"></canvas>
+            </div>
+            <div class="ie-meta" id="ie-meta"></div>
+          </div>
+          <div class="ie-right">
+            <div class="ie-sec">
+              <div class="ie-sec-t">方向</div>
+              <div class="ie-btns">
+                <button class="ie-btn" data-ie="rotL" type="button">⟲ 左转 90°</button>
+                <button class="ie-btn" data-ie="rotR" type="button">⟳ 右转 90°</button>
+                <button class="ie-btn" data-ie="flipH" type="button">⇋ 水平翻转</button>
+                <button class="ie-btn" data-ie="flipV" type="button">⇅ 垂直翻转</button>
+              </div>
+            </div>
+            <div class="ie-sec">
+              <div class="ie-sec-t">裁剪比例（居中）</div>
+              <select id="ie-aspect" class="ie-sel">
+                <option value="free">自由（不裁剪）</option>
+                <option value="1:1">1:1 方形</option>
+                <option value="4:3">4:3 横版</option>
+                <option value="3:4">3:4 竖版</option>
+                <option value="16:9">16:9 宽屏</option>
+                <option value="9:16">9:16 手机壁纸</option>
+              </select>
+            </div>
+            <div class="ie-sec">
+              <div class="ie-sec-t">输出尺寸</div>
+              <div class="ie-row">
+                <label>宽度</label>
+                <input id="ie-w" class="ie-num" type="number" min="32" max="4096" value="0" />
+                <span class="ie-u" id="ie-hint">px（0 = 原尺寸）</span>
+              </div>
+            </div>
+            <div class="ie-sec">
+              <div class="ie-sec-t">调色</div>
+              <div class="ie-row"><label>亮度</label><input id="ie-bri" type="range" min="50" max="150" value="100" /><span class="ie-v" id="ie-bri-v">100%</span></div>
+              <div class="ie-row"><label>对比</label><input id="ie-con" type="range" min="50" max="150" value="100" /><span class="ie-v" id="ie-con-v">100%</span></div>
+              <div class="ie-row"><label>饱和</label><input id="ie-sat" type="range" min="0" max="200" value="100" /><span class="ie-v" id="ie-sat-v">100%</span></div>
+            </div>
+            <div class="ie-sec">
+              <div class="ie-sec-t">文字水印</div>
+              <input id="ie-wm" class="ie-input" type="text" placeholder="留空则不加水印" maxlength="40" />
+              <div class="ie-row">
+                <select id="ie-wmpos" class="ie-sel">
+                  <option value="br">右下</option><option value="bl">左下</option>
+                  <option value="tr">右上</option><option value="tl">左上</option>
+                  <option value="c">居中</option>
+                </select>
+                <input id="ie-wmsize" class="ie-num" type="number" min="8" max="200" value="28" />
+                <input id="ie-wmcolor" type="color" value="#ffffff" class="ie-color" />
+              </div>
+            </div>
+            <div class="ie-sec">
+              <div class="ie-sec-t">导出</div>
+              <div class="ie-row">
+                <select id="ie-fmt" class="ie-sel">
+                  <option value="image/png">PNG</option>
+                  <option value="image/jpeg">JPEG</option>
+                  <option value="image/webp">WebP</option>
+                </select>
+                <label>质量</label>
+                <input id="ie-q" type="range" min="50" max="100" value="92" />
+                <span class="ie-v" id="ie-q-v">92%</span>
+              </div>
+              <div class="ie-btns" style="margin-top:10px">
+                <button class="btn btn-primary" id="ie-download" type="button">⬇ 下载图片</button>
+                <button class="btn btn-outline" id="ie-reset" type="button">重置</button>
+                <button class="btn btn-outline" id="ie-pick" type="button">换一张</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="ws-panel active" data-wspanel="translate">
         <div class="trans-area" id="trans-area">
           <div class="trans-head">
@@ -3156,6 +3271,165 @@
       const q=document.getElementById('anime-q');
       if(q){ q.addEventListener('input',function(){ animeQ=String(q.value||'').trim(); renderAnime() }) }
     })();
+
+    /* ===== 图片编辑（全本地 canvas 处理，不上传） ===== */
+    const IE = { img:null, rot:0, flipH:1, flipV:1, aspect:'free', outW:0, bri:100, con:100, sat:100,
+                 wm:'', wmPos:'br', wmSize:28, wmColor:'#ffffff', fmt:'image/png', quality:92 };
+    function ieEl(id){ return document.getElementById(id) }
+    function ieLoadFile(file){
+      if(!file || !/^image\//.test(file.type)){ try{toast('请选择图片文件')}catch(e){} return }
+      const url=URL.createObjectURL(file);
+      const im=new Image();
+      im.onload=function(){
+        IE.img=im; IE.outW=0;
+        const d=ieEl('ie-drop'), s=ieEl('ie-stage'), h=ieEl('ie-hint');
+        if(d) d.style.display='none';
+        if(s) s.style.display='flex';
+        const w=ieEl('ie-w'); if(w) w.value=0;
+        if(h) h.textContent='px（0 = 原尺寸）';
+        ieRender();
+        try{toast('已载入 '+im.naturalWidth+'×'+im.naturalHeight,'success')}catch(e){}
+      };
+      im.onerror=function(){ try{toast('这个文件无法解码','error')}catch(e){} };
+      im.src=url;
+    }
+    function ieCropRect(){
+      const W=IE.img.naturalWidth, H=IE.img.naturalHeight;
+      if(IE.aspect==='free') return {x:0,y:0,w:W,h:H};
+      const parts=IE.aspect.split(':'), ar=parseFloat(parts[0])/parseFloat(parts[1]);
+      let w=W, h=Math.round(W/ar);
+      if(h>H){ h=H; w=Math.round(H*ar) }
+      return {x:Math.round((W-w)/2), y:Math.round((H-h)/2), w:w, h:h};
+    }
+    function ieRender(){
+      const cv=ieEl('ie-canvas'); if(!cv||!IE.img) return;
+      const cr=ieCropRect();
+      /* 1) 源空间：裁剪 + 旋转 + 翻转 */
+      const swap=(IE.rot%180!==0);
+      const ow=swap?cr.h:cr.w, oh=swap?cr.w:cr.h;
+      const oc=document.createElement('canvas'); oc.width=ow; oc.height=oh;
+      const c1=oc.getContext('2d');
+      c1.save();
+      c1.translate(ow/2, oh/2);
+      c1.rotate(IE.rot*Math.PI/180);
+      c1.scale(IE.flipH, IE.flipV);
+      c1.drawImage(IE.img, cr.x, cr.y, cr.w, cr.h, -cr.w/2, -cr.h/2, cr.w, cr.h);
+      c1.restore();
+      /* 2) 输出空间：缩放 + 调色 */
+      let outW = IE.outW>0 ? Math.min(IE.outW, 4096) : ow;
+      let outH = Math.round(outW * oh / ow);
+      cv.width=outW; cv.height=outH;
+      const c2=cv.getContext('2d');
+      c2.clearRect(0,0,outW,outH);
+      c2.filter='brightness('+IE.bri+'%) contrast('+IE.con+'%) saturate('+IE.sat+'%)';
+      if(IE.fmt==='image/jpeg'){ c2.fillStyle='#ffffff'; c2.fillRect(0,0,outW,outH) }
+      c2.drawImage(oc, 0, 0, outW, outH);
+      c2.filter='none';
+      /* 3) 水印 */
+      if(IE.wm){
+        const scale=outW/ow;
+        const fs=Math.max(8, Math.round(IE.wmSize*scale));
+        c2.font='600 '+fs+'px system-ui, "Microsoft YaHei", sans-serif';
+        c2.textBaseline='alphabetic';
+        const pad=Math.round(fs*0.6);
+        const tw=c2.measureText(IE.wm).width;
+        let x=outW-tw-pad, y=outH-pad;
+        if(IE.wmPos==='bl'){ x=pad }
+        else if(IE.wmPos==='tr'){ y=pad+fs }
+        else if(IE.wmPos==='tl'){ x=pad; y=pad+fs }
+        else if(IE.wmPos==='c'){ x=(outW-tw)/2; y=(outH+fs)/2 }
+        c2.globalAlpha=0.92;
+        c2.lineWidth=Math.max(1, Math.round(fs*0.12));
+        c2.strokeStyle='rgba(0,0,0,.45)'; c2.strokeText(IE.wm, x, y);
+        c2.fillStyle=IE.wmColor; c2.fillText(IE.wm, x, y);
+        c2.globalAlpha=1;
+      }
+      /* 4) 预览尺寸限制（导出时重新按原始尺寸渲染） */
+      const stage=ieEl('ie-stage');
+      if(stage){ const maxW=Math.min(560, stage.clientWidth||560); if(cv.width>maxW){ cv.style.width=maxW+'px'; cv.style.height='auto' } else { cv.style.width=''; cv.style.height='' } }
+      const m=ieEl('ie-meta');
+      if(m) m.textContent='原始 '+IE.img.naturalWidth+'×'+IE.img.naturalHeight+'　→　输出 '+outW+'×'+outH+'（'+(IE.fmt.split('/')[1].toUpperCase())+'）';
+      return {w:outW,h:outH,canvas:cv};
+    }
+    /* 导出：按完整尺寸重绘一次（预览可能是缩小的） */
+    function ieExport(){
+      if(!IE.img){ try{toast('先选择一张图片')}catch(e){} return }
+      const savedW=IE.outW;
+      const r=ieRender();
+      const cv=ieEl('ie-canvas');
+      const a=document.createElement('a');
+      const ext=IE.fmt==='image/png'?'png':(IE.fmt==='image/webp'?'webp':'jpg');
+      a.download='edited-'+Date.now()+'.'+ext;
+      const done=function(u){ a.href=u; document.body.appendChild(a); a.click(); a.remove(); try{toast('已导出 '+r.w+'×'+r.h,'success')}catch(e){} };
+      if(cv.toBlob){ cv.toBlob(function(b){ if(!b){ try{toast('导出失败')}catch(e){} return } done(URL.createObjectURL(b)) }, IE.fmt, IE.quality/100) }
+      else { done(cv.toDataURL(IE.fmt, IE.quality/100)) }
+      IE.outW=savedW;
+    }
+    (function ieBind(){
+      const drop=ieEl('ie-drop'), file=ieEl('ie-file');
+      if(drop && file){
+        drop.addEventListener('click',function(){ file.click() });
+        file.addEventListener('change',function(){ if(file.files&&file.files[0]) ieLoadFile(file.files[0]) });
+        drop.addEventListener('dragover',function(e){ e.preventDefault(); drop.classList.add('over') });
+        drop.addEventListener('dragleave',function(){ drop.classList.remove('over') });
+        drop.addEventListener('drop',function(e){
+          e.preventDefault(); drop.classList.remove('over');
+          const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+          if(f) ieLoadFile(f);
+        });
+      }
+      const pick=ieEl('ie-pick');
+      if(pick) pick.addEventListener('click',function(){ if(file) file.click() });
+      const stage=ieEl('ie-stage');
+      if(stage) stage.addEventListener('click',function(){ if(file) file.click() });
+      document.querySelectorAll('[data-ie]').forEach(function(b){
+        b.addEventListener('click',function(){
+          if(!IE.img) return;
+          const k=b.dataset.ie;
+          if(k==='rotL') IE.rot=(IE.rot+270)%360;
+          else if(k==='rotR') IE.rot=(IE.rot+90)%360;
+          else if(k==='flipH') IE.flipH*=-1;
+          else if(k==='flipV') IE.flipV*=-1;
+          IE.outW=0; const w=ieEl('ie-w'); if(w) w.value=0;
+          ieRender();
+        });
+      });
+      const asp=ieEl('ie-aspect');
+      if(asp) asp.addEventListener('change',function(){ IE.aspect=asp.value; IE.outW=0; const w=ieEl('ie-w'); if(w) w.value=0; ieRender() });
+      const wIn=ieEl('ie-w');
+      if(wIn) wIn.addEventListener('input',function(){ IE.outW=Math.max(0, parseInt(wIn.value||'0',10)||0); ieRender() });
+      [['ie-bri','bri'],['ie-con','con'],['ie-sat','sat'],['ie-q','quality']].forEach(function(p){
+        const el=ieEl(p[0]); if(!el) return;
+        el.addEventListener('input',function(){
+          const v=parseInt(el.value,10)||0; IE[p[1]]=v;
+          const lab=ieEl(p[0]+'-v'); if(lab) lab.textContent=v+'%';
+          ieRender();
+        });
+      });
+      const wm=ieEl('ie-wm');
+      if(wm) wm.addEventListener('input',function(){ IE.wm=wm.value; ieRender() });
+      const wmp=ieEl('ie-wmpos'); if(wmp) wmp.addEventListener('change',function(){ IE.wmPos=wmp.value; ieRender() });
+      const wms=ieEl('ie-wmsize'); if(wms) wms.addEventListener('input',function(){ IE.wmSize=parseInt(wms.value,10)||28; ieRender() });
+      const wmc=ieEl('ie-wmcolor'); if(wmc) wmc.addEventListener('input',function(){ IE.wmColor=wmc.value; ieRender() });
+      const fmt=ieEl('ie-fmt'); if(fmt) fmt.addEventListener('change',function(){ IE.fmt=fmt.value; ieRender() });
+      const dl=ieEl('ie-download'); if(dl) dl.addEventListener('click',ieExport);
+      const rs=ieEl('ie-reset');
+      if(rs) rs.addEventListener('click',function(){
+        IE.rot=0; IE.flipH=1; IE.flipV=1; IE.aspect='free'; IE.outW=0; IE.bri=100; IE.con=100; IE.sat=100;
+        IE.wm=''; IE.wmPos='br'; IE.wmSize=28; IE.wmColor='#ffffff'; IE.fmt='image/png'; IE.quality=92;
+        if(ieEl('ie-aspect')) ieEl('ie-aspect').value='free';
+        if(ieEl('ie-w')) ieEl('ie-w').value=0;
+        if(ieEl('ie-bri')){ ieEl('ie-bri').value=100; ieEl('ie-bri-v').textContent='100%' }
+        if(ieEl('ie-con')){ ieEl('ie-con').value=100; ieEl('ie-con-v').textContent='100%' }
+        if(ieEl('ie-sat')){ ieEl('ie-sat').value=100; ieEl('ie-sat-v').textContent='100%' }
+        if(ieEl('ie-q')){ ieEl('ie-q').value=92; ieEl('ie-q-v').textContent='92%' }
+        if(ieEl('ie-wm')) ieEl('ie-wm').value='';
+        if(ieEl('ie-wmsize')) ieEl('ie-wmsize').value=28;
+        if(ieEl('ie-wmcolor')) ieEl('ie-wmcolor').value='#ffffff';
+        if(ieEl('ie-fmt')) ieEl('ie-fmt').value='image/png';
+        ieRender(); try{toast('已重置')}catch(e){}
+      });
+    })();
     function showInbox(){
       try{
         inboxFetchRemote();
@@ -3321,6 +3595,7 @@
       spark:'<path d="M12 3.2l1.75 4.55L18.3 9.5l-4.55 1.75L12 15.8l-1.75-4.55L5.7 9.5l4.55-1.75z"/><path d="M18.6 15.2l.8 2.05 2.05.8-2.05.8-.8 2.05-.8-2.05-2.05-.8 2.05-.8z"/>',
       wand:'<path d="M15 4l5 5"/><path d="M4 20l11-11"/><path d="M17.5 2.5l1 1M21.5 6.5l1 1M12.5 2.5l.6.6"/>',
       anime:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+      brush:'<path d="M4 20l4-1 9-9 3 3-9 9z"/><path d="M14 5l3 3"/>',
       pose:'<circle cx="12" cy="4.5" r="2"/><path d="M12 6.5v6"/><path d="M8 21l4-8 4 8"/><path d="M7.5 10l4.5 2 4.5-2"/>',
       key:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m17 6 2 2"/><path d="m14 9 2 2"/>',
       logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
@@ -3337,7 +3612,7 @@
       {t:'',items:[{k:'home',i:'home',l:'主页'}]},
       {t:'娱乐区',items:[{k:'image',i:'image',l:'插图'},{k:'comic',i:'comic',l:'漫画'},{k:'post',i:'post',l:'博文'}]},
       {t:'科学区',items:[{k:'solar',i:'orbit',l:'太阳系'},{k:'deep',i:'deep',l:'深空星云'},{k:'edu',i:'edu',l:'天文事件'}]},
-      {t:'工作区',items:[{k:'translate',i:'translate',l:'文本翻译'},{k:'convert',i:'swap',l:'图片转格式'},{k:'gif',i:'film',l:'视频转 GIF'}]},
+      {t:'工作区',items:[{k:'translate',i:'translate',l:'文本翻译'},{k:'convert',i:'swap',l:'图片转格式'},{k:'imgedit',i:'brush',l:'图片编辑'},{k:'gif',i:'film',l:'视频转 GIF'}]},
       {t:'动漫区',items:[{k:'anime',i:'anime',l:'角色图鉴'}]},
       {t:'AI 区',items:[{k:'prompts',i:'spark',l:'提示词库'},{k:'promptgen',i:'wand',l:'提示词生成器'}]},
       {t:'我的',items:[{k:'inbox',i:'bell',l:'消息'+(inboxUnread()?(' '+inboxUnread()):'')},{k:'liked',i:'heart',l:'我喜欢的'},{k:'history',i:'clock',l:'历史浏览'},{k:'space',i:'user',l:'我的空间'},{k:'upload',i:'upload',l:'上传作品'}]},
@@ -3461,10 +3736,10 @@
     }
     const WS_TITLE={ translate:'🌐 文本翻译', convert:'🔄 图片转格式', gif:'🎞️ 视频转 GIF' };
     function wsActivate(v){
-      v=(v==='convert'||v==='gif')?v:'translate';
+      v=(v==='convert'||v==='gif'||v==='imgedit')?v:'translate';
       document.querySelectorAll('#ws-view .ws-tab').forEach(function(x){x.classList.toggle('active',x.dataset.wstab===v)});
       document.querySelectorAll('#ws-view .ws-panel').forEach(function(p){p.classList.toggle('active',p.dataset.wspanel===v)});
-      const tt=document.getElementById('ws-title');if(tt&&WS_TITLE[v])tt.textContent=WS_TITLE[v];
+      const tt=document.getElementById('ws-title');if(tt&&WS_TITLE[v])tt.textContent=WS_TITLE[v];if(v==='imgedit'&&tt)tt.textContent='🖼 图片编辑';
       try{navActiveKey=v;syncNavActive()}catch(e){}
     }
     function openWorkspace(tab){
@@ -3625,6 +3900,7 @@
       R.workspace = safe(function(){ openWorkspace('translate') },'workspace');
       R.translate = safe(function(){ openWorkspace('translate') },'translate');
       R.convert   = safe(function(){ openWorkspace('convert') },'convert');
+      R.imgedit   = safe(function(){ openWorkspace('imgedit') },'imgedit');
       R.gif       = safe(function(){ openWorkspace('gif') },'gif');
       R.workbench = safe(function(){ if(typeof openWorkbench==='function') openWorkbench() },'workbench');
 
